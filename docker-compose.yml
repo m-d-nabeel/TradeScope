@@ -4,11 +4,11 @@ services:
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_USER: tradinguser
-      POSTGRES_PASSWORD: tradingpass
-      POSTGRES_DB: tradingdb
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
