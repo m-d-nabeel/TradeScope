@@ -43,4 +43,12 @@ install-global-deps:
 	go install -tags "postgres,mysql" github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
-.PHONY: migrate-all-up migrate-all-down migrate-next migrate-prev migrate-force-1 migrate-force sqlc-generate migrate-create docker-up docker-down install-global-deps
+.PHONY: migrate-all-up migrate-all-down migrate-next migrate-prev migrate-force-1 migrate-force migrate-create
+.PHONY: sqlc-generate docker-up docker-down install-global-deps
+.PHONY: run-server run-client
+
+server:
+	go run cmd/api/main.go
+
+client:
+	cd client && bun dev
