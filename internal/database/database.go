@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/trading-backend/config"
 )
 
 type Service interface {
@@ -22,12 +22,12 @@ type service struct {
 }
 
 var (
-	database = os.Getenv("DB_DATABASE")
-	password = os.Getenv("DB_PASSWORD")
-	username = os.Getenv("DB_USERNAME")
-	port     = os.Getenv("DB_PORT")
-	host     = os.Getenv("DB_HOST")
-	schema   = os.Getenv("DB_SCHEMA")
+	database = config.Envs.DbDatabase
+	password = config.Envs.DbPassword
+	username = config.Envs.DbUsername
+	port     = config.Envs.DbPort
+	host     = config.Envs.DbHost
+	schema   = config.Envs.DbSchema
 )
 
 func New() (Service, error) {

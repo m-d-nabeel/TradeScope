@@ -21,5 +21,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 	})
 	r.Get("/logout/{provider}", s.handleLogout)
 
+	r.Group(func(r chi.Router) {
+		// r.Use(s.AuthMiddleware)
+		r.Get("/dashboard", s.handleDashboard)
+		r.Get("/profile", s.handleProfile)
+		r.Get("/settings", s.handleSettings)
+		r.Get("/settings/{setting}", s.handleSetting)
+	})
+
 	return r
 }

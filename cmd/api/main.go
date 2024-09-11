@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/trading-backend/internal/auth"
 	"github.com/trading-backend/internal/server"
 )
 
 func main() {
 
-	auth.NewAuth()
-	server, err := server.NewServer()
+	server, err := server.New()
 
 	if err != nil {
 		panic(fmt.Sprintf("cannot start server: %s", err))

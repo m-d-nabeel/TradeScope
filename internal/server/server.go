@@ -5,39 +5,42 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/trading-backend/config"
 	"github.com/trading-backend/internal/database"
+	"github.com/trading-backend/internal/service/auth"
 )
 
 type Server struct {
-	port int
 	db   database.Service
+	auth *auth.AuthService
 }
 
-func NewServer() (*http.Server, error) {
-	port, err := strconv.Atoi(os.Getenv("PORT"))
-	if err != nil {
-		log.Println("Error while parsing PORT from env, setting default port to 5000")
-		port = 5000
-	}
-
+func New() (*http.Server, error) {
 	dbService, err := database.New()
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize database: %v", err)
 	}
 
+	sessionStore := auth.NewCookieStore(auth.SessionOptions{
+		CookiesKey: config.Envs.CookiesAuthSecret,
+		MaxAge:     config.Envs.CookiesAuthAgeInSeconds,
+		Secure:     config.Envs.CookiesAuthIsSecure,
+		HttpOnly:   config.Envs.CookiesAuthIsHttpOnly,
+	})
+
+	authService := auth.NewAuthService(sessionStore)
+
 	newServer := &Server{
-		port: port,
 		db:   dbService,
+		auth: authService,
 	}
 
 	// Declare Server config
 	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", newServer.port),
+		Addr:         fmt.Sprintf(":%d", config.Envs.Port),
 		Handler:      newServer.RegisterRoutes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
@@ -61,4 +64,16 @@ func (s *Server) respondJSON(w http.ResponseWriter, status int, payload interfac
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write(data)
+}
+
+func (s *Server) respondError(w http.ResponseWriter, statusCode int, message string) {
+	if statusCode > 499 {
+		log.Printf("Responding with 5XX error: %s", message)
+	}
+	type errorResponse struct {
+		Error string `json:"error"`
+	}
+	s.respondJSON(w, statusCode, errorResponse{
+		Error: message,
+	})
 }

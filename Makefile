@@ -14,13 +14,9 @@ migrate-next:
 migrate-prev:
 	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations prev
 
-# Force apply the next migration
-migrate-force-1:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations force 1
-
 # Force apply all migrations
 migrate-force:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations force
+	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations force $(version)
 
 # Generate Go code from SQL queries
 sqlc-generate:
@@ -43,12 +39,26 @@ install-global-deps:
 	go install -tags "postgres,mysql" github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
-.PHONY: migrate-all-up migrate-all-down migrate-next migrate-prev migrate-force-1 migrate-force migrate-create
-.PHONY: sqlc-generate docker-up docker-down install-global-deps
-.PHONY: run-server run-client
-
+# Always run server
+.PHONY: server
 server:
 	go run cmd/api/main.go
 
+# Always run client
+.PHONY: client
 client:
 	cd client && bun dev
+
+# Ensure migration commands always run
+.PHONY: migrate-all-up migrate-all-down migrate-next migrate-prev migrate-force migrate-create
+
+# Ensure other commands always run
+.PHONY: sqlc-generate docker-up docker-down install-global-deps
+
+
+start:
+	docker-compose up -d
+	go run cmd/api/main.go
+
+stop:
+	docker-compose down
