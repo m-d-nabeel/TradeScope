@@ -19,6 +19,7 @@ type Config struct {
 	Port                    int
 	BackendUrl              string
 	SecretKey               string
+	JWTSecret               string
 	GoogleClientId          string
 	GoogleClientSecret      string
 	ApcaApiKeyId            string
@@ -44,6 +45,7 @@ func initConfig() Config {
 		Port:                    getEnvAsInt("PORT", 5000),
 		BackendUrl:              getEnv("BACKEND_URL", "http://localhost:8080"),
 		SecretKey:               getEnvOrError("SECRET_KEY"),
+		JWTSecret:               getEnvOrError("JWT_SECRET"),
 		GoogleClientId:          getEnvOrError("GOOGLE_CLIENT_ID"),
 		GoogleClientSecret:      getEnvOrError("GOOGLE_CLIENT_SECRET"),
 		ApcaApiKeyId:            getEnvOrError("APCA_API_KEY_ID"),

@@ -1,22 +1,41 @@
 package auth
 
 import (
-	"fmt"
-	"log"
+	"errors"
 	"net/http"
+	"time"
 
-	"github.com/gorilla/sessions"
+	"github.com/golang-jwt/jwt"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
 	"github.com/trading-backend/config"
 )
 
-type AuthService struct{}
+const (
+	AccessTokenExpiry  = 15 * time.Minute
+	RefreshTokenExpiry = 7 * 24 * time.Hour
+	AccessAudience     = "access"
+	RefreshAudience    = "refresh"
+)
 
-func NewAuthService(store sessions.Store) *AuthService {
-	gothic.Store = store
+type AuthService struct {
+	jwtSecret []byte
+}
 
+type UserClaims struct {
+	Email  string `json:"email"`
+	Name   string `json:"name"`
+	UserID string `json:"user_id"`
+	jwt.StandardClaims
+}
+
+type RefreshClaims struct {
+	UserID string `json:"user_id"`
+	jwt.StandardClaims
+}
+
+func NewAuthService() *AuthService {
 	goth.UseProviders(
 		google.New(
 			config.Envs.GoogleClientId,
@@ -31,65 +50,98 @@ func NewAuthService(store sessions.Store) *AuthService {
 		return "google", nil
 	}
 
-	return &AuthService{}
+	return &AuthService{
+		jwtSecret: []byte(config.Envs.JWTSecret),
+	}
 }
 
-func (s *AuthService) GetSessionUser(r *http.Request) (goth.User, error) {
-	session, err := gothic.Store.Get(r, gothic.SessionName)
+func (s *AuthService) GenerateTokenPair(user *goth.User) (string, string, error) {
+	accessToken, err := s.generateAccessToken(user)
 	if err != nil {
-		return goth.User{}, err
+		return "", "", err
 	}
 
-	u := session.Values["user"]
-	if u == nil {
-		return goth.User{}, fmt.Errorf("user is not authenticated! %v", u)
-	}
-
-	return u.(goth.User), nil
-}
-
-func (s *AuthService) StoreUserSession(w http.ResponseWriter, r *http.Request, user goth.User) error {
-	// Get a session. We're ignoring the error resulted from decoding an
-	// existing session: Get() always returns a session, even if empty.
-	session, _ := gothic.Store.Get(r, gothic.SessionName)
-
-	session.Values["user"] = user.AccessToken
-
-	err := session.Save(r, w)
+	refreshToken, err := s.generateRefreshToken(user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return err
+		return "", "", err
 	}
 
-	return nil
+	return accessToken, refreshToken, nil
 }
 
-func (s *AuthService) RemoveUserSession(w http.ResponseWriter, r *http.Request) {
-	session, err := gothic.Store.Get(r, gothic.SessionName)
+func (s *AuthService) generateAccessToken(user *goth.User) (string, error) {
+	claims := UserClaims{
+		Email:  user.Email,
+		Name:   user.Name,
+		UserID: user.UserID,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(AccessTokenExpiry).Unix(),
+			IssuedAt:  time.Now().Unix(),
+			Audience:  AccessAudience,
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(s.jwtSecret)
+}
+
+func (s *AuthService) generateRefreshToken(user *goth.User) (string, error) {
+	claims := RefreshClaims{
+		UserID: user.UserID,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(RefreshTokenExpiry).Unix(),
+			IssuedAt:  time.Now().Unix(),
+			Audience:  RefreshAudience,
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(s.jwtSecret)
+}
+
+func (s *AuthService) RefreshTokens(refreshToken string) (string, string, error) {
+	claims, err := s.ValidateRefreshToken(refreshToken)
+
+	// userID := claims.UserID
+
+	// Fetch user from database
+
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return "", "", err
 	}
 
-	session.Values["user"] = goth.User{}
-	// delete the cookie immediately
-	session.Options.MaxAge = -1
+	user := &goth.User{
+		UserID: claims.UserID,
+		// Email:  claims.Email,
+		// Name:   claims.Name,
+	}
 
-	session.Save(r, w)
+	return s.GenerateTokenPair(user)
 }
 
-func RequireAuth(handlerFunc http.HandlerFunc, auth *AuthService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		session, err := auth.GetSessionUser(r)
-		if err != nil {
-			log.Println("User is not authenticated!")
-			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
-			return
-		}
-
-		log.Printf("user is authenticated! user: %v!", session.FirstName)
-
-		handlerFunc(w, r)
+// Validate Utility function to validate a token
+func (s *AuthService) ValidateAccessToken(tokenString string) (*UserClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return s.jwtSecret, nil
+	})
+	if err != nil {
+		return nil, err
 	}
+	if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
+		return claims, nil
+	}
+	return nil, errors.New("invalid token")
+}
+
+func (s *AuthService) ValidateRefreshToken(tokenString string) (*RefreshClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &RefreshClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return s.jwtSecret, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if claims, ok := token.Claims.(*RefreshClaims); ok && token.Valid {
+		return claims, nil
+	}
+	return nil, errors.New("invalid token")
 }
