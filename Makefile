@@ -1,22 +1,22 @@
 # Apply all up migrations
 migrate-all-up:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations up
+	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations up
 
 # Apply all down migrations
 migrate-all-down:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations down
+	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations down
 
 # Apply the next migration
 migrate-next:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations next
+	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations next
 
 # Apply the previous migration
 migrate-prev:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations prev
+	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations prev
 
 # Force apply all migrations
 migrate-force:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/tradingdb?sslmode=disable" -path ./db/migrations force $(version)
+	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations force $(version)
 
 # Generate Go code from SQL queries
 sqlc-generate:

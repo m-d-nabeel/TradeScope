@@ -59,14 +59,14 @@ func (s *Server) respondJSON(w http.ResponseWriter, status int, payload interfac
 	w.Write(data)
 }
 
-// func (s *Server) respondError(w http.ResponseWriter, statusCode int, message string) {
-// 	if statusCode > 499 {
-// 		log.Printf("Responding with 5XX error: %s", message)
-// 	}
-// 	type errorResponse struct {
-// 		Error string `json:"error"`
-// 	}
-// 	s.respondJSON(w, statusCode, errorResponse{
-// 		Error: message,
-// 	})
-// }
+func (s *Server) respondError(w http.ResponseWriter, statusCode int, message string) {
+	if statusCode > 499 {
+		log.Printf("Responding with 5XX error: %s", message)
+	}
+	type errorResponse struct {
+		Error string `json:"error"`
+	}
+	s.respondJSON(w, statusCode, errorResponse{
+		Error: message,
+	})
+}

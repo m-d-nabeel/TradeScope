@@ -10,6 +10,7 @@ import (
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
 	"github.com/trading-backend/config"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -112,8 +113,6 @@ func (s *AuthService) RefreshTokens(refreshToken string) (string, string, error)
 
 	user := &goth.User{
 		UserID: claims.UserID,
-		// Email:  claims.Email,
-		// Name:   claims.Name,
 	}
 
 	return s.GenerateTokenPair(user)
@@ -144,4 +143,17 @@ func (s *AuthService) ValidateRefreshToken(tokenString string) (*RefreshClaims, 
 		return claims, nil
 	}
 	return nil, errors.New("invalid token")
+}
+
+// Hashing and Salting Secrets
+func (s *AuthService) HashSecret(secret string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(secret), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), nil
+}
+
+func (s *AuthService) CompareHashedSecret(hashedSecret, secret string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedSecret), []byte(secret))
 }
