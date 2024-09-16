@@ -17,8 +17,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Get("/", s.handleHome)
 	r.Get("/health", s.handleHealthCheck)
 	r.Route("/auth", func(r chi.Router) {
+		r.Get("/refresh", s.handleTokenRefresh)
 		r.Get("/{provider}", s.handleAuth)
 		r.Get("/{provider}/callback", s.handleAuthCallback)
+		r.Get("/status", s.handleAuthStatus)
 	})
 	r.Get("/logout/{provider}", s.handleLogout)
 

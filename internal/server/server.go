@@ -1,9 +1,7 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -45,28 +43,4 @@ func New() (*http.Server, error) {
 
 func (s *Server) Close() {
 	s.db.Close()
-}
-
-func (s *Server) respondJSON(w http.ResponseWriter, status int, payload interface{}) {
-	data, err := json.Marshal(payload)
-	if err != nil {
-		log.Printf("Error marshalling JSON: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	w.Write(data)
-}
-
-func (s *Server) respondError(w http.ResponseWriter, statusCode int, message string) {
-	if statusCode > 499 {
-		log.Printf("Responding with 5XX error: %s", message)
-	}
-	type errorResponse struct {
-		Error string `json:"error"`
-	}
-	s.respondJSON(w, statusCode, errorResponse{
-		Error: message,
-	})
 }

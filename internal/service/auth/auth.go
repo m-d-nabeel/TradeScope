@@ -10,6 +10,8 @@ import (
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
 	"github.com/trading-backend/config"
+	"github.com/trading-backend/internal/database/sqlc"
+	"github.com/trading-backend/internal/lib"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -100,22 +102,20 @@ func (s *AuthService) generateRefreshToken(user *goth.User) (string, error) {
 	return token.SignedString(s.jwtSecret)
 }
 
-func (s *AuthService) RefreshTokens(refreshToken string) (string, string, error) {
-	claims, err := s.ValidateRefreshToken(refreshToken)
-
-	// userID := claims.UserID
-
-	// Fetch user from database
-
-	if err != nil {
-		return "", "", err
+func (s *AuthService) RefreshTokens(user *sqlc.User) (string, string, error) {
+	if user == nil {
+		return "", "", errors.New("user is nil")
 	}
 
-	user := &goth.User{
-		UserID: claims.UserID,
+	userIDString := lib.UUIDToString(user.ID)
+
+	claims := &goth.User{
+		UserID: userIDString,
+		Name:   user.Name,
+		Email:  user.Email,
 	}
 
-	return s.GenerateTokenPair(user)
+	return s.GenerateTokenPair(claims)
 }
 
 // Validate Utility function to validate a token

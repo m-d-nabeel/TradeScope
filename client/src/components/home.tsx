@@ -1,14 +1,12 @@
-import { Outlet } from "@tanstack/react-router";
+import { useAuth } from "@/contexts";
+import { Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Button } from "./ui/button";
-import { useAuth } from "@/contexts";
+import React from "react";
 
 export const Home = () => {
-  const { user, loading, login, logout } = useAuth();
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const { user, login, logout } = useAuth();
+  console.log("User:", user);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -16,30 +14,30 @@ export const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
-              <a href="/" className="flex-shrink-0 flex items-center">
+              <Link to="/" className="flex-shrink-0 flex items-center">
                 Home
-              </a>
+              </Link>
               {user && (
-                <>
-                  <a
-                    href="/dashboard"
+                <React.Fragment>
+                  <Link
+                    to="/dashboard"
                     className="ml-6 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                   >
                     Dashboard
-                  </a>
-                  <a
-                    href="/profile"
+                  </Link>
+                  <Link
+                    to="/profile"
                     className="ml-6 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                   >
                     Profile
-                  </a>
-                  <a
-                    href="/settings"
+                  </Link>
+                  <Link
+                    to="/settings"
                     className="ml-6 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                   >
                     Settings
-                  </a>
-                </>
+                  </Link>
+                </React.Fragment>
               )}
             </div>
             <div className="flex items-center">

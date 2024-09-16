@@ -1,10 +1,14 @@
 package server
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/trading-backend/internal/lib"
+)
 
 func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 	resp := map[string]string{"message": "Welcome to the Trading Backend API"}
-	s.respondJSON(w, http.StatusOK, resp)
+	lib.RespondJSON(w, http.StatusOK, resp)
 }
 
 func (s *Server) handleHealthCheck(w http.ResponseWriter, r *http.Request) {
@@ -13,5 +17,5 @@ func (s *Server) handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 	if health["status"] != "up" {
 		status = http.StatusServiceUnavailable
 	}
-	s.respondJSON(w, status, health)
+	lib.RespondJSON(w, status, health)
 }

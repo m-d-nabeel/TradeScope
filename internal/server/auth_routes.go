@@ -4,22 +4,23 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/trading-backend/internal/database/sqlc"
+	"github.com/trading-backend/internal/lib"
 	"github.com/trading-backend/internal/service/auth"
 )
 
-type contextKey struct{}
+type contextKey string
 
-var (
+const (
 	FrontendURL            = "http://localhost:5173"
-	providerKey contextKey = contextKey{}
-	userKey     contextKey = contextKey{}
+	providerKey contextKey = "__provider_key__"
+	userKey     contextKey = "__user_key__"
 )
 
 func (s *Server) handleAuth(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +36,7 @@ func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
+		log.Println("Authentication failed: ", err)
 		http.Error(w, "Authentication failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -51,30 +53,23 @@ func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) {
 			Role:      sqlc.NullRoleEnum{RoleEnum: sqlc.RoleEnumUser, Valid: true},
 		})
 		if err != nil {
+			log.Println("User creation failed: ", err)
 			http.Error(w, "User creation failed: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
 
-	accessToken, refreshToken, err := s.auth.GenerateTokenPair(&user)
+	accessToken, refreshToken, err := s.auth.GenerateTokenPair(&goth.User{
+		UserID: lib.UUIDToString(dbUser.ID),
+		Email:  dbUser.Email,
+		Name:   dbUser.Name,
+	})
+
 	if err != nil {
+		log.Println("Token generation failed: ", err)
 		http.Error(w, "Token generation failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Println("AccessToken: ", accessToken)
-	log.Println("RefreshToken: ", refreshToken)
-
-	// hashedRefreshToken, err := s.auth.HashSecret(refreshToken)
-
-	// if err != nil {
-	// 	http.Error(w, "Token hash failed: "+err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// err = dbQuery.UpdateUserRefreshToken(r.Context(), sqlc.UpdateUserRefreshTokenParams{
-	// 	ID:               dbUser.ID,
-	// 	RefreshTokenHash: pgtype.Text{String: hashedRefreshToken, Valid: true},
-	// })
 
 	err = dbQuery.UpdateUserRefreshToken(r.Context(), sqlc.UpdateUserRefreshTokenParams{
 		ID:               dbUser.ID,
@@ -82,6 +77,7 @@ func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
+		log.Println("Token update failed: ", err)
 		http.Error(w, "Token update failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -96,25 +92,6 @@ func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
-func (s *Server) HandleRefresh(w http.ResponseWriter, r *http.Request) {
-	refreshTokenCookie, err := r.Cookie("refresh_token")
-	if err != nil {
-		http.Error(w, "Refresh token not found", http.StatusUnauthorized)
-		return
-	}
-
-	refreshToken := refreshTokenCookie.Value
-	newAccessToken, newRefreshToken, err := s.auth.RefreshTokens(refreshToken)
-	if err != nil {
-		http.Error(w, "Token refresh failed: "+err.Error(), http.StatusUnauthorized)
-		return
-	}
-
-	setCookies(w, newAccessToken, newRefreshToken)
-
-	w.WriteHeader(http.StatusOK)
-}
-
 func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("AuthMiddleware")
@@ -125,19 +102,22 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 		accessTokenCookie, err := r.Cookie("access_token")
 		if err == nil && accessTokenCookie != nil {
 			accessToken = accessTokenCookie.Value
+			log.Println("AccessTokenFromCookie")
+
 		}
 
-		// If not in cookie, check Authorization header
-		if accessToken == "" {
-			authHeader := r.Header.Get("Authorization")
-			if strings.HasPrefix(authHeader, "Bearer ") {
-				accessToken = strings.TrimPrefix(authHeader, "Bearer ")
-			}
-		}
+		// // If not in cookie, check Authorization header
+		// if accessToken == "" {
+		// 	authHeader := r.Header.Get("Authorization")
+		// 	if strings.HasPrefix(authHeader, "Bearer ") {
+		// 		accessToken = strings.TrimPrefix(authHeader, "Bearer ")
+		// 		log.Println("AccessTokenFromHeader")
+		// 	}
+		// }
 
 		// If no access token found, attempt to refresh
 		if accessToken == "" {
-			s.handleTokenRefresh(w, r, next)
+			s.handleAuth(w, r)
 			return
 		}
 
@@ -145,77 +125,95 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 		claims, err := s.auth.ValidateAccessToken(accessToken)
 		if err != nil {
 			log.Printf("Access token validation failed: %v", err)
-			s.handleTokenRefresh(w, r, next)
+			// s.handleTokenRefresh(w, r, next)
+			// s.handleTokenRefresh(w, r)
+			lib.RespondError(w, http.StatusUnauthorized, "Unauthorized")
 			return
 		}
 
 		log.Println(claims)
 
 		// Token is valid, set user in context and proceed
-		ctx := context.WithValue(r.Context(), userKey, claims)
+		ctxWithUser := context.WithValue(r.Context(), userKey, claims)
+		rWithUser := r.WithContext(ctxWithUser)
 
-		c, ok := ctx.Value(userKey).(*UserClaims)
-		if !ok {
-			s.respondError(w, http.StatusInternalServerError, "Error getting user claims in middleware")
-			return
-		}
-
-		log.Println("User: ", c.Name)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, rWithUser)
 	})
 }
 
-func (s *Server) handleTokenRefresh(w http.ResponseWriter, r *http.Request, next http.Handler) {
+func (s *Server) handleTokenRefresh(w http.ResponseWriter, r *http.Request) {
+	log.Println("handleRefresh")
+
+	var refreshToken string
 	refreshTokenCookie, err := r.Cookie("refresh_token")
-	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	if err == nil && refreshTokenCookie != nil {
+		refreshToken = refreshTokenCookie.Value
+	}
+
+	log.Println("RefreshTokenFromCookie: ", refreshToken)
+
+	// if refreshToken == "" {
+	// 	authHeader := r.Header.Get("Authorization")
+	// 	if strings.HasPrefix(authHeader, "Bearer ") {
+	// 		refreshToken = strings.TrimPrefix(authHeader, "Bearer ")
+	// 	}
+	// }
+
+	if refreshToken == "" {
+		s.handleAuth(w, r)
 		return
 	}
-	refreshClaims, err := s.auth.ValidateRefreshToken(refreshTokenCookie.Value)
 
+	// log.Println("RefreshTokenFromHeader: ", refreshToken)
+
+	refreshClaims, err := s.auth.ValidateRefreshToken(refreshToken)
 	if err != nil {
+		log.Println("Refresh token validation failed: ", err)
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	dbQuery := sqlc.New(s.db.GetPool())
-	userIDBytes := [16]byte{}
-	copy(userIDBytes[:], []byte(refreshClaims.UserID))
-	user, err := dbQuery.GetUserByID(r.Context(), pgtype.UUID{
-		Bytes: userIDBytes,
-		Valid: true,
-	})
+
+	userID, err := lib.UUIDFromString(refreshClaims.UserID)
 
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("User ID conversion failed: ", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	if user.RefreshTokenHash.String != refreshTokenCookie.Value {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	// err = s.auth.CompareHashedSecret(user.RefreshTokenHash.String, refreshTokenCookie.Value)
-	// if err != nil {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
-
-	newAccessToken, newRefreshToken, err := s.auth.RefreshTokens(refreshTokenCookie.Value)
+	user, err := dbQuery.GetUserByID(r.Context(), userID)
 
 	if err != nil {
+		log.Println("User not found")
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+
+	if user.RefreshTokenHash.String != refreshToken {
+		log.Println("Refresh token mismatch")
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	newAccessToken, newRefreshToken, err := s.auth.RefreshTokens(&user)
+	if err != nil {
+		log.Println("Token refresh failed: ", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("NewAccessToken: ", newAccessToken)
+	log.Println("NewRefreshToken: ", newRefreshToken)
+
 	err = dbQuery.UpdateUserRefreshToken(r.Context(), sqlc.UpdateUserRefreshTokenParams{
 		ID:               user.ID,
 		RefreshTokenHash: pgtype.Text{String: newRefreshToken, Valid: true},
 	})
-
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("Token update failed: ", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -223,11 +221,47 @@ func (s *Server) handleTokenRefresh(w http.ResponseWriter, r *http.Request, next
 
 	claims, err := s.auth.ValidateAccessToken(newAccessToken)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		log.Println("Access token validation failed: ", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	ctx := context.WithValue(r.Context(), userKey, claims)
-	next.ServeHTTP(w, r.WithContext(ctx))
+
+	lib.RespondJSON(w, http.StatusOK, claims)
+}
+
+func (s *Server) handleAuthStatus(w http.ResponseWriter, r *http.Request) {
+	log.Println("handleAuthStatus")
+	accessTokenCookie, err := r.Cookie("access_token")
+	if err != nil {
+		log.Println("No access token cookie")
+		lib.RespondError(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	accessToken := accessTokenCookie.Value
+
+	if accessToken == "" {
+		log.Println("No access token")
+		lib.RespondError(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	claims, err := s.auth.ValidateAccessToken(accessToken)
+	if err != nil {
+		log.Println("Access token validation failed: ", err)
+		lib.RespondError(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	type StatusResponse struct {
+		Status string           `json:"status"`
+		User   *auth.UserClaims `json:"user"`
+	}
+
+	lib.RespondJSON(w, http.StatusOK, StatusResponse{
+		Status: "Authenticated",
+		User:   claims,
+	})
 }
 
 // Cookie functions
@@ -247,9 +281,13 @@ func setCookies(w http.ResponseWriter, accessToken, refreshToken string) {
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		Secure:   true,
-		Path:     "/",
+		Path:     "/auth/refresh",
 		Expires:  time.Now().Add(auth.RefreshTokenExpiry),
 	})
+
+	log.Println("Cookies set")
+	log.Println("AccessToken: ", accessToken)
+	log.Println("RefreshToken: ", refreshToken)
 }
 
 func removeCookies(w http.ResponseWriter) {
@@ -269,7 +307,9 @@ func removeCookies(w http.ResponseWriter) {
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
-		Path:     "/",
+		Path:     "/auth/refresh",
 		Expires:  time.Now().Add(-1 * time.Hour),
 	})
+
+	log.Println("Cookies removed")
 }
