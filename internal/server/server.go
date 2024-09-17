@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/trading-backend/config"
 	"github.com/trading-backend/internal/database"
@@ -14,6 +15,7 @@ import (
 type Server struct {
 	db   database.Service
 	auth *auth.AuthService
+	apca *alpaca.Client
 }
 
 func New() (*http.Server, error) {
@@ -23,10 +25,16 @@ func New() (*http.Server, error) {
 	}
 
 	authService := auth.NewAuthService()
+	apcaCli := alpaca.NewClient(alpaca.ClientOpts{
+		APIKey:    config.Envs.ApcaApiKeyId,
+		APISecret: config.Envs.ApcaApiSecretKey,
+		BaseURL:   config.Envs.ApcaApiBaseUrl,
+	})
 
 	newServer := &Server{
 		db:   dbService,
 		auth: authService,
+		apca: apcaCli,
 	}
 
 	// Declare Server config

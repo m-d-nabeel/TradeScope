@@ -10,26 +10,42 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
+
+	// Apply global middleware
 	r.Use(middleware.Logger)
 	r.Use(corsOptions().Handler)
 	r.Use(setResponseHeaders)
 
+	// Define route groups
 	r.Get("/", s.handleHome)
-	r.Get("/health", s.handleHealthCheck)
-	r.Route("/auth", func(r chi.Router) {
-		r.Get("/refresh", s.handleTokenRefresh)
-		r.Get("/{provider}", s.handleAuth)
-		r.Get("/{provider}/callback", s.handleAuthCallback)
-		r.Get("/status", s.handleAuthStatus)
-	})
-	r.Get("/logout/{provider}", s.handleLogout)
+	r.Get("/health", s.checkHealthHandler)
 
-	r.Group(func(r chi.Router) {
-		r.Use(s.AuthMiddleware)
-		r.Get("/dashboard", s.handleDashboard)
-		r.Get("/profile", s.handleProfile)
-		r.Get("/settings", s.handleSettings)
-		r.Get("/settings/{setting}", s.handleSetting)
+	// Authentication routes
+	r.Route("/auth", func(r chi.Router) {
+		r.Get("/refresh", s.refreshTokenHandler)
+		r.Get("/{provider}", s.authHandler)
+		r.Get("/{provider}/callback", s.authCallbackHandler)
+		r.Get("/status", s.getAuthStatusHandler)
+	})
+
+	// Logout route
+	r.Get("/logout/{provider}", s.logoutHandler)
+
+	// Authenticated routes
+	r.With(s.AuthMiddleware).Group(func(r chi.Router) {
+		r.Get("/dashboard", s.dashboardHandler)
+		r.Get("/profile", s.profileHandler)
+		r.Get("/settings", s.settingsHandler)
+		r.Get("/settings/{setting}", s.settingHandler)
+	})
+
+	// Alpaca API routes
+	r.With(s.AuthMiddleware).Route("/api/alpaca", func(r chi.Router) {
+		r.Get("/account", s.getAccountHandler)
+		r.Get("/positions", s.getPositionsHandler)
+		r.Get("/assets/{symbol}", s.getAssetHandler)
+		r.Get("/assets/refresh", s.updateAssetsHandler)
+		r.Get("/assets/get", s.getAssetsHandler)
 	})
 
 	return r

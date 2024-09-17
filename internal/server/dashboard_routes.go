@@ -8,7 +8,7 @@ import (
 	"github.com/trading-backend/internal/service/auth"
 )
 
-func (s *Server) handleDashboard(w http.ResponseWriter, r *http.Request) {
+func (s *Server) dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Dashboard")
 	claims, ok := r.Context().Value(userKey).(*auth.UserClaims)
 	if !ok {

@@ -5,6 +5,7 @@ go 1.23
 toolchain go1.23.1
 
 require (
+	github.com/alpacahq/alpaca-trade-api-go/v3 v3.6.0
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.1
@@ -13,8 +14,11 @@ require (
 )
 
 require (
-	github.com/google/go-cmp v0.6.0 // indirect
+	cloud.google.com/go v0.115.1 // indirect
 	github.com/gorilla/sessions v1.4.0 // indirect
+	github.com/josharian/intern v1.0.0 // indirect
+	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/shopspring/decimal v1.4.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 )
 

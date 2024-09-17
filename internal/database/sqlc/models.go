@@ -11,6 +11,183 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AssetClassEnum string
+
+const (
+	AssetClassEnumUsEquity AssetClassEnum = "us_equity"
+	AssetClassEnumUsOption AssetClassEnum = "us_option"
+	AssetClassEnumCrypto   AssetClassEnum = "crypto"
+)
+
+func (e *AssetClassEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AssetClassEnum(s)
+	case string:
+		*e = AssetClassEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AssetClassEnum: %T", src)
+	}
+	return nil
+}
+
+type NullAssetClassEnum struct {
+	AssetClassEnum AssetClassEnum
+	Valid          bool // Valid is true if AssetClassEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAssetClassEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.AssetClassEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AssetClassEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAssetClassEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AssetClassEnum), nil
+}
+
+type AssetStatusEnum string
+
+const (
+	AssetStatusEnumActive   AssetStatusEnum = "active"
+	AssetStatusEnumInactive AssetStatusEnum = "inactive"
+)
+
+func (e *AssetStatusEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AssetStatusEnum(s)
+	case string:
+		*e = AssetStatusEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AssetStatusEnum: %T", src)
+	}
+	return nil
+}
+
+type NullAssetStatusEnum struct {
+	AssetStatusEnum AssetStatusEnum
+	Valid           bool // Valid is true if AssetStatusEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAssetStatusEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.AssetStatusEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AssetStatusEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAssetStatusEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AssetStatusEnum), nil
+}
+
+type AttributesEnum string
+
+const (
+	AttributesEnumPtpNoException   AttributesEnum = "ptp_no_exception"
+	AttributesEnumPtpWithException AttributesEnum = "ptp_with_exception"
+	AttributesEnumIpo              AttributesEnum = "ipo"
+	AttributesEnumHasOptions       AttributesEnum = "has_options"
+	AttributesEnumOptionsLateClose AttributesEnum = "options_late_close"
+)
+
+func (e *AttributesEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AttributesEnum(s)
+	case string:
+		*e = AttributesEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AttributesEnum: %T", src)
+	}
+	return nil
+}
+
+type NullAttributesEnum struct {
+	AttributesEnum AttributesEnum
+	Valid          bool // Valid is true if AttributesEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAttributesEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.AttributesEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AttributesEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAttributesEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AttributesEnum), nil
+}
+
+type ExchangeEnum string
+
+const (
+	ExchangeEnumAMEX     ExchangeEnum = "AMEX"
+	ExchangeEnumARCA     ExchangeEnum = "ARCA"
+	ExchangeEnumBATS     ExchangeEnum = "BATS"
+	ExchangeEnumNYSE     ExchangeEnum = "NYSE"
+	ExchangeEnumNASDAQ   ExchangeEnum = "NASDAQ"
+	ExchangeEnumNYSEARCA ExchangeEnum = "NYSEARCA"
+	ExchangeEnumOTC      ExchangeEnum = "OTC"
+)
+
+func (e *ExchangeEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ExchangeEnum(s)
+	case string:
+		*e = ExchangeEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ExchangeEnum: %T", src)
+	}
+	return nil
+}
+
+type NullExchangeEnum struct {
+	ExchangeEnum ExchangeEnum
+	Valid        bool // Valid is true if ExchangeEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullExchangeEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.ExchangeEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ExchangeEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullExchangeEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ExchangeEnum), nil
+}
+
 type RoleEnum string
 
 const (
@@ -52,6 +229,23 @@ func (ns NullRoleEnum) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return string(ns.RoleEnum), nil
+}
+
+type Asset struct {
+	ID                     pgtype.UUID
+	Class                  AssetClassEnum
+	Exchange               ExchangeEnum
+	Symbol                 string
+	Name                   string
+	Status                 AssetStatusEnum
+	Tradable               bool
+	Marginable             bool
+	Shortable              bool
+	EasyToBorrow           bool
+	Fractionable           bool
+	MarginRequirementLong  pgtype.Text
+	MarginRequirementShort pgtype.Text
+	Attributes             []AttributesEnum
 }
 
 type Order struct {

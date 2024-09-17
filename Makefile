@@ -19,7 +19,7 @@ migrate-force:
 	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations force $(version)
 
 # Generate Go code from SQL queries
-sqlc-generate:
+sqlc-generate:	
 	sqlc generate
 
 # Create a new migration file with a sequence number and the name init_schema with both up and down migrations

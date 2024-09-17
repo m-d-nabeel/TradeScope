@@ -11,7 +11,7 @@ func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 	lib.RespondJSON(w, http.StatusOK, resp)
 }
 
-func (s *Server) handleHealthCheck(w http.ResponseWriter, r *http.Request) {
+func (s *Server) checkHealthHandler(w http.ResponseWriter, r *http.Request) {
 	health := s.db.Health()
 	status := http.StatusOK
 	if health["status"] != "up" {

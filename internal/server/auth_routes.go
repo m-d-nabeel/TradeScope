@@ -23,13 +23,13 @@ const (
 	userKey     contextKey = "__user_key__"
 )
 
-func (s *Server) handleAuth(w http.ResponseWriter, r *http.Request) {
+func (s *Server) authHandler(w http.ResponseWriter, r *http.Request) {
 	provider := chi.URLParam(r, "provider")
 	r = r.WithContext(context.WithValue(r.Context(), providerKey, provider))
 	gothic.BeginAuthHandler(w, r)
 }
 
-func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) {
+func (s *Server) authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("handleAuthCallback")
 	provider := chi.URLParam(r, "provider")
 	r = r.WithContext(context.WithValue(r.Context(), providerKey, provider))
@@ -87,7 +87,7 @@ func (s *Server) handleAuthCallback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, FrontendURL+"/dashboard", http.StatusTemporaryRedirect)
 }
 
-func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
+func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	removeCookies(w)
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
@@ -117,7 +117,7 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 
 		// If no access token found, attempt to refresh
 		if accessToken == "" {
-			s.handleAuth(w, r)
+			s.authHandler(w, r)
 			return
 		}
 
@@ -141,7 +141,7 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Server) handleTokenRefresh(w http.ResponseWriter, r *http.Request) {
+func (s *Server) refreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("handleRefresh")
 
 	var refreshToken string
@@ -160,7 +160,7 @@ func (s *Server) handleTokenRefresh(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	if refreshToken == "" {
-		s.handleAuth(w, r)
+		s.authHandler(w, r)
 		return
 	}
 
@@ -229,7 +229,7 @@ func (s *Server) handleTokenRefresh(w http.ResponseWriter, r *http.Request) {
 	lib.RespondJSON(w, http.StatusOK, claims)
 }
 
-func (s *Server) handleAuthStatus(w http.ResponseWriter, r *http.Request) {
+func (s *Server) getAuthStatusHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("handleAuthStatus")
 	accessTokenCookie, err := r.Cookie("access_token")
 	if err != nil {
