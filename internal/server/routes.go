@@ -46,6 +46,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Get("/assets/{symbol}", s.getAssetHandler)
 		r.Get("/assets/refresh", s.updateAssetsHandler)
 		r.Get("/assets/get", s.getAssetsHandler)
+		r.Get("/assets/page/{page}", s.assetsPaginationHandler)
 	})
 
 	return r

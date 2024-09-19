@@ -6,13 +6,12 @@ migrate-all-up:
 migrate-all-down:
 	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations down
 
-# Apply the next migration
-migrate-next:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations next
 
-# Apply the previous migration
-migrate-prev:
-	migrate -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" -path ./db/migrations prev
+migrate-nth-up:
+	migrate  -path ./db/migrations -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" up $(version)
+
+migrate-nth-down:
+	migrate  -path ./db/migrations -database "postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable" down $(version)
 
 # Force apply all migrations
 migrate-force:
@@ -50,7 +49,7 @@ client:
 	cd client && bun dev
 
 # Ensure migration commands always run
-.PHONY: migrate-all-up migrate-all-down migrate-next migrate-prev migrate-force migrate-create
+.PHONY: migrate-all-up migrate-all-down migrate-create migrate-force migrate-nth-up migrate-nth-down
 
 # Ensure other commands always run
 .PHONY: sqlc-generate docker-up docker-down install-global-deps
