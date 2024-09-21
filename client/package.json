@@ -11,16 +11,17 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
-    "@tanstack/react-router": "^1.57.13",
+    "@tanstack/react-router": "^1.58.3",
+    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.439.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.5.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

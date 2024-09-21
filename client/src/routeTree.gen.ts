@@ -13,11 +13,11 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ProfileImport } from './routes/profile'
 
 // Create Virtual Routes
 
 const SettingsLazyImport = createFileRoute('/settings')()
-const ProfileLazyImport = createFileRoute('/profile')()
 const DashboardLazyImport = createFileRoute('/dashboard')()
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
@@ -29,11 +29,6 @@ const SettingsLazyRoute = SettingsLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/settings.lazy').then((d) => d.Route))
 
-const ProfileLazyRoute = ProfileLazyImport.update({
-  path: '/profile',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/profile.lazy').then((d) => d.Route))
-
 const DashboardLazyRoute = DashboardLazyImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRoute,
@@ -43,6 +38,11 @@ const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+
+const ProfileRoute = ProfileImport.update({
+  path: '/profile',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
@@ -60,6 +60,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileImport
+      parentRoute: typeof rootRoute
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -72,13 +79,6 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileLazyImport
       parentRoute: typeof rootRoute
     }
     '/settings': {
@@ -95,51 +95,51 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/profile': typeof ProfileRoute
   '/about': typeof AboutLazyRoute
   '/dashboard': typeof DashboardLazyRoute
-  '/profile': typeof ProfileLazyRoute
   '/settings': typeof SettingsLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/profile': typeof ProfileRoute
   '/about': typeof AboutLazyRoute
   '/dashboard': typeof DashboardLazyRoute
-  '/profile': typeof ProfileLazyRoute
   '/settings': typeof SettingsLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/profile': typeof ProfileRoute
   '/about': typeof AboutLazyRoute
   '/dashboard': typeof DashboardLazyRoute
-  '/profile': typeof ProfileLazyRoute
   '/settings': typeof SettingsLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/dashboard' | '/profile' | '/settings'
+  fullPaths: '/' | '/profile' | '/about' | '/dashboard' | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/dashboard' | '/profile' | '/settings'
-  id: '__root__' | '/' | '/about' | '/dashboard' | '/profile' | '/settings'
+  to: '/' | '/profile' | '/about' | '/dashboard' | '/settings'
+  id: '__root__' | '/' | '/profile' | '/about' | '/dashboard' | '/settings'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  ProfileRoute: typeof ProfileRoute
   AboutLazyRoute: typeof AboutLazyRoute
   DashboardLazyRoute: typeof DashboardLazyRoute
-  ProfileLazyRoute: typeof ProfileLazyRoute
   SettingsLazyRoute: typeof SettingsLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  ProfileRoute: ProfileRoute,
   AboutLazyRoute: AboutLazyRoute,
   DashboardLazyRoute: DashboardLazyRoute,
-  ProfileLazyRoute: ProfileLazyRoute,
   SettingsLazyRoute: SettingsLazyRoute,
 }
 
@@ -156,23 +156,23 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/profile",
         "/about",
         "/dashboard",
-        "/profile",
         "/settings"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
+    "/profile": {
+      "filePath": "profile.tsx"
+    },
     "/about": {
       "filePath": "about.lazy.tsx"
     },
     "/dashboard": {
       "filePath": "dashboard.lazy.tsx"
-    },
-    "/profile": {
-      "filePath": "profile.lazy.tsx"
     },
     "/settings": {
       "filePath": "settings.lazy.tsx"

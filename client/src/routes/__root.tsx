@@ -1,6 +1,13 @@
 import { Home } from "@/components/home";
-import { createRootRoute } from "@tanstack/react-router";
+import NotFound from "@/components/not-found";
+import { createRootRouteWithContext } from "@tanstack/react-router";
+import { useAuth } from "../hooks/useAuth";
 
-export const Route = createRootRoute({
+export type RouterContext = {
+  auth: ReturnType<typeof useAuth>;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: Home,
+  notFoundComponent: NotFound,
 });

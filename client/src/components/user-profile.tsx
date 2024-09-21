@@ -1,12 +1,10 @@
-import { useAuth } from "@/contexts";
+import { useRouteContext } from "@tanstack/react-router";
 
 export const UserProfile = () => {
-  const { user } = useAuth();
-
-  if (!user) {
-    return null;
-  }
-
+  const { user } = useRouteContext({
+    from: "/profile",
+    select: (context) => context.auth,
+  });
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-lg flex items-center space-x-4">
       <div className="flex-shrink-0">

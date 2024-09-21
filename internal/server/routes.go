@@ -29,7 +29,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	})
 
 	// Logout route
-	r.Get("/logout/{provider}", s.logoutHandler)
+	r.Post("/logout/{provider}", s.logoutHandler)
 
 	// Authenticated routes
 	r.With(s.AuthMiddleware).Group(func(r chi.Router) {
