@@ -10,7 +10,7 @@ interface UserInterface {
     avatarUrl: string;
 }
 
-export interface AuthStore {
+export interface AuthStoreInterface {
     isAuthenticated: boolean;
     user: UserInterface | null;
     logout: () => void;
@@ -18,7 +18,7 @@ export interface AuthStore {
     login: (provider: string) => void;
 }
 
-export const useAuthStore = create<AuthStore>()(
+export const useAuthStore = create<AuthStoreInterface>()(
     persist(
         (set) => ({
             isAuthenticated: false,

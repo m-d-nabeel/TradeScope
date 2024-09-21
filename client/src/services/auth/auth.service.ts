@@ -17,8 +17,9 @@ export const AuthService = {
 
     async logout() {
         try {
+            const { logout } = useAuthStore.getState();
             await axiosInstance.post("/logout/google", {});
-            useAuthStore.getState().logout();
+            logout();
             return true;
         } catch (error: any) {
             console.info("Error during logout: ", error?.message);

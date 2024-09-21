@@ -1,10 +1,10 @@
-import { AuthStore } from "@/store/auth-store";
+import { AuthStoreInterface } from "@/store/auth-store";
 import { Link, useRouteContext } from "@tanstack/react-router";
 import { Fragment } from "react";
 import { Button } from "./ui/button";
 
 export const Navbar = () => {
-  const { auth }: { auth: AuthStore } = useRouteContext({ from: "" });
+  const { auth }: { auth: AuthStoreInterface } = useRouteContext({ from: "" });
   const { user, logout, login } = auth;
   return (
     <nav className="bg-white shadow-sm">
