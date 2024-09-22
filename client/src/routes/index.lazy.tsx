@@ -1,9 +1,6 @@
+import { HomeLanding } from '@/components/landing-page'
 import { createLazyFileRoute } from '@tanstack/react-router'
 
 export const Route = createLazyFileRoute('/')({
-  component: Index,
+  component: HomeLanding,
 })
-
-function Index() {
-  return <div>Welcome to the Trading App</div>
-}

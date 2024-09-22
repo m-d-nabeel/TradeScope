@@ -6,7 +6,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { AlpacaAccount } from "@/types/alpaca.types";
+import { useAlpaca } from "@/hooks/useAlpaca";
+import { formatCurrency } from "@/lib/utils";
 import {
   AlertCircle,
   Calendar,
@@ -17,13 +18,6 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
-
-function formatCurrency(value: string): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(parseFloat(value));
-}
 
 function InfoItem({
   label,
@@ -45,8 +39,14 @@ function InfoItem({
   );
 }
 
-export function AlpacaAccountDisplay({ account }: { account: AlpacaAccount }) {
+export function AlpacaAccountDisplay() {
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
+
+  const { account } = useAlpaca();
+
+  if (!account) {
+    return null;
+  }
 
   return (
     <TooltipProvider>
