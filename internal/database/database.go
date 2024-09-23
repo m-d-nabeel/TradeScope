@@ -2,82 +2,81 @@ package database
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	_ "github.com/joho/godotenv/autoload"
-	"github.com/trading-backend/config"
 )
 
 type Service interface {
+	// PostgreSQL operations
+	GetPool() *pgxpool.Pool
+
+	// Redis operations
+	Get(ctx context.Context, key string) (string, error)
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	Del(ctx context.Context, keys ...string) error
+
+	// Common operations
 	Health() map[string]string
 	Close()
-	GetPool() *pgxpool.Pool
 }
 
-type service struct {
-	pool *pgxpool.Pool
+type CompositeService struct {
+	pgService    *postgresDBService
+	redisService RedisService
 }
 
-var (
-	database = config.Envs.DbDatabase
-	password = config.Envs.DbPassword
-	username = config.Envs.DbUsername
-	port     = config.Envs.DbPort
-	host     = config.Envs.DbHost
-	schema   = config.Envs.DbSchema
-)
-
-func New() (Service, error) {
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&search_path=%s", username, password, host, port, database, schema)
-
-	config, err := pgxpool.ParseConfig(connStr)
+func NewCompositeService() (Service, error) {
+	pgService, err := NewPostgresService()
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse connection string: %v", err)
+		return nil, err
 	}
 
-	config.MaxConns = 20
-	config.MinConns = 5
-	config.MaxConnLifetime = 1 * time.Hour
-	config.MaxConnIdleTime = 30 * time.Minute
-
-	pool, err := pgxpool.NewWithConfig(context.Background(), config)
+	redisService, err := NewRedisService()
 	if err != nil {
-		return nil, fmt.Errorf("unable to create connection pool: %v", err)
+		pgService.Close()
+		return nil, err
 	}
 
-	return &service{pool: pool}, nil
+	return &CompositeService{
+		pgService:    pgService.(*postgresDBService),
+		redisService: redisService,
+	}, nil
 }
 
-func (s *service) Health() map[string]string {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
+// Implement the Service interface methods for CompositeService
+func (s *CompositeService) GetPool() *pgxpool.Pool {
+	return s.pgService.GetPool()
+}
 
-	stats := make(map[string]string)
+func (s *CompositeService) Get(ctx context.Context, key string) (string, error) {
+	return s.redisService.Get(ctx, key)
+}
 
-	err := s.pool.Ping(ctx)
-	if err != nil {
-		stats["status"] = "down"
-		stats["error"] = fmt.Sprintf("db down: %v", err)
-		return stats
+func (s *CompositeService) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	return s.redisService.Set(ctx, key, value, expiration)
+}
+
+func (s *CompositeService) Del(ctx context.Context, keys ...string) error {
+	return s.redisService.Del(ctx, keys...)
+}
+
+func (s *CompositeService) Health() map[string]string {
+	pgHealth := s.pgService.Health()
+	redisHealth := s.redisService.Health()
+
+	combinedHealth := make(map[string]string)
+	for k, v := range pgHealth {
+		combinedHealth["pg_"+k] = v
+	}
+	for k, v := range redisHealth {
+		combinedHealth["redis_"+k] = v
 	}
 
-	poolStats := s.pool.Stat()
-	stats["status"] = "up"
-	stats["total_connections"] = fmt.Sprintf("%d", poolStats.TotalConns())
-	stats["acquired_connections"] = fmt.Sprintf("%d", poolStats.AcquiredConns())
-	stats["idle_connections"] = fmt.Sprintf("%d", poolStats.IdleConns())
-
-	return stats
+	return combinedHealth
 }
 
-func (s *service) Close() {
-	s.pool.Close()
-	log.Printf("Disconnected from database: %s", database)
-}
-
-func (s *service) GetPool() *pgxpool.Pool {
-	return s.pool
+func (s *CompositeService) Close() {
+	s.pgService.Close()
+	s.redisService.Close()
 }

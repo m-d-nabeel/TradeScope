@@ -50,7 +50,6 @@ func (s *Server) getAssetsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
 		return
 	}
-	log.Println(assets)
 	lib.RespondJSON(w, http.StatusAccepted, assets)
 }
 
