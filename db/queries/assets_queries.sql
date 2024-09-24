@@ -39,6 +39,11 @@ DO UPDATE SET
     margin_requirement_short = EXCLUDED.margin_requirement_short,
     attributes = EXCLUDED.attributes;
 
+
+-- Truncate the assets table
+-- name: TruncateAssets :exec
+TRUNCATE TABLE assets;
+
 -- Update an existing asset
 -- name: UpdateAsset :exec
 UPDATE assets

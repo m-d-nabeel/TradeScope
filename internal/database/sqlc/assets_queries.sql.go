@@ -302,6 +302,16 @@ func (q *Queries) ListAssets(ctx context.Context) ([]Asset, error) {
 	return items, nil
 }
 
+const truncateAssets = `-- name: TruncateAssets :exec
+TRUNCATE TABLE assets
+`
+
+// Truncate the assets table
+func (q *Queries) TruncateAssets(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, truncateAssets)
+	return err
+}
+
 const updateAsset = `-- name: UpdateAsset :exec
 UPDATE assets
 SET 

@@ -66,3 +66,11 @@ func RespondError(w http.ResponseWriter, statusCode int, message string) {
 		Error: message,
 	})
 }
+
+func MarshalBinary(v interface{}) ([]byte, error) {
+	return json.Marshal(v)
+}
+
+func UnmarshalBinary(data []byte, v interface{}) error {
+	return json.Unmarshal(data, v)
+}

@@ -1,23 +1,56 @@
 package server
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/trading-backend/internal/database/sqlc"
 	"github.com/trading-backend/internal/lib"
+	"github.com/trading-backend/internal/service/auth"
 )
 
 func (s *Server) getAccountHandler(w http.ResponseWriter, r *http.Request) {
+	userFromCtx, ok := r.Context().Value(userKey).(*auth.UserClaims)
+	if !ok || userFromCtx == nil {
+		http.Error(w, "failed to fetch user", http.StatusInternalServerError)
+		return
+	}
+
+	cacheKey := "account:userid:" + userFromCtx.UserID
+	cachedData, err := s.rdb.Get(r.Context(), cacheKey)
+	if err == nil {
+		log.Println("cache hit")
+		var act alpaca.Account
+		err = json.Unmarshal([]byte(cachedData), &act)
+
+		if err != nil {
+			log.Println(err)
+		} else {
+			lib.RespondJSON(w, http.StatusOK, act)
+			return
+		}
+	}
+
 	account, err := s.apca.GetAccount()
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "failed to fetch account", http.StatusInternalServerError)
 		return
+	}
+	accountJSON, err := json.Marshal(account)
+	if err == nil {
+		err = s.rdb.Set(r.Context(), cacheKey, accountJSON, 5*time.Minute)
+		if err != nil {
+			log.Println("Error caching account:", err)
+		}
+	} else {
+		log.Println("Error unmarshaling account from cache:", err)
 	}
 
 	lib.RespondJSON(w, http.StatusAccepted, account)
@@ -43,6 +76,28 @@ func (s *Server) getAssetHandler(w http.ResponseWriter, r *http.Request) {
 	lib.RespondJSON(w, http.StatusAccepted, asset)
 }
 func (s *Server) getAssetsHandler(w http.ResponseWriter, r *http.Request) {
+
+	// userFromCtx, ok := r.Context().Value(userKey).(*auth.UserClaims)
+	// if !ok || userFromCtx == nil {
+	// 	http.Error(w, "failed to fetch user", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	// cacheKey := "assets:userid:" + userFromCtx.UserID
+	// cachedData, err := s.rdb.Get(r.Context(), cacheKey)
+	// if err == nil {
+	// 	log.Println("cache hit")
+	// 	var ass []alpaca.Asset
+	// 	err = json.Unmarshal([]byte(cachedData), &ass)
+
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 	} else {
+	// 		lib.RespondJSON(w, http.StatusOK, ass)
+	// 		return
+	// 	}
+	// }
+
 	dbQuery := sqlc.New(s.db.GetPool())
 	assets, err := dbQuery.ListAssets(r.Context())
 	if err != nil {
@@ -50,17 +105,31 @@ func (s *Server) getAssetsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
 		return
 	}
+
+	// assetsJSON, err := json.Marshal(assets)
+	// if err == nil {
+	// 	err = s.rdb.Set(r.Context(), cacheKey, assetsJSON, 15*time.Minute)
+	// 	if err != nil {
+	// 		log.Println("Error caching account:", err)
+	// 	}
+	// } else {
+	// 	log.Println("Error unmarshaling account from cache:", err)
+	// }
+
 	lib.RespondJSON(w, http.StatusAccepted, assets)
 }
 
 func (s *Server) updateAssetsHandler(w http.ResponseWriter, r *http.Request) {
+	dbQuery := sqlc.New(s.db.GetPool())
+
+	dbQuery.TruncateAssets(r.Context())
+
 	assets, err := s.apca.GetAssets(alpaca.GetAssetsRequest{})
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
 		return
 	}
-	dbQuery := sqlc.New(s.db.GetPool())
 	for _, asset := range assets {
 
 		uuidID, err := lib.UUIDFromString(asset.ID)
@@ -97,7 +166,11 @@ func (s *Server) updateAssetsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	lib.RespondJSON(w, http.StatusAccepted, nil)
+	lib.RespondJSON(w, http.StatusAccepted, struct {
+		Message string `json:"message"`
+	}{
+		Message: "Assets updated",
+	})
 }
 
 func (s *Server) assetsPaginationHandler(w http.ResponseWriter, r *http.Request) {

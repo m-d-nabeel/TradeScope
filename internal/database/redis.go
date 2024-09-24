@@ -9,7 +9,7 @@ import (
 )
 
 type RedisService interface {
-	Get(ctx context.Context, key string) (string, error)
+	Get(ctx context.Context, key string) ([]byte, error)
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	Del(ctx context.Context, keys ...string) error
 	Health() map[string]string
@@ -35,8 +35,8 @@ func NewRedisService() (RedisService, error) {
 	return &redisService{client: client}, nil
 }
 
-func (s *redisService) Get(ctx context.Context, key string) (string, error) {
-	return s.client.Get(ctx, key).Result()
+func (s *redisService) Get(ctx context.Context, key string) ([]byte, error) {
+	return s.client.Get(ctx, key).Bytes()
 }
 
 func (s *redisService) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {

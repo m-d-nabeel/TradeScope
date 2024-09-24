@@ -12,10 +12,15 @@ func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) checkHealthHandler(w http.ResponseWriter, r *http.Request) {
-	health := s.db.Health()
+	postgresHealth := s.db.Health()
+	redisHealth := s.rdb.Health()
 	status := http.StatusOK
-	if health["status"] != "up" {
+	if postgresHealth["status"] != "up" || redisHealth["status"] != "up" {
 		status = http.StatusServiceUnavailable
+	}
+	health := map[string]interface{}{
+		"postgres": postgresHealth,
+		"redis":    redisHealth,
 	}
 	lib.RespondJSON(w, status, health)
 }
