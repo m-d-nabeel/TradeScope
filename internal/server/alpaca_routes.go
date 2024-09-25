@@ -149,21 +149,6 @@ func (s *Server) assetsPaginationHandler(w http.ResponseWriter, r *http.Request)
 		pageNo = 1
 	}
 
-	cacheKey := "assets:page:" + pageStr
-	cachedData, err := s.rdb.Get(r.Context(), cacheKey)
-	if err == nil {
-		log.Println("cache hit")
-		var cachedAssets []lib.Asset
-		err = json.Unmarshal([]byte(cachedData), &cachedAssets)
-
-		if err != nil {
-			log.Println(err)
-		} else {
-			lib.RespondJSON(w, http.StatusOK, cachedAssets)
-			return
-		}
-	}
-
 	dbQuery := sqlc.New(s.db.GetPool())
 	assets, err := dbQuery.GetAssetsWithKeysetPagination(r.Context(), sqlc.GetAssetsWithKeysetPaginationParams{
 		SeqID: int32((pageNo - 1) * 20),
@@ -175,16 +160,6 @@ func (s *Server) assetsPaginationHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
 		return
 	}
-	assetsJSON, err := json.Marshal(lib.DbAssetsToAssets(assets))
-	if err == nil {
-		err = s.rdb.Set(r.Context(), cacheKey, assetsJSON, 10*time.Minute)
-		if err != nil {
-			log.Println("Error caching account:", err)
-		}
-	} else {
-		log.Println("Error unmarshaling account from cache:", err)
-	}
-
 	lib.RespondJSON(w, http.StatusAccepted, lib.DbAssetsToAssets(assets))
 }
 
