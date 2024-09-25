@@ -64,7 +64,7 @@
 -- Assets Table
 CREATE TABLE IF NOT EXISTS assets (
     id UUID PRIMARY KEY,
-    seq_id BIGSERIAL,
+    seq_id INTEGER UNIQUE NOT NULL,
     class VARCHAR(20) NOT NULL,
     exchange VARCHAR(20) NOT NULL,
     symbol VARCHAR(20) NOT NULL,
@@ -78,8 +78,7 @@ CREATE TABLE IF NOT EXISTS assets (
     maintenance_margin_requirement INTEGER,
     margin_requirement_long TEXT,
     margin_requirement_short TEXT,
-    attributes TEXT[],
-    UNIQUE (exchange, symbol)
+    attributes TEXT[]
 );
 
 -- Indexes

@@ -33,3 +33,22 @@ export type AlpacaAccount = {
     daytrade_count: number;
     crypto_tier: number;
 }
+
+export type AlpacaAsset = {
+    ID: string;
+    Class: string;
+    EasyToBorrow: boolean;
+    Exchange: string;
+    Fractionable: boolean;
+    MaintenanceMarginRequirement: string;
+    MarginRequirementLong?: string;
+    MarginRequirementShort?: string;
+    Marginable?: boolean;
+    Name: string;
+    SeqID: number;
+    Shortable: boolean;
+    Status: string;
+    Symbol: string;
+    Tradable: boolean;
+    Attributes: string[];
+}

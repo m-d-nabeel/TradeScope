@@ -38,6 +38,10 @@ install-global-deps:
 	go install -tags "postgres,mysql" github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
+psql-cli-conn:
+	psql postgres://tradinguser:tradingpass@localhost:5432/trading_platform?sslmode=disable
+
+
 # Always run server
 .PHONY: server
 server:

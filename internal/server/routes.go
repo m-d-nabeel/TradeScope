@@ -26,10 +26,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Get("/{provider}", s.authHandler)
 		r.Get("/{provider}/callback", s.authCallbackHandler)
 		r.Get("/status", s.getAuthStatusHandler)
+		r.Post("/logout/{provider}", s.logoutHandler)
 	})
-
-	// Logout route
-	r.Post("/logout/{provider}", s.logoutHandler)
 
 	// Authenticated routes
 	r.With(s.AuthMiddleware).Group(func(r chi.Router) {
@@ -44,9 +42,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Get("/account", s.getAccountHandler)
 		r.Get("/positions", s.getPositionsHandler)
 		r.Get("/assets/{symbol}", s.getAssetHandler)
-		r.Get("/assets/refresh", s.updateAssetsHandler)
 		r.Get("/assets/get", s.getAssetsHandler)
 		r.Get("/assets/page/{page}", s.assetsPaginationHandler)
+		r.Post("/assets/refresh", s.updateAssetsHandler)
+		r.Get("/assets/{id}", s.getAssetByIdHandler)
 	})
 
 	return r

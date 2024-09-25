@@ -1,7 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-export function Pagination({
+export function PaginationComponent({
   pageNumber,
   setPageNumber,
   totalPages,
@@ -11,24 +18,43 @@ export function Pagination({
   totalPages: number;
 }) {
   return (
-    <div className="flex justify-between items-center">
-      <Button
-        onClick={() => setPageNumber(Math.max(pageNumber - 1, 1))}
-        disabled={pageNumber === 1}
-        variant="outline"
-      >
-        <ChevronLeft className="mr-2" size={16} /> Previous
-      </Button>
-      <span className="text-sm text-gray-500">
-        Page {pageNumber} of {totalPages}
-      </span>
-      <Button
-        onClick={() => setPageNumber(Math.min(pageNumber + 1, totalPages))}
-        disabled={pageNumber === totalPages}
-        variant="outline"
-      >
-        Next <ChevronRight className="ml-2" size={16} />
-      </Button>
-    </div>
+    <Pagination>
+      <PaginationContent className="flex justify-between items-center">
+        <PaginationItem className="cursor-pointer">
+          <PaginationPrevious
+            onClick={() => setPageNumber(Math.max(pageNumber - 1, 1))}
+          />
+        </PaginationItem>
+
+        {pageNumber > 1 && (
+          <PaginationItem className="cursor-pointer">
+            <PaginationLink
+              onClick={() => setPageNumber(Math.max(pageNumber - 1, 1))}
+            >
+              {pageNumber - 1}
+            </PaginationLink>
+          </PaginationItem>
+        )}
+        <PaginationItem>
+          <PaginationLink isActive>{pageNumber}</PaginationLink>
+        </PaginationItem>
+        <PaginationItem className="cursor-pointer">
+          <PaginationLink
+            onClick={() => setPageNumber(Math.min(pageNumber + 1, totalPages))}
+          >
+            {pageNumber + 1}
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+
+        <PaginationItem className="cursor-pointer">
+          <PaginationNext
+            onClick={() => setPageNumber(Math.min(pageNumber + 1, totalPages))}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   );
 }

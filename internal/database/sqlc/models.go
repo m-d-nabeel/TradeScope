@@ -56,7 +56,7 @@ func (ns NullRoleEnum) Value() (driver.Value, error) {
 
 type Asset struct {
 	ID                           pgtype.UUID
-	SeqID                        pgtype.Int8
+	SeqID                        int32
 	Class                        string
 	Exchange                     string
 	Symbol                       string

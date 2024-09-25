@@ -1,18 +1,19 @@
 import { useAlpacaStore } from "@/store/alpaca-store";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export const useAlpaca = () => {
-    const { account, assets, fetchAccount, fetchAssets } = useAlpacaStore();
-    const [pageNumber, setPageNumber] = useState(1);
+    const { account, assets, fetchAccount, fetchAssets, page, setPage } = useAlpacaStore();
 
     useEffect(() => {
         fetchAccount();
     }, [fetchAccount]);
 
+    console.log(assets);
+    
+
     useEffect(() => {
-        fetchAssets(pageNumber);
-    }, [fetchAssets, pageNumber]);
+        fetchAssets(page);
+    }, [fetchAssets, page]);
 
-
-    return { account, assets, setPageNumber, pageNumber };
+    return { account, assets, page, setPage };
 }

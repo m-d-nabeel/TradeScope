@@ -89,7 +89,7 @@ func (s *Server) authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	removeCookies(w)
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, FrontendURL, http.StatusTemporaryRedirect)
 }
 
 func (s *Server) AuthMiddleware(next http.Handler) http.Handler {

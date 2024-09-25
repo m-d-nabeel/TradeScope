@@ -2,29 +2,37 @@
 
 import { Button } from "@/components/ui/button";
 import { useAlpaca } from "@/hooks/useAlpaca";
+import { AlpacaAsset } from "@/types/alpaca.types";
 import { LayoutGrid, List } from "lucide-react";
 import { useState } from "react";
 import { AssetCard } from "./asset-card";
 import { AssetList } from "./asset-list";
-import { Pagination } from "./pagination";
+import { PaginationComponent } from "./pagination";
 import { SearchAndFilter } from "./search-and-filter";
 
 export function Dashboard() {
-  const { assets, pageNumber, setPageNumber } = useAlpaca();
+  const { assets, page, setPage } = useAlpaca();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterClass, setFilterClass] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
-  const filteredAssets =
-    assets?.[pageNumber]?.filter(
-      (asset: any) =>
-        asset.Symbol.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (filterClass === "" || asset.Class === filterClass)
-    ) || [];
+  const currentPageAssets = assets[page] || [];
 
-  const assetClasses = [
-    ...new Set(assets?.[pageNumber]?.map((asset: any) => asset.Class) || []),
-  ];
+  const isLastPage = currentPageAssets.length < 50;
+
+  const filteredAssets = currentPageAssets.filter((asset: AlpacaAsset) => {
+    if (searchTerm) {
+      return asset.Name.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+    if (filterClass) {
+      return asset.Class === filterClass;
+    }
+    return true;
+  });
+
+  const assetClasses = Array.from(
+    new Set(currentPageAssets.map((asset: AlpacaAsset) => asset.Class))
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-100 to-teal-100 p-8">
@@ -68,10 +76,10 @@ export function Dashboard() {
           </div>
         )}
 
-        <Pagination
-          pageNumber={pageNumber}
-          setPageNumber={setPageNumber}
-          totalPages={Infinity}
+        <PaginationComponent
+          pageNumber={page}
+          setPageNumber={setPage}
+          totalPages={isLastPage ? page : page + 1}
         />
       </div>
     </div>

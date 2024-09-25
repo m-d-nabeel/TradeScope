@@ -1,4 +1,5 @@
 import { APP_CONFIG } from "@/config/constants";
+import { AuthService } from "@/services/auth/auth.service";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -24,7 +25,10 @@ export const useAuthStore = create<AuthStoreInterface>()(
             isAuthenticated: false,
             user: null,
             setAuth: (isAuthenticated, user) => set({ isAuthenticated, user }),
-            logout: () => set({ isAuthenticated: false, user: null }),
+            logout: () => {
+                AuthService.logout();
+                set({ isAuthenticated: false, user: null })
+            },
             login: (provider) => {
                 window.location.href = `${APP_CONFIG.API_BASE_URL}/auth/${provider}`;
             }

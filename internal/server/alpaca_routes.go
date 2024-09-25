@@ -76,28 +76,6 @@ func (s *Server) getAssetHandler(w http.ResponseWriter, r *http.Request) {
 	lib.RespondJSON(w, http.StatusAccepted, asset)
 }
 func (s *Server) getAssetsHandler(w http.ResponseWriter, r *http.Request) {
-
-	// userFromCtx, ok := r.Context().Value(userKey).(*auth.UserClaims)
-	// if !ok || userFromCtx == nil {
-	// 	http.Error(w, "failed to fetch user", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// cacheKey := "assets:userid:" + userFromCtx.UserID
-	// cachedData, err := s.rdb.Get(r.Context(), cacheKey)
-	// if err == nil {
-	// 	log.Println("cache hit")
-	// 	var ass []alpaca.Asset
-	// 	err = json.Unmarshal([]byte(cachedData), &ass)
-
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 	} else {
-	// 		lib.RespondJSON(w, http.StatusOK, ass)
-	// 		return
-	// 	}
-	// }
-
 	dbQuery := sqlc.New(s.db.GetPool())
 	assets, err := dbQuery.ListAssets(r.Context())
 	if err != nil {
@@ -105,17 +83,6 @@ func (s *Server) getAssetsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
 		return
 	}
-
-	// assetsJSON, err := json.Marshal(assets)
-	// if err == nil {
-	// 	err = s.rdb.Set(r.Context(), cacheKey, assetsJSON, 15*time.Minute)
-	// 	if err != nil {
-	// 		log.Println("Error caching account:", err)
-	// 	}
-	// } else {
-	// 	log.Println("Error unmarshaling account from cache:", err)
-	// }
-
 	lib.RespondJSON(w, http.StatusAccepted, assets)
 }
 
@@ -130,7 +97,7 @@ func (s *Server) updateAssetsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
 		return
 	}
-	for _, asset := range assets {
+	for idx, asset := range assets {
 
 		uuidID, err := lib.UUIDFromString(asset.ID)
 
@@ -142,6 +109,7 @@ func (s *Server) updateAssetsHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = dbQuery.CreateAsset(r.Context(), sqlc.CreateAssetParams{
 			ID:           uuidID,
+			SeqID:        int32(idx + 1),
 			Class:        string(asset.Class),
 			Exchange:     asset.Exchange,
 			Symbol:       asset.Symbol,
@@ -176,20 +144,30 @@ func (s *Server) updateAssetsHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) assetsPaginationHandler(w http.ResponseWriter, r *http.Request) {
 	pageStr := chi.URLParam(r, "page")
 	pageNo, err := strconv.Atoi(pageStr)
-	if err != nil {
+	if err != nil || pageNo < 1 {
 		log.Println(err)
 		pageNo = 1
 	}
+
+	cacheKey := "assets:page:" + pageStr
+	cachedData, err := s.rdb.Get(r.Context(), cacheKey)
+	if err == nil {
+		log.Println("cache hit")
+		var cachedAssets []lib.Asset
+		err = json.Unmarshal([]byte(cachedData), &cachedAssets)
+
+		if err != nil {
+			log.Println(err)
+		} else {
+			lib.RespondJSON(w, http.StatusOK, cachedAssets)
+			return
+		}
+	}
+
 	dbQuery := sqlc.New(s.db.GetPool())
 	assets, err := dbQuery.GetAssetsWithKeysetPagination(r.Context(), sqlc.GetAssetsWithKeysetPaginationParams{
-		SeqID: pgtype.Int8{
-			Int64: int64((pageNo - 1) * 20),
-			Valid: true,
-		},
-		SeqID_2: pgtype.Int8{
-			Int64: int64(pageNo * 20),
-			Valid: true,
-		},
+		SeqID: int32((pageNo - 1) * 20),
+		Limit: 200,
 	})
 
 	if err != nil {
@@ -197,5 +175,41 @@ func (s *Server) assetsPaginationHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
 		return
 	}
-	lib.RespondJSON(w, http.StatusAccepted, assets)
+	assetsJSON, err := json.Marshal(lib.DbAssetsToAssets(assets))
+	if err == nil {
+		err = s.rdb.Set(r.Context(), cacheKey, assetsJSON, 10*time.Minute)
+		if err != nil {
+			log.Println("Error caching account:", err)
+		}
+	} else {
+		log.Println("Error unmarshaling account from cache:", err)
+	}
+
+	lib.RespondJSON(w, http.StatusAccepted, lib.DbAssetsToAssets(assets))
+}
+
+func (s *Server) getAssetByIdHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	if idStr == "" {
+		log.Println("Invalid ID")
+		lib.RespondError(w, http.StatusInternalServerError, "Invalid ID")
+		return
+	}
+
+	pguuid, err := lib.UUIDFromString(idStr)
+	if err != nil {
+		log.Println(err)
+		lib.RespondError(w, http.StatusInternalServerError, "Invalid ID")
+		return
+	}
+
+	dbQuery := sqlc.New(s.db.GetPool())
+
+	asset, err := dbQuery.GetAssetByID(r.Context(), pguuid)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "failed to fetch asset", http.StatusInternalServerError)
+		return
+	}
+	lib.RespondJSON(w, http.StatusAccepted, lib.DbAssetToAsset(asset))
 }

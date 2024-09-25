@@ -13,31 +13,18 @@ import (
 
 const createAsset = `-- name: CreateAsset :exec
 INSERT INTO assets (
-    id, class, exchange, symbol, name, status, 
+    id, seq_id, class, exchange, symbol, name, status, 
     tradable, marginable, shortable, easy_to_borrow, fractionable, 
     maintenance_margin_requirement, margin_requirement_long, margin_requirement_short, attributes
 )
 VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
 )
-ON CONFLICT (exchange, symbol) 
-DO UPDATE SET
-    class = EXCLUDED.class,
-    name = EXCLUDED.name,
-    status = EXCLUDED.status,
-    tradable = EXCLUDED.tradable,
-    marginable = EXCLUDED.marginable,
-    shortable = EXCLUDED.shortable,
-    easy_to_borrow = EXCLUDED.easy_to_borrow,
-    fractionable = EXCLUDED.fractionable,
-    maintenance_margin_requirement = EXCLUDED.maintenance_margin_requirement,
-    margin_requirement_long = EXCLUDED.margin_requirement_long,
-    margin_requirement_short = EXCLUDED.margin_requirement_short,
-    attributes = EXCLUDED.attributes
 `
 
 type CreateAssetParams struct {
 	ID                           pgtype.UUID
+	SeqID                        int32
 	Class                        string
 	Exchange                     string
 	Symbol                       string
@@ -58,6 +45,7 @@ type CreateAssetParams struct {
 func (q *Queries) CreateAsset(ctx context.Context, arg CreateAssetParams) error {
 	_, err := q.db.Exec(ctx, createAsset,
 		arg.ID,
+		arg.SeqID,
 		arg.Class,
 		arg.Exchange,
 		arg.Symbol,
@@ -73,17 +61,6 @@ func (q *Queries) CreateAsset(ctx context.Context, arg CreateAssetParams) error 
 		arg.MarginRequirementShort,
 		arg.Attributes,
 	)
-	return err
-}
-
-const deleteAsset = `-- name: DeleteAsset :exec
-DELETE FROM assets
-WHERE id = $1
-`
-
-// Delete an asset
-func (q *Queries) DeleteAsset(ctx context.Context, id pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAsset, id)
 	return err
 }
 
@@ -212,18 +189,19 @@ func (q *Queries) GetAssetsBySymbol(ctx context.Context, lower string) ([]Asset,
 
 const getAssetsWithKeysetPagination = `-- name: GetAssetsWithKeysetPagination :many
 SELECT id, seq_id, class, exchange, symbol, name, status, tradable, marginable, shortable, easy_to_borrow, fractionable, maintenance_margin_requirement, margin_requirement_long, margin_requirement_short, attributes FROM assets
-WHERE seq_id > $1 AND seq_id <= $2
+WHERE seq_id > $1
 ORDER BY seq_id ASC
+LIMIT $2
 `
 
 type GetAssetsWithKeysetPaginationParams struct {
-	SeqID   pgtype.Int8
-	SeqID_2 pgtype.Int8
+	SeqID int32
+	Limit int32
 }
 
 // Get assets with keyset pagination
 func (q *Queries) GetAssetsWithKeysetPagination(ctx context.Context, arg GetAssetsWithKeysetPaginationParams) ([]Asset, error) {
-	rows, err := q.db.Query(ctx, getAssetsWithKeysetPagination, arg.SeqID, arg.SeqID_2)
+	rows, err := q.db.Query(ctx, getAssetsWithKeysetPagination, arg.SeqID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -309,65 +287,5 @@ TRUNCATE TABLE assets
 // Truncate the assets table
 func (q *Queries) TruncateAssets(ctx context.Context) error {
 	_, err := q.db.Exec(ctx, truncateAssets)
-	return err
-}
-
-const updateAsset = `-- name: UpdateAsset :exec
-UPDATE assets
-SET 
-    class = $2,
-    exchange = $3,
-    symbol = $4,
-    name = $5,
-    status = $6,
-    tradable = $7,
-    marginable = $8,
-    shortable = $9,
-    easy_to_borrow = $10,
-    fractionable = $11,
-    maintenance_margin_requirement = $12,
-    margin_requirement_long = $13,
-    margin_requirement_short = $14,
-    attributes = $15
-WHERE id = $1
-`
-
-type UpdateAssetParams struct {
-	ID                           pgtype.UUID
-	Class                        string
-	Exchange                     string
-	Symbol                       string
-	Name                         string
-	Status                       string
-	Tradable                     bool
-	Marginable                   bool
-	Shortable                    bool
-	EasyToBorrow                 bool
-	Fractionable                 bool
-	MaintenanceMarginRequirement pgtype.Int4
-	MarginRequirementLong        pgtype.Text
-	MarginRequirementShort       pgtype.Text
-	Attributes                   []string
-}
-
-// Update an existing asset
-func (q *Queries) UpdateAsset(ctx context.Context, arg UpdateAssetParams) error {
-	_, err := q.db.Exec(ctx, updateAsset,
-		arg.ID,
-		arg.Class,
-		arg.Exchange,
-		arg.Symbol,
-		arg.Name,
-		arg.Status,
-		arg.Tradable,
-		arg.Marginable,
-		arg.Shortable,
-		arg.EasyToBorrow,
-		arg.Fractionable,
-		arg.MaintenanceMarginRequirement,
-		arg.MarginRequirementLong,
-		arg.MarginRequirementShort,
-		arg.Attributes,
-	)
 	return err
 }

@@ -1,19 +1,19 @@
 import { Badge } from "@/components/ui/badge";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { motion } from "framer-motion";
+import { Briefcase, TrendingUp } from "lucide-react";
 
 export function AssetList({ assets }: { assets: any[] }) {
   return (
@@ -23,25 +23,29 @@ export function AssetList({ assets }: { assets: any[] }) {
           <TableRow>
             <TableHead>Symbol</TableHead>
             <TableHead>Name</TableHead>
-            <TableHead>Class</TableHead>
-            <TableHead>Exchange</TableHead>
+            <TableHead>
+              <div className="flex items-center space-x-2">
+                <Briefcase className="text-gray-400" size={16} />
+                <span className="text-sm font-medium">Class</span>
+              </div>
+            </TableHead>
+            <TableHead>
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="text-gray-400" size={16} />
+                <span className="text-sm font-medium">Exchange</span>
+              </div>
+            </TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Properties</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {assets.map((asset, index) => (
-            <motion.tr
-              key={asset.ID}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-            >
+          {assets.map((asset) => (
+            <TableRow key={asset.ID} className="h-fit">
               <TableCell className="font-medium">{asset.Symbol}</TableCell>
               <TableCell>{asset.Name}</TableCell>
-              <TableCell>{asset.Class}</TableCell>
-              <TableCell>{asset.Exchange}</TableCell>
+              <TableCell className="text-center">{asset.Class}</TableCell>
+              <TableCell className="text-center">{asset.Exchange}</TableCell>
               <TableCell>
                 <Badge
                   variant={asset.Status === "active" ? "default" : "secondary"}
@@ -50,14 +54,14 @@ export function AssetList({ assets }: { assets: any[] }) {
                 </Badge>
               </TableCell>
               <TableCell>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid gap-2 grid-cols-4">
                   <AssetBadge label="Tradable" value={asset.Tradable} />
                   <AssetBadge label="Marginable" value={asset.Marginable} />
                   <AssetBadge label="Shortable" value={asset.Shortable} />
                   <AssetBadge label="Fractionable" value={asset.Fractionable} />
                 </div>
               </TableCell>
-            </motion.tr>
+            </TableRow>
           ))}
         </TableBody>
       </Table>
@@ -72,7 +76,7 @@ function AssetBadge({ label, value }: { label: string; value: boolean }) {
         <TooltipTrigger asChild>
           <Badge
             variant={value ? "default" : "secondary"}
-            className="cursor-help"
+            className="cursor-help flex justify-center items-center whitespace-nowrap col-span-2 md:col-span-1"
           >
             {value ? label[0] : `-${label[0]}`}
           </Badge>
