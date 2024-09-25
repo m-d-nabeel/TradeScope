@@ -13,9 +13,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AlpacaAsset } from "@/types/alpaca.types";
 import { Briefcase, TrendingUp } from "lucide-react";
 
-export function AssetList({ assets }: { assets: any[] }) {
+export function AssetList({ assets }: { assets: AlpacaAsset[] }) {
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
       <Table>
@@ -41,24 +42,27 @@ export function AssetList({ assets }: { assets: any[] }) {
         </TableHeader>
         <TableBody>
           {assets.map((asset) => (
-            <TableRow key={asset.ID} className="h-fit">
-              <TableCell className="font-medium">{asset.Symbol}</TableCell>
-              <TableCell>{asset.Name}</TableCell>
-              <TableCell className="text-center">{asset.Class}</TableCell>
-              <TableCell className="text-center">{asset.Exchange}</TableCell>
+            <TableRow key={asset.id} className="h-fit">
+              <TableCell className="font-medium">{asset.symbol}</TableCell>
+              <TableCell>{asset.name}</TableCell>
+              <TableCell className="text-center">{asset.class}</TableCell>
+              <TableCell className="text-center">{asset.exchange}</TableCell>
               <TableCell>
                 <Badge
-                  variant={asset.Status === "active" ? "default" : "secondary"}
+                  variant={asset.status === "active" ? "default" : "secondary"}
                 >
-                  {asset.Status}
+                  {asset.status}
                 </Badge>
               </TableCell>
               <TableCell>
                 <div className="grid gap-2 grid-cols-4">
-                  <AssetBadge label="Tradable" value={asset.Tradable} />
-                  <AssetBadge label="Marginable" value={asset.Marginable} />
-                  <AssetBadge label="Shortable" value={asset.Shortable} />
-                  <AssetBadge label="Fractionable" value={asset.Fractionable} />
+                  <AssetBadge label="Tradable" value={asset.tradable} />
+                  <AssetBadge
+                    label="Marginable"
+                    value={asset.marginable ?? false}
+                  />
+                  <AssetBadge label="Shortable" value={asset.shortable} />
+                  <AssetBadge label="Fractionable" value={asset.fractionable} />
                 </div>
               </TableCell>
             </TableRow>

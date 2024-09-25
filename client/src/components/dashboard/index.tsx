@@ -22,16 +22,16 @@ export function Dashboard() {
 
   const filteredAssets = currentPageAssets.filter((asset: AlpacaAsset) => {
     if (searchTerm) {
-      return asset.Name.toLowerCase().includes(searchTerm.toLowerCase());
+      return asset.name.toLowerCase().includes(searchTerm.toLowerCase());
     }
     if (filterClass) {
-      return asset.Class === filterClass;
+      return asset.class === filterClass;
     }
     return true;
   });
 
   const assetClasses = Array.from(
-    new Set(currentPageAssets.map((asset: AlpacaAsset) => asset.Class))
+    new Set(currentPageAssets.map((asset: AlpacaAsset) => asset.class))
   );
 
   return (
@@ -70,8 +70,8 @@ export function Dashboard() {
         {viewMode === "list" && <AssetList assets={filteredAssets} />}
         {viewMode === "grid" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAssets.map((asset: any, index: number) => (
-              <AssetCard key={asset.Symbol} asset={asset} index={index} />
+            {filteredAssets.map((asset: AlpacaAsset, index: number) => (
+              <AssetCard key={asset.symbol} asset={asset} index={index} />
             ))}
           </div>
         )}

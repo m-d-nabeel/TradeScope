@@ -35,20 +35,20 @@ export type AlpacaAccount = {
 }
 
 export type AlpacaAsset = {
-    ID: string;
-    Class: string;
-    EasyToBorrow: boolean;
-    Exchange: string;
-    Fractionable: boolean;
-    MaintenanceMarginRequirement: string;
-    MarginRequirementLong?: string;
-    MarginRequirementShort?: string;
-    Marginable?: boolean;
-    Name: string;
-    SeqID: number;
-    Shortable: boolean;
-    Status: string;
-    Symbol: string;
-    Tradable: boolean;
-    Attributes: string[];
+    id: string;
+    class: string;
+    easyToBorrow: boolean;
+    exchange: string;
+    fractionable: boolean;
+    maintenanceMarginRequirement: string;
+    marginRequirementLong?: string;
+    marginRequirementShort?: string;
+    marginable?: boolean;
+    name: string;
+    seqID: number;
+    shortable: boolean;
+    status: string;
+    symbol: string;
+    tradable: boolean;
+    attributes: string[];
 }

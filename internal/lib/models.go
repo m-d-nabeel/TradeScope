@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -58,7 +57,6 @@ type Asset struct {
 }
 
 func DbAssetToAsset(dbAsset sqlc.Asset) Asset {
-	log.Println(dbAsset.SeqID)
 	return Asset{
 		ID:                           uuid.UUID(dbAsset.ID.Bytes),
 		SeqID:                        dbAsset.SeqID,

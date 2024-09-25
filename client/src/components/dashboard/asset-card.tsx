@@ -6,10 +6,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Briefcase, TrendingUp } from "lucide-react";
+import { AlpacaAsset } from "@/types/alpaca.types";
 import { motion } from "framer-motion";
+import { Briefcase, TrendingUp } from "lucide-react";
 
-export function AssetCard({ asset, index }: { asset: any; index: number }) {
+export function AssetCard({
+  asset,
+  index,
+}: {
+  asset: AlpacaAsset;
+  index: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -22,31 +29,31 @@ export function AssetCard({ asset, index }: { asset: any; index: number }) {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
-                {asset.Symbol}
+                {asset.symbol}
               </h2>
-              <p className="text-sm text-gray-500">{asset.Name}</p>
+              <p className="text-sm text-gray-500">{asset.name}</p>
             </div>
             <Badge
-              variant={asset.Status === "active" ? "default" : "secondary"}
+              variant={asset.status === "active" ? "default" : "secondary"}
             >
-              {asset.Status}
+              {asset.status}
             </Badge>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex items-center space-x-2">
               <Briefcase className="text-gray-400" size={16} />
-              <span className="text-sm font-medium">{asset.Class}</span>
+              <span className="text-sm font-medium">{asset.class}</span>
             </div>
             <div className="flex items-center space-x-2">
               <TrendingUp className="text-gray-400" size={16} />
-              <span className="text-sm font-medium">{asset.Exchange}</span>
+              <span className="text-sm font-medium">{asset.exchange}</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <AssetBadge label="Tradable" value={asset.Tradable} />
-            <AssetBadge label="Marginable" value={asset.Marginable} />
-            <AssetBadge label="Shortable" value={asset.Shortable} />
-            <AssetBadge label="Fractionable" value={asset.Fractionable} />
+            <AssetBadge label="Tradable" value={asset.tradable} />
+            <AssetBadge label="Marginable" value={asset.marginable ?? false} />
+            <AssetBadge label="Shortable" value={asset.shortable} />
+            <AssetBadge label="Fractionable" value={asset.fractionable} />
           </div>
         </CardContent>
       </Card>
