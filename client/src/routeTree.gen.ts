@@ -13,46 +13,27 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ProfileImport } from './routes/profile'
-import { Route as LoginImport } from './routes/login'
-import { Route as DashboardImport } from './routes/dashboard'
-import { Route as AccountstatsImport } from './routes/accountstats'
+import { Route as MainImport } from './routes/_main'
+import { Route as MainTradeIndexImport } from './routes/_main/trade/index'
+import { Route as MainSettingsIndexImport } from './routes/_main/settings/index'
+import { Route as MainPortfolioIndexImport } from './routes/_main/portfolio/index'
+import { Route as MainMarketIndexImport } from './routes/_main/market/index'
+import { Route as MainLogoutIndexImport } from './routes/_main/logout/index'
+import { Route as MainHelpIndexImport } from './routes/_main/help/index'
+import { Route as MainDashboardIndexImport } from './routes/_main/dashboard/index'
+import { Route as MainAssetsIndexImport } from './routes/_main/assets/index'
+import { Route as MainAlertsIndexImport } from './routes/_main/alerts/index'
+import { Route as MainAccountIndexImport } from './routes/_main/account/index'
+import { Route as MainDashboardDashboardImport } from './routes/_main/dashboard/dashboard'
 
 // Create Virtual Routes
 
-const SettingsLazyImport = createFileRoute('/settings')()
-const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
 
-const SettingsLazyRoute = SettingsLazyImport.update({
-  path: '/settings',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/settings.lazy').then((d) => d.Route))
-
-const AboutLazyRoute = AboutLazyImport.update({
-  path: '/about',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
-
-const ProfileRoute = ProfileImport.update({
-  path: '/profile',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LoginRoute = LoginImport.update({
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardRoute = DashboardImport.update({
-  path: '/dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AccountstatsRoute = AccountstatsImport.update({
-  path: '/accountstats',
+const MainRoute = MainImport.update({
+  id: '/_main',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +41,61 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const MainTradeIndexRoute = MainTradeIndexImport.update({
+  path: '/trade/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainSettingsIndexRoute = MainSettingsIndexImport.update({
+  path: '/settings/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainPortfolioIndexRoute = MainPortfolioIndexImport.update({
+  path: '/portfolio/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainMarketIndexRoute = MainMarketIndexImport.update({
+  path: '/market/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainLogoutIndexRoute = MainLogoutIndexImport.update({
+  path: '/logout/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainHelpIndexRoute = MainHelpIndexImport.update({
+  path: '/help/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainDashboardIndexRoute = MainDashboardIndexImport.update({
+  path: '/dashboard/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainAssetsIndexRoute = MainAssetsIndexImport.update({
+  path: '/assets/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainAlertsIndexRoute = MainAlertsIndexImport.update({
+  path: '/alerts/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainAccountIndexRoute = MainAccountIndexImport.update({
+  path: '/account/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainDashboardDashboardRoute = MainDashboardDashboardImport.update({
+  path: '/dashboard/dashboard',
+  getParentRoute: () => MainRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -72,133 +108,231 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/accountstats': {
-      id: '/accountstats'
-      path: '/accountstats'
-      fullPath: '/accountstats'
-      preLoaderRoute: typeof AccountstatsImport
+    '/_main': {
+      id: '/_main'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof MainImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard': {
-      id: '/dashboard'
+    '/_main/dashboard/dashboard': {
+      id: '/_main/dashboard/dashboard'
+      path: '/dashboard/dashboard'
+      fullPath: '/dashboard/dashboard'
+      preLoaderRoute: typeof MainDashboardDashboardImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/account/': {
+      id: '/_main/account/'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof MainAccountIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/alerts/': {
+      id: '/_main/alerts/'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof MainAlertsIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/assets/': {
+      id: '/_main/assets/'
+      path: '/assets'
+      fullPath: '/assets'
+      preLoaderRoute: typeof MainAssetsIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/dashboard/': {
+      id: '/_main/dashboard/'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainDashboardIndexImport
+      parentRoute: typeof MainImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
+    '/_main/help/': {
+      id: '/_main/help/'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof MainHelpIndexImport
+      parentRoute: typeof MainImport
     }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileImport
-      parentRoute: typeof rootRoute
+    '/_main/logout/': {
+      id: '/_main/logout/'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof MainLogoutIndexImport
+      parentRoute: typeof MainImport
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutLazyImport
-      parentRoute: typeof rootRoute
+    '/_main/market/': {
+      id: '/_main/market/'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof MainMarketIndexImport
+      parentRoute: typeof MainImport
     }
-    '/settings': {
-      id: '/settings'
+    '/_main/portfolio/': {
+      id: '/_main/portfolio/'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof MainPortfolioIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/settings/': {
+      id: '/_main/settings/'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof SettingsLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainSettingsIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/trade/': {
+      id: '/_main/trade/'
+      path: '/trade'
+      fullPath: '/trade'
+      preLoaderRoute: typeof MainTradeIndexImport
+      parentRoute: typeof MainImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface MainRouteChildren {
+  MainDashboardDashboardRoute: typeof MainDashboardDashboardRoute
+  MainAccountIndexRoute: typeof MainAccountIndexRoute
+  MainAlertsIndexRoute: typeof MainAlertsIndexRoute
+  MainAssetsIndexRoute: typeof MainAssetsIndexRoute
+  MainDashboardIndexRoute: typeof MainDashboardIndexRoute
+  MainHelpIndexRoute: typeof MainHelpIndexRoute
+  MainLogoutIndexRoute: typeof MainLogoutIndexRoute
+  MainMarketIndexRoute: typeof MainMarketIndexRoute
+  MainPortfolioIndexRoute: typeof MainPortfolioIndexRoute
+  MainSettingsIndexRoute: typeof MainSettingsIndexRoute
+  MainTradeIndexRoute: typeof MainTradeIndexRoute
+}
+
+const MainRouteChildren: MainRouteChildren = {
+  MainDashboardDashboardRoute: MainDashboardDashboardRoute,
+  MainAccountIndexRoute: MainAccountIndexRoute,
+  MainAlertsIndexRoute: MainAlertsIndexRoute,
+  MainAssetsIndexRoute: MainAssetsIndexRoute,
+  MainDashboardIndexRoute: MainDashboardIndexRoute,
+  MainHelpIndexRoute: MainHelpIndexRoute,
+  MainLogoutIndexRoute: MainLogoutIndexRoute,
+  MainMarketIndexRoute: MainMarketIndexRoute,
+  MainPortfolioIndexRoute: MainPortfolioIndexRoute,
+  MainSettingsIndexRoute: MainSettingsIndexRoute,
+  MainTradeIndexRoute: MainTradeIndexRoute,
+}
+
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '/accountstats': typeof AccountstatsRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
-  '/about': typeof AboutLazyRoute
-  '/settings': typeof SettingsLazyRoute
+  '': typeof MainRouteWithChildren
+  '/dashboard/dashboard': typeof MainDashboardDashboardRoute
+  '/account': typeof MainAccountIndexRoute
+  '/alerts': typeof MainAlertsIndexRoute
+  '/assets': typeof MainAssetsIndexRoute
+  '/dashboard': typeof MainDashboardIndexRoute
+  '/help': typeof MainHelpIndexRoute
+  '/logout': typeof MainLogoutIndexRoute
+  '/market': typeof MainMarketIndexRoute
+  '/portfolio': typeof MainPortfolioIndexRoute
+  '/settings': typeof MainSettingsIndexRoute
+  '/trade': typeof MainTradeIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
-  '/accountstats': typeof AccountstatsRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
-  '/about': typeof AboutLazyRoute
-  '/settings': typeof SettingsLazyRoute
+  '': typeof MainRouteWithChildren
+  '/dashboard/dashboard': typeof MainDashboardDashboardRoute
+  '/account': typeof MainAccountIndexRoute
+  '/alerts': typeof MainAlertsIndexRoute
+  '/assets': typeof MainAssetsIndexRoute
+  '/dashboard': typeof MainDashboardIndexRoute
+  '/help': typeof MainHelpIndexRoute
+  '/logout': typeof MainLogoutIndexRoute
+  '/market': typeof MainMarketIndexRoute
+  '/portfolio': typeof MainPortfolioIndexRoute
+  '/settings': typeof MainSettingsIndexRoute
+  '/trade': typeof MainTradeIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/accountstats': typeof AccountstatsRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
-  '/about': typeof AboutLazyRoute
-  '/settings': typeof SettingsLazyRoute
+  '/_main': typeof MainRouteWithChildren
+  '/_main/dashboard/dashboard': typeof MainDashboardDashboardRoute
+  '/_main/account/': typeof MainAccountIndexRoute
+  '/_main/alerts/': typeof MainAlertsIndexRoute
+  '/_main/assets/': typeof MainAssetsIndexRoute
+  '/_main/dashboard/': typeof MainDashboardIndexRoute
+  '/_main/help/': typeof MainHelpIndexRoute
+  '/_main/logout/': typeof MainLogoutIndexRoute
+  '/_main/market/': typeof MainMarketIndexRoute
+  '/_main/portfolio/': typeof MainPortfolioIndexRoute
+  '/_main/settings/': typeof MainSettingsIndexRoute
+  '/_main/trade/': typeof MainTradeIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/accountstats'
+    | ''
+    | '/dashboard/dashboard'
+    | '/account'
+    | '/alerts'
+    | '/assets'
     | '/dashboard'
-    | '/login'
-    | '/profile'
-    | '/about'
+    | '/help'
+    | '/logout'
+    | '/market'
+    | '/portfolio'
     | '/settings'
+    | '/trade'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/accountstats'
+    | ''
+    | '/dashboard/dashboard'
+    | '/account'
+    | '/alerts'
+    | '/assets'
     | '/dashboard'
-    | '/login'
-    | '/profile'
-    | '/about'
+    | '/help'
+    | '/logout'
+    | '/market'
+    | '/portfolio'
     | '/settings'
+    | '/trade'
   id:
     | '__root__'
     | '/'
-    | '/accountstats'
-    | '/dashboard'
-    | '/login'
-    | '/profile'
-    | '/about'
-    | '/settings'
+    | '/_main'
+    | '/_main/dashboard/dashboard'
+    | '/_main/account/'
+    | '/_main/alerts/'
+    | '/_main/assets/'
+    | '/_main/dashboard/'
+    | '/_main/help/'
+    | '/_main/logout/'
+    | '/_main/market/'
+    | '/_main/portfolio/'
+    | '/_main/settings/'
+    | '/_main/trade/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  AccountstatsRoute: typeof AccountstatsRoute
-  DashboardRoute: typeof DashboardRoute
-  LoginRoute: typeof LoginRoute
-  ProfileRoute: typeof ProfileRoute
-  AboutLazyRoute: typeof AboutLazyRoute
-  SettingsLazyRoute: typeof SettingsLazyRoute
+  MainRoute: typeof MainRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  AccountstatsRoute: AccountstatsRoute,
-  DashboardRoute: DashboardRoute,
-  LoginRoute: LoginRoute,
-  ProfileRoute: ProfileRoute,
-  AboutLazyRoute: AboutLazyRoute,
-  SettingsLazyRoute: SettingsLazyRoute,
+  MainRoute: MainRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -214,34 +348,71 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/accountstats",
-        "/dashboard",
-        "/login",
-        "/profile",
-        "/about",
-        "/settings"
+        "/_main"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
-    "/accountstats": {
-      "filePath": "accountstats.tsx"
+    "/_main": {
+      "filePath": "_main.tsx",
+      "children": [
+        "/_main/dashboard/dashboard",
+        "/_main/account/",
+        "/_main/alerts/",
+        "/_main/assets/",
+        "/_main/dashboard/",
+        "/_main/help/",
+        "/_main/logout/",
+        "/_main/market/",
+        "/_main/portfolio/",
+        "/_main/settings/",
+        "/_main/trade/"
+      ]
     },
-    "/dashboard": {
-      "filePath": "dashboard.tsx"
+    "/_main/dashboard/dashboard": {
+      "filePath": "_main/dashboard/dashboard.tsx",
+      "parent": "/_main"
     },
-    "/login": {
-      "filePath": "login.tsx"
+    "/_main/account/": {
+      "filePath": "_main/account/index.tsx",
+      "parent": "/_main"
     },
-    "/profile": {
-      "filePath": "profile.tsx"
+    "/_main/alerts/": {
+      "filePath": "_main/alerts/index.tsx",
+      "parent": "/_main"
     },
-    "/about": {
-      "filePath": "about.lazy.tsx"
+    "/_main/assets/": {
+      "filePath": "_main/assets/index.tsx",
+      "parent": "/_main"
     },
-    "/settings": {
-      "filePath": "settings.lazy.tsx"
+    "/_main/dashboard/": {
+      "filePath": "_main/dashboard/index.tsx",
+      "parent": "/_main"
+    },
+    "/_main/help/": {
+      "filePath": "_main/help/index.tsx",
+      "parent": "/_main"
+    },
+    "/_main/logout/": {
+      "filePath": "_main/logout/index.tsx",
+      "parent": "/_main"
+    },
+    "/_main/market/": {
+      "filePath": "_main/market/index.tsx",
+      "parent": "/_main"
+    },
+    "/_main/portfolio/": {
+      "filePath": "_main/portfolio/index.tsx",
+      "parent": "/_main"
+    },
+    "/_main/settings/": {
+      "filePath": "_main/settings/index.tsx",
+      "parent": "/_main"
+    },
+    "/_main/trade/": {
+      "filePath": "_main/trade/index.tsx",
+      "parent": "/_main"
     }
   }
 }

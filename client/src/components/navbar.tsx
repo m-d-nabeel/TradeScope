@@ -7,7 +7,6 @@ import {
   LogOut,
   PieChart,
   Settings,
-  User,
 } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -31,9 +30,6 @@ export const Navbar = () => {
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <NavLink to="/dashboard" icon={<Home className="h-5 w-5" />}>
                   Dashboard
-                </NavLink>
-                <NavLink to="/profile" icon={<User className="h-5 w-5" />}>
-                  Profile
                 </NavLink>
                 <NavLink to="/settings" icon={<Settings className="h-5 w-5" />}>
                   Settings
