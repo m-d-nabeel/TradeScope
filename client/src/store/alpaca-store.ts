@@ -7,9 +7,11 @@ interface AlpacaState {
   account: AlpacaAccount | null;
   page: number;
   assets: Record<number, AlpacaAsset[]>;
+  totalAssets: AlpacaAsset[];
   setAccount: (account: AlpacaAccount) => void;
   fetchAccount: () => Promise<void>;
   fetchAssets: (page: number) => Promise<void>;
+  fetchTotalAssets: () => Promise<void>;
   setPage: (page: number) => void;
 }
 
@@ -17,6 +19,7 @@ export const useAlpacaStore = create<AlpacaState>()(
   (set, get) => ({
     account: null,
     assets: {},
+    totalAssets: [],
     setAccount: (account) => set({ account }),
     page: 1,
     setPage: (page) => set({ page }),
@@ -49,6 +52,19 @@ export const useAlpacaStore = create<AlpacaState>()(
         }));
       } catch (error: any) {
         console.info("Error fetching assets: ", error?.message);
+      }
+    },
+
+    async fetchTotalAssets() {
+      const cachedTotalAssets = get().totalAssets;
+      if (cachedTotalAssets.length) {
+        return;
+      }
+      try {
+        const assets = await AlpacaService.getAllAssets();
+        set({ totalAssets: assets });
+      } catch (error: any) {
+        console.info("Error fetching total assets: ", error?.message);
       }
     },
   })

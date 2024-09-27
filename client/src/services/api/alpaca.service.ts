@@ -19,5 +19,14 @@ export const AlpacaService = {
             console.info("Error getting assets: ", error?.message);
             return null;
         }
+    },
+    async getAllAssets() {
+        try {
+            const response = await axiosInstance.get(`/api/alpaca/assets/get`);
+            return response.data;
+        } catch (error: any) {
+            console.info("Error getting assets: ", error?.message);
+            return null;
+        }
     }
 }
