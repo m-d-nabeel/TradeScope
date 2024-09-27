@@ -10,7 +10,7 @@ type HeaderProps = {
 export const Header = ({ setSidebarOpen }: HeaderProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const location = useLocation();
-  const pageTitle = location.pathname.split("/").pop();
+  const pageTitle = location.pathname.split("/")?.[1];
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -30,7 +30,7 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
           <div className="flex items-center">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-1 lg:hidden rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+              className="p-1 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
             >
               <span className="sr-only">Open sidebar</span>
               <svg
