@@ -83,7 +83,7 @@ func (s *Server) getAssetsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
 		return
 	}
-	lib.RespondJSON(w, http.StatusAccepted, assets)
+	lib.RespondJSON(w, http.StatusAccepted, lib.DbAssetsToAssets(assets))
 }
 
 func (s *Server) updateAssetsHandler(w http.ResponseWriter, r *http.Request) {

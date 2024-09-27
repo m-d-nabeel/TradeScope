@@ -4,7 +4,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Link, useLocation } from "@tanstack/react-router";
+import { RouterContext } from "@/routes/__root";
+import {
+  Link,
+  rootRouteId,
+  useLocation,
+  useRouteContext
+} from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   BarChart3Icon,
@@ -14,7 +20,6 @@ import {
   TrendingUpIcon,
   UserIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 
 interface SidebarProps {
@@ -22,23 +27,19 @@ interface SidebarProps {
   setSidebarOpen: (open: boolean) => void;
 }
 
+const links = [
+  { to: "/dashboard", icon: HomeIcon, label: "Dashboard" },
+  { to: "/trade", icon: TrendingUpIcon, label: "Trade" },
+  { to: "/portfolio", icon: BarChart3Icon, label: "Portfolio" },
+  { to: "/market", icon: BarChart3Icon, label: "Market" },
+  { to: "/alerts", icon: BellIcon, label: "Alerts" },
+  { to: "/account", icon: UserIcon, label: "Account" },
+];
+
 export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+  const { auth }: RouterContext = useRouteContext({ from: rootRouteId });
   const location = useLocation();
-  const [activeLink, setActiveLink] = useState("");
-
-  useEffect(() => {
-    const currentPath = location.pathname.split("/")[1] || "dashboard";
-    setActiveLink(currentPath);
-  }, [location]);
-
-  const links = [
-    { to: "/dashboard", icon: HomeIcon, label: "Dashboard" },
-    { to: "/trade", icon: TrendingUpIcon, label: "Trade" },
-    { to: "/portfolio", icon: BarChart3Icon, label: "Portfolio" },
-    { to: "/market", icon: BarChart3Icon, label: "Market" },
-    { to: "/alerts", icon: BellIcon, label: "Alerts" },
-    { to: "/account", icon: UserIcon, label: "Account" },
-  ];
+  const activePath = location.pathname.slice(1);
 
   return (
     <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -54,16 +55,16 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               key={to}
               to={to}
               className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-200 ease-in-out ${
-                activeLink === to.slice(1)
+                activePath === to.slice(1)
                   ? "bg-blue-100 text-blue-600"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
               <Icon
-                className={`h-5 w-5 ${activeLink === to.slice(1) ? "text-blue-500" : ""}`}
+                className={`h-5 w-5 ${activePath === to.slice(1) ? "text-blue-500" : ""}`}
               />
               <span className="font-medium">{label}</span>
-              {activeLink === to.slice(1) && (
+              {activePath === to.slice(1) && (
                 <motion.div
                   className="absolute left-0 w-1 h-8 bg-blue-500 rounded-r-full"
                   layoutId="activeIndicator"
@@ -77,6 +78,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         </nav>
         <div className="absolute bottom-0 w-full p-4 bg-white border-t">
           <Button
+            onClick={auth.logout}
             variant="outline"
             className="w-full group hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors duration-200"
           >
