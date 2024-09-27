@@ -35,10 +35,6 @@ export function AssetsComponent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-100 to-teal-100 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">
-          Alpaca Assets Dashboard
-        </h1>
-
         <div className="flex justify-between items-center mb-6">
           <SearchAndFilter
             searchTerm={searchTerm}
