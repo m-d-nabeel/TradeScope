@@ -9,16 +9,17 @@ import {
   Link,
   rootRouteId,
   useLocation,
-  useRouteContext
+  useRouteContext,
 } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   BarChart3Icon,
   BellIcon,
+  HelpCircleIcon,
   HomeIcon,
   LogOutIcon,
   TrendingUpIcon,
-  UserIcon,
+  UserIcon
 } from "lucide-react";
 import { Button } from "../ui/button";
 
@@ -34,6 +35,7 @@ const links = [
   { to: "/market", icon: BarChart3Icon, label: "Market" },
   { to: "/alerts", icon: BellIcon, label: "Alerts" },
   { to: "/account", icon: UserIcon, label: "Account" },
+  { to: "/help", icon: HelpCircleIcon, label: "Help" },
 ];
 
 export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {

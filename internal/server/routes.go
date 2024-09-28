@@ -48,6 +48,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Get("/assets/{id}", s.getAssetByIdHandler)
 	})
 
+	// Alpaca Market Data routes
+	r.With(s.AuthMiddleware).Route("/api/alpaca/market", func(r chi.Router) {
+		r.Get("/bars", s.GetHistoricalBarsHandler)
+	})
+
 	return r
 }
 

@@ -1,5 +1,4 @@
-import { AuthStoreInterface } from "@/store/auth-store";
-import { Link, useRouteContext } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   BarChart2,
   Home,
@@ -8,12 +7,15 @@ import {
   PieChart,
   Settings,
 } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
-export const Navbar = () => {
-  const { auth }: { auth: AuthStoreInterface } = useRouteContext({ from: "" });
-  const { user, logout, login } = auth;
+interface NavbarProps {
+  user: any;
+  login: (provider: string) => void;
+  logout: () => void;
+}
 
+export const Navbar = ({ user, login, logout }: NavbarProps) => {
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,10 +36,7 @@ export const Navbar = () => {
                 <NavLink to="/settings" icon={<Settings className="h-5 w-5" />}>
                   Settings
                 </NavLink>
-                <NavLink
-                  to="/accountstats"
-                  icon={<PieChart className="h-5 w-5" />}
-                >
+                <NavLink to="/account" icon={<PieChart className="h-5 w-5" />}>
                   Account Stats
                 </NavLink>
               </div>

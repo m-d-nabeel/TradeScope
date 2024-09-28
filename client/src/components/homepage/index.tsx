@@ -1,36 +1,18 @@
-import { AuthStoreInterface } from "@/store/auth-store";
-import { Link, useRouteContext } from "@tanstack/react-router";
+import { AuthContext } from "@/routes/__root";
+import { Link, useLoaderData } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, DollarSign, Shield, TrendingUp, Zap } from "lucide-react";
-import { Navbar } from "../navbar";
 import { Button } from "../ui/button";
-
-const FeatureCard = ({
-  icon: Icon,
-  title,
-  description,
-}: {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-}) => (
-  <motion.div
-    whileHover={{ scale: 1.05 }}
-    className="bg-white p-6 rounded-lg shadow-lg"
-  >
-    <Icon className="w-12 h-12 text-emerald-500 mb-4" />
-    <h3 className="text-xl font-semibold mb-2">{title}</h3>
-    <p className="text-gray-600">{description}</p>
-  </motion.div>
-);
+import { FeatureCard } from "./feature-card";
+import { Navbar } from "./navbar";
 
 export const Homepage = () => {
-  const { auth }: { auth: AuthStoreInterface } = useRouteContext({ from: "" });
-  const { user, login } = auth;
+  const auth = useLoaderData({ from: "/" as const }) as AuthContext;
+  const { user, login, logout } = auth;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
-      <Navbar />
+      <Navbar user={user} login={login} logout={logout} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
