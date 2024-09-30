@@ -26,19 +26,50 @@ func (s *Server) GetHistoricalBarsHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if symbols != "" {
-		alpacamarket.MarketDataQuery["symbols"] = symbols
+		alpacamarket.MarketBarQuery["symbols"] = symbols
 	}
 	if timeframe != "" {
-		alpacamarket.MarketDataQuery["timeframe"] = timeframe
+		alpacamarket.MarketBarQuery["timeframe"] = timeframe
 	}
 	if start != "" {
-		alpacamarket.MarketDataQuery["start"] = start
+		alpacamarket.MarketBarQuery["start"] = start
 	}
 	if end != "" {
-		alpacamarket.MarketDataQuery["end"] = end
+		alpacamarket.MarketBarQuery["end"] = end
 	}
 
 	data, err := alpacamarket.GetHistoricalBars()
+	if err != nil {
+		lib.RespondError(w, http.StatusInternalServerError, err.Error())
+	}
+
+	lib.RespondJSON(w, http.StatusOK, data)
+}
+
+func (s *Server) GetHistoricalAuctionsHandler(w http.ResponseWriter, r *http.Request) {
+
+	queryVals := r.URL.Query()
+
+	symbols := queryVals.Get("symbols")
+	start := queryVals.Get("start")
+	end := queryVals.Get("end")
+
+	if err := validator.ValidateMarketQuery(symbols, "", start, end); err != nil {
+		lib.RespondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if symbols != "" {
+		alpacamarket.MarketAuctionQuery["symbols"] = symbols
+	}
+	if start != "" {
+		alpacamarket.MarketAuctionQuery["start"] = start
+	}
+	if end != "" {
+		alpacamarket.MarketAuctionQuery["end"] = end
+	}
+
+	data, err := alpacamarket.GetHistoricalAuctions()
 	if err != nil {
 		lib.RespondError(w, http.StatusInternalServerError, err.Error())
 	}

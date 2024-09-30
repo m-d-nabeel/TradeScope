@@ -49,6 +49,12 @@ func validateRFC3339Date(date string) error {
 
 // validateTimeframe checks if the provided timeframe is valid according to the rules.
 func validateTimeframe(timeframe string) error {
+
+	if timeframe == "" {
+		// Default set to 1W already
+		return nil
+	}
+
 	var numStr string
 	var unit string
 
