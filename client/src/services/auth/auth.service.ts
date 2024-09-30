@@ -1,6 +1,6 @@
-import { APP_CONFIG } from "@/config/constants";
 import { useAuthStore } from "@/store/auth-store";
 import { axiosInstance } from "../api/api.service";
+import { APP_CONFIG } from "@/config/constants";
 
 export const AuthService = {
     async checkAuthStatus() {

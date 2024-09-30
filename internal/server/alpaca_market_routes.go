@@ -21,6 +21,7 @@ func (s *Server) GetHistoricalBarsHandler(w http.ResponseWriter, r *http.Request
 	log.Printf("symbols: %s, timeframe: %s, start: %s, end: %s", symbols, timeframe, start, end)
 
 	if err := validator.ValidateMarketQuery(symbols, timeframe, start, end); err != nil {
+		log.Printf("Error validating query: %v", err)
 		lib.RespondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -40,6 +41,7 @@ func (s *Server) GetHistoricalBarsHandler(w http.ResponseWriter, r *http.Request
 
 	data, err := alpacamarket.GetHistoricalBars()
 	if err != nil {
+		log.Printf("Error getting historical bars: %v", err)
 		lib.RespondError(w, http.StatusInternalServerError, err.Error())
 	}
 
@@ -55,6 +57,7 @@ func (s *Server) GetHistoricalAuctionsHandler(w http.ResponseWriter, r *http.Req
 	end := queryVals.Get("end")
 
 	if err := validator.ValidateMarketQuery(symbols, "", start, end); err != nil {
+		log.Printf("Error validating query: %v", err)
 		lib.RespondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -71,6 +74,7 @@ func (s *Server) GetHistoricalAuctionsHandler(w http.ResponseWriter, r *http.Req
 
 	data, err := alpacamarket.GetHistoricalAuctions()
 	if err != nil {
+		log.Printf("Error getting historical auctions: %v", err)
 		lib.RespondError(w, http.StatusInternalServerError, err.Error())
 	}
 

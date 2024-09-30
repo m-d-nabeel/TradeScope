@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func ValidateMarketQuery(symbol, timeframe, start, end string) error {
-	if symbol == "" {
+func ValidateMarketQuery(symbols, timeframe, start, end string) error {
+	if symbols == "" {
 		return errors.New("symbol is required")
 	}
 	if start == "" {

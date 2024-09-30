@@ -53,29 +53,29 @@ type AuctionsResponse struct {
 
 // Default query parameters for Alpaca API requests
 var MarketAuctionQuery = map[string]string{
-	"symbols":    "AAPL",                 // Comma-separated list of symbols
-	"start":      "2022-01-01T00:00:00Z", // Start date in RFC-3339 format
-	"end":        "",                     // End date in RFC-3339 format
-	"limit":      strconv.Itoa(1000),     // Maximum number of bars to return
-	"asof":       "",                     // As-of date (default is current date)
-	"feed":       "sip",                  // Data feed ("sip", "iex", "otc")
-	"currency":   "USD",                  // Currency (default is USD)
-	"sort":       "asc",                  // Sort order ("asc" or "desc")
-	"page_token": "",                     // Page token for pagination
+	"symbols":    "AAPL",             // Comma-separated list of symbols
+	"start":      "",                 // Start date in RFC-3339 format
+	"end":        "",                 // End date in RFC-3339 format
+	"limit":      strconv.Itoa(1000), // Maximum number of bars to return
+	"asof":       "",                 // As-of date (default is current date)
+	"feed":       "sip",              // Data feed ("sip", "iex", "otc")
+	"currency":   "USD",              // Currency (default is USD)
+	"sort":       "asc",              // Sort order ("asc" or "desc")
+	"page_token": "",                 // Page token for pagination
 }
 
 var MarketBarQuery = map[string]string{
-	"symbols":    "AAPL",                 // Comma-separated list of symbols
-	"timeframe":  "1W",                   // Timeframe for the bars (e.g., 1Min, 1H, 1D, 1W, 1M)
-	"start":      "2022-01-01T00:00:00Z", // Start date in RFC-3339 format
-	"end":        "",                     // End date in RFC-3339 format
-	"limit":      strconv.Itoa(1000),     // Maximum number of bars to return
-	"adjustment": "raw",                  // Adjustment type ("raw", "split", "dividend", "all")
-	"asof":       "",                     // As-of date (default is current date)
-	"feed":       "sip",                  // Data feed ("sip", "iex", "otc")
-	"currency":   "USD",                  // Currency (default is USD)
-	"sort":       "asc",                  // Sort order ("asc" or "desc")
-	"page_token": "",                     // Page token for pagination
+	"symbols":    "AAPL",             // Comma-separated list of symbols
+	"timeframe":  "1W",               // Timeframe for the bars (e.g., 1Min, 1H, 1D, 1W, 1M)
+	"start":      "",                 // Start date in RFC-3339 format
+	"end":        "",                 // End date in RFC-3339 format
+	"limit":      strconv.Itoa(1000), // Maximum number of bars to return
+	"adjustment": "raw",              // Adjustment type ("raw", "split", "dividend", "all")
+	"asof":       "",                 // As-of date (default is current date)
+	"feed":       "sip",              // Data feed ("sip", "iex", "otc")
+	"currency":   "USD",              // Currency (default is USD)
+	"sort":       "asc",              // Sort order ("asc" or "desc")
+	"page_token": "",                 // Page token for pagination
 }
 
 type MarketService interface {

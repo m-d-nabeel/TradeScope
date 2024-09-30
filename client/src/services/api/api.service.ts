@@ -1,5 +1,5 @@
-import { APP_CONFIG } from "@/config/constants";
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { APP_CONFIG } from "@/config/constants";
 
 export const axiosInstance = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,

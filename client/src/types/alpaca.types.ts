@@ -52,3 +52,24 @@ export type AlpacaAsset = {
     tradable: boolean;
     attributes: string[];
 }
+
+
+type AlpacaAuctionFields = {
+    t: string;
+    x: string;
+    p: number;
+    s: number;
+    c: string;
+}
+
+export type AlpacaAuction = {
+    d: string;
+    o: AlpacaAuctionFields[];
+    c: AlpacaAuctionFields[];
+}
+
+export type AlpacaAuctions = {
+    auctions: Record<string, AlpacaAuction[]>;
+    next_page_token: string;
+    currency: string;
+}
