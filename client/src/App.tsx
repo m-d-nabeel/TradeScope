@@ -1,5 +1,5 @@
 import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { useGlobalStore } from "./hooks/useGlobal";
+import { useGlobalStore } from "./hooks/use-global-context";
 import { routeTree } from "./routeTree.gen";
 
 export const App = () => {

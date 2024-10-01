@@ -1,6 +1,6 @@
 import { AuthService } from '@/services/auth.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useGlobalStore } from './useGlobal';
+import { useGlobalStore } from './use-global-context';
 
 export const useAuthQueries = () => {
     const queryClient = useQueryClient();

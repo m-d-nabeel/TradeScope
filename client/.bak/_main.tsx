@@ -1,10 +1,8 @@
-import Loading from "@/components/common/loading";
 import { Layout } from "@/components/layout";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_main")({
+export const Route = createFileRoute("/")({
   component: Layout,
-  pendingComponent: Loading,
   beforeLoad: async ({ context }) => {
     console.log(context);
     const { globalCtx } = context;
