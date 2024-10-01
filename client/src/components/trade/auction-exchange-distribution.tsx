@@ -23,7 +23,7 @@ export function AuctionExchangeDistribution({
       });
       return counts;
     },
-    {} as Record<string, number>
+    {} as Record<string, number>,
   );
 
   const chartData = Object.entries(exchangeCounts).map(([exchange, count]) => ({

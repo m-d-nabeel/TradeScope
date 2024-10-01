@@ -25,7 +25,7 @@ export function PaginationComponent<TData>({ table }: PaginationProps<TData>) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between px-2 py-4 space-y-3 sm:space-y-0">
+    <div className="flex flex-col items-center justify-between space-y-3 px-2 py-4 sm:flex-row sm:space-y-0">
       <div className="flex items-center space-x-2 text-sm text-muted-foreground">
         <span>Total rows: {table.getFilteredRowModel().rows.length}</span>
         <span>|</span>

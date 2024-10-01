@@ -6,11 +6,11 @@ import { Sidebar } from "./sidebar";
 export const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div className="flex w-full h-screen bg-gray-100">
+    <div className="flex h-screen w-full bg-gray-100">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <div className="flex-1 w-full flex flex-col overflow-hidden">
+      <div className="flex w-full flex-1 flex-col overflow-hidden">
         <Header setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100">
           <Outlet />
         </main>
       </div>

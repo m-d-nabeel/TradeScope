@@ -20,7 +20,7 @@ export default function TradeVisualisation() {
 
   if (!auctionData) {
     return (
-      <Card className="w-full max-w-4xl mx-auto my-2">
+      <Card className="mx-auto my-2 w-full max-w-4xl">
         <CardHeader>
           <CardTitle>{symbol} Auction Data Analysis</CardTitle>
           <CardDescription>
@@ -31,7 +31,7 @@ export default function TradeVisualisation() {
     );
   }
   return (
-    <Card className="w-full max-w-4xl mx-auto my-2">
+    <Card className="mx-auto my-2 w-full max-w-4xl">
       <CardHeader>
         <CardTitle>{symbol} Auction Data Analysis</CardTitle>
         <CardDescription>

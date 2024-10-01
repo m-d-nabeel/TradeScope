@@ -1,26 +1,26 @@
 export interface ApiResponse<T> {
-    data: T;
-    message: string;
-    status: number;
+  data: T;
+  message: string;
+  status: number;
 }
 
 export interface ErrorResponse {
-    error: string;
-    message: string;
-    status: number;
+  error: string;
+  message: string;
+  status: number;
 }
 
 export type ApiPromise<T> = Promise<ApiResponse<T>>;
 export type ApiErrorPromise = Promise<ErrorResponse>;
 
 export type AuthStatusApiResponse = {
-    status: string;
-    user: {
-        email: string;
-        name: string;
-        user_id: string;
-        aud: string;
-        exp: number;
-        iat: number;
-    }
-}
+  status: string;
+  user: {
+    email: string;
+    name: string;
+    user_id: string;
+    aud: string;
+    exp: number;
+    iat: number;
+  };
+};

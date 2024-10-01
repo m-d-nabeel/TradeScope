@@ -101,7 +101,7 @@ export const columns: ColumnDef<AlpacaAsset>[] = [
     cell: ({ row }) => {
       const asset = row.original;
       return (
-        <div className="grid gap-2 grid-cols-5">
+        <div className="grid grid-cols-5 gap-2">
           <AssetBadge label="Tradable" value={asset.tradable} />
           <AssetBadge label="Marginable" value={asset.marginable ?? false} />
           <AssetBadge label="Shortable" value={asset.shortable} />

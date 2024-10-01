@@ -11,24 +11,24 @@ export const Homepage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <main className="mx-auto max-w-7xl px-4 pb-16 pt-20 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+          className="mb-16 text-center"
         >
-          <h1 className="text-5xl font-extrabold text-gray-900 mb-4">
+          <h1 className="mb-4 text-5xl font-extrabold text-gray-900">
             Welcome to <span className="text-emerald-600">AlpacaTrade</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="mb-8 text-xl text-gray-600">
             Empower your financial future with our cutting-edge trading platform
           </p>
           {!isAuthenticated && (
             <Button
               onClick={() => login("google")}
               size="lg"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
+              className="transform rounded-full bg-emerald-600 px-6 py-3 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-emerald-700"
             >
               Get Started Now
             </Button>
@@ -39,7 +39,7 @@ export const Homepage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16"
+          className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4"
         >
           <FeatureCard
             icon={TrendingUp}
@@ -67,21 +67,21 @@ export const Homepage = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="bg-white rounded-lg shadow-xl overflow-hidden"
+          className="overflow-hidden rounded-lg bg-white shadow-xl"
         >
           <div className="md:flex">
             <div className="md:flex-shrink-0">
               <img
-                className="h-full object-cover w-full md:w-48"
+                className="h-full w-full object-cover md:w-48"
                 src="src/assets/trading-chart.jpg"
                 alt="Trading chart"
               />
             </div>
             <div className="p-8">
-              <div className="uppercase tracking-wide text-sm text-emerald-500 font-semibold">
+              <div className="text-sm font-semibold uppercase tracking-wide text-emerald-500">
                 Why Choose Us
               </div>
-              <h2 className="block mt-1 text-2xl leading-tight font-bold text-gray-900">
+              <h2 className="mt-1 block text-2xl font-bold leading-tight text-gray-900">
                 Revolutionize Your Trading Experience
               </h2>
               <p className="mt-2 text-gray-600">
@@ -108,17 +108,17 @@ export const Homepage = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="mt-16 text-center"
         >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900">
             Ready to Start Trading?
           </h2>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="mb-8 text-xl text-gray-600">
             Join thousands of successful traders on our platform today
           </p>
           {!isAuthenticated ? (
             <Button
               onClick={() => login("google")}
               size="lg"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
+              className="transform rounded-full bg-emerald-600 px-6 py-3 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-emerald-700"
             >
               Sign Up Now
             </Button>
@@ -126,7 +126,7 @@ export const Homepage = () => {
             <Link
               from={""}
               to="/dashboard"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
+              className="transform rounded-full bg-emerald-600 px-6 py-3 font-bold text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-emerald-700"
             >
               Go to Dashboard
             </Link>

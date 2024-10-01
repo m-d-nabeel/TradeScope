@@ -1,9 +1,9 @@
 import { Badge } from "../ui/badge";
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "../ui/tooltip";
 
 export function AssetBadge({
@@ -19,7 +19,7 @@ export function AssetBadge({
         <TooltipTrigger asChild>
           <Badge
             variant={value ? "default" : "secondary"}
-            className="cursor-help flex justify-center items-center whitespace-nowrap col-span-2 md:col-span-1"
+            className="col-span-2 flex cursor-help items-center justify-center whitespace-nowrap md:col-span-1"
           >
             {value ? label[0] : `-${label[0]}`}
           </Badge>

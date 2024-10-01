@@ -25,12 +25,12 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 z-10 bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-1 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500"
+              className="rounded-md p-1 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100"
             >
               <span className="sr-only">Open sidebar</span>
               <svg
@@ -52,7 +52,7 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="ml-4 text-xl capitalize font-bold text-gray-800"
+              className="ml-4 text-xl font-bold capitalize text-gray-800"
             >
               {pageTitle}
             </motion.div>
@@ -64,7 +64,7 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
                 <motion.div
                   animate={{ y: [0, -5, 0] }}
                   transition={{ repeat: Infinity, duration: 2 }}
-                  className="text-gray-600 font-semibold"
+                  className="font-semibold text-gray-600"
                 >
                   {currentTime.toLocaleTimeString()}
                 </motion.div>
@@ -79,13 +79,13 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="ml-4 flex items-center"
             >
-              <button className="p-1 rounded-full text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500">
+              <button className="rounded-full p-1 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                 <span className="sr-only">View notifications</span>
                 <Bell className="h-6 w-6" />
               </button>
-              <div className="ml-3 relative">
+              <div className="relative ml-3">
                 <div>
-                  <button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500">
+                  <button className="flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100">
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
@@ -107,16 +107,16 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="bg-gray-50 border-t border-gray-200"
+            className="border-t border-gray-200 bg-gray-50"
           >
-            <div className="max-w-7xl mx-auto py-1 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl px-4 py-1 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
                 {stocks.map((stock) => (
                   <div
                     key={stock.symbol}
                     className="flex items-center space-x-2"
                   >
-                    <span className="text-gray-800 font-semibold">
+                    <span className="font-semibold text-gray-800">
                       {stock.symbol}
                     </span>
                     <span className="text-gray-600">

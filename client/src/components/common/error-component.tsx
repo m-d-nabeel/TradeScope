@@ -30,7 +30,7 @@ export function ErrorComponent({ error }: { error: Error }) {
     return navigate({
       to: location.pathname,
       replace: true,
-    })
+    });
   };
 
   return (

@@ -27,14 +27,14 @@ export function AlpacaAccountDisplay() {
 
   if (!isSuccess) {
     return (
-      <Card className="w-full max-w-4xl mx-auto bg-gradient-to-br from-gray-50 to-gray-100 shadow-xl">
+      <Card className="mx-auto w-full max-w-4xl bg-gradient-to-br from-gray-50 to-gray-100 shadow-xl">
         <CardHeader className="border-b border-gray-200">
           <CardTitle className="text-2xl font-bold text-gray-800">
             Alpaca Account Overview
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="flex items-center justify-center h-48">
+          <div className="flex h-48 items-center justify-center">
             <p className="text-lg text-gray-500">Loading...</p>
           </div>
         </CardContent>
@@ -42,16 +42,16 @@ export function AlpacaAccountDisplay() {
     );
   }
 
-  if(!data) {
+  if (!data) {
     return (
-      <Card className="w-full max-w-4xl mx-auto bg-gradient-to-br from-gray-50 to-gray-100 shadow-xl">
+      <Card className="mx-auto w-full max-w-4xl bg-gradient-to-br from-gray-50 to-gray-100 shadow-xl">
         <CardHeader className="border-b border-gray-200">
           <CardTitle className="text-2xl font-bold text-gray-800">
             Alpaca Account Overview
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="flex items-center justify-center h-48">
+          <div className="flex h-48 items-center justify-center">
             <p className="text-lg text-gray-500">No account data found</p>
           </div>
         </CardContent>
@@ -61,13 +61,13 @@ export function AlpacaAccountDisplay() {
 
   return (
     <TooltipProvider>
-      <Card className="w-full max-w-4xl mx-auto bg-gradient-to-br from-gray-50 to-gray-100 shadow-xl">
+      <Card className="mx-auto w-full max-w-4xl bg-gradient-to-br from-gray-50 to-gray-100 shadow-xl">
         <CardHeader className="border-b border-gray-200">
           <CardTitle className="text-2xl font-bold text-gray-800">
             Alpaca Account Overview
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+        <CardContent className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-700">
               Account Information
@@ -223,7 +223,7 @@ export function AlpacaAccountDisplay() {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setShowSensitiveInfo(!showSensitiveInfo)}
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
+                  className="rounded-md bg-gray-200 px-4 py-2 text-gray-800 transition-colors duration-200 hover:bg-gray-300"
                 >
                   {showSensitiveInfo ? "Hide" : "Show"} Sensitive Info
                 </button>

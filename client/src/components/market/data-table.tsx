@@ -50,7 +50,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      <div className="rounded-lg my-4 overflow-hidden shadow-lg bg-gradient-to-b from-gray-100 to-indigo-100 dark:from-gray-800 dark:to-gray-900">
+      <div className="my-4 overflow-hidden rounded-lg bg-gradient-to-b from-gray-100 to-indigo-100 shadow-lg dark:from-gray-800 dark:to-gray-900">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -62,13 +62,13 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="bg-white/50 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 backdrop-blur-sm dark:bg-gray-800/50"
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -86,29 +86,29 @@ export function DataTable<TData, TValue>({
                     i % 2 === 0
                       ? "bg-white dark:bg-gray-900"
                       : "bg-gray-50 dark:bg-gray-800"
-                  } hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors`}
+                  } transition-colors hover:bg-purple-50 dark:hover:bg-purple-900/20`}
                 >
                   {row.getVisibleCells().map((cell) => {
                     if (cell.column.id === "symbol") {
                       return (
-                        <TableCell key={cell.id} className="py-3 px-4">
+                        <TableCell key={cell.id} className="px-4 py-3">
                           <Link
                             to="/trade"
                             search={{ symbols: cell.getValue() }}
                           >
                             {flexRender(
                               cell.column.columnDef.cell,
-                              cell.getContext()
+                              cell.getContext(),
                             )}
                           </Link>
                         </TableCell>
                       );
                     }
                     return (
-                      <TableCell key={cell.id} className="py-3 px-4">
+                      <TableCell key={cell.id} className="px-4 py-3">
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     );

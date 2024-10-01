@@ -20,7 +20,7 @@ export function AuctionTimelineChart({
       time: new Date(a?.t).getTime(),
       price: a?.p,
       type: auction?.o?.includes(a) ? "Opening" : "Closing",
-    }))
+    })),
   );
 
   return (
