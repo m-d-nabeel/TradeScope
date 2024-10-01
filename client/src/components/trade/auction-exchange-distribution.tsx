@@ -13,20 +13,19 @@ export function AuctionExchangeDistribution({
 }: {
   auctionData: AlpacaAuction[];
 }) {
-  // Reduce to get counts of each exchange
   const exchangeCounts = auctionData.reduce(
     (counts, auction) => {
-      // Combine the `o` (opening) and `c` (closing) auctions
-      auction.o.concat(auction.c).forEach((auctionField) => {
-        const exchange = auctionField?.x; // `x` is the exchange code
-        counts[exchange] = (counts[exchange] || 0) + 1;
+      auction?.o?.concat(auction?.c || []).forEach((auctionField) => {
+        if (auctionField) {
+          const exchange = auctionField.x;
+          counts[exchange] = (counts[exchange] || 0) + 1;
+        }
       });
       return counts;
     },
     {} as Record<string, number>
-  ); // Record to track exchange counts
+  );
 
-  // Map the exchangeCounts to chart data
   const chartData = Object.entries(exchangeCounts).map(([exchange, count]) => ({
     exchange,
     count,

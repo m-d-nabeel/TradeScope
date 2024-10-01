@@ -21,7 +21,6 @@ import { Route as MainHelpIndexImport } from './routes/_main/help/index'
 import { Route as MainDashboardIndexImport } from './routes/_main/dashboard/index'
 import { Route as MainAlertsIndexImport } from './routes/_main/alerts/index'
 import { Route as MainAccountIndexImport } from './routes/_main/account/index'
-import { Route as MainDashboardDashboardImport } from './routes/_main/dashboard/dashboard'
 
 // Create/Update Routes
 
@@ -75,11 +74,6 @@ const MainAccountIndexRoute = MainAccountIndexImport.update({
   getParentRoute: () => MainRoute,
 } as any)
 
-const MainDashboardDashboardRoute = MainDashboardDashboardImport.update({
-  path: '/dashboard/dashboard',
-  getParentRoute: () => MainRoute,
-} as any)
-
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -97,13 +91,6 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof MainImport
       parentRoute: typeof rootRoute
-    }
-    '/_main/dashboard/dashboard': {
-      id: '/_main/dashboard/dashboard'
-      path: '/dashboard/dashboard'
-      fullPath: '/dashboard/dashboard'
-      preLoaderRoute: typeof MainDashboardDashboardImport
-      parentRoute: typeof MainImport
     }
     '/_main/account/': {
       id: '/_main/account/'
@@ -167,7 +154,6 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface MainRouteChildren {
-  MainDashboardDashboardRoute: typeof MainDashboardDashboardRoute
   MainAccountIndexRoute: typeof MainAccountIndexRoute
   MainAlertsIndexRoute: typeof MainAlertsIndexRoute
   MainDashboardIndexRoute: typeof MainDashboardIndexRoute
@@ -179,7 +165,6 @@ interface MainRouteChildren {
 }
 
 const MainRouteChildren: MainRouteChildren = {
-  MainDashboardDashboardRoute: MainDashboardDashboardRoute,
   MainAccountIndexRoute: MainAccountIndexRoute,
   MainAlertsIndexRoute: MainAlertsIndexRoute,
   MainDashboardIndexRoute: MainDashboardIndexRoute,
@@ -195,7 +180,6 @@ const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof MainRouteWithChildren
-  '/dashboard/dashboard': typeof MainDashboardDashboardRoute
   '/account': typeof MainAccountIndexRoute
   '/alerts': typeof MainAlertsIndexRoute
   '/dashboard': typeof MainDashboardIndexRoute
@@ -209,7 +193,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof MainRouteWithChildren
-  '/dashboard/dashboard': typeof MainDashboardDashboardRoute
   '/account': typeof MainAccountIndexRoute
   '/alerts': typeof MainAlertsIndexRoute
   '/dashboard': typeof MainDashboardIndexRoute
@@ -224,7 +207,6 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_main': typeof MainRouteWithChildren
-  '/_main/dashboard/dashboard': typeof MainDashboardDashboardRoute
   '/_main/account/': typeof MainAccountIndexRoute
   '/_main/alerts/': typeof MainAlertsIndexRoute
   '/_main/dashboard/': typeof MainDashboardIndexRoute
@@ -240,7 +222,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
-    | '/dashboard/dashboard'
     | '/account'
     | '/alerts'
     | '/dashboard'
@@ -253,7 +234,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
-    | '/dashboard/dashboard'
     | '/account'
     | '/alerts'
     | '/dashboard'
@@ -266,7 +246,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_main'
-    | '/_main/dashboard/dashboard'
     | '/_main/account/'
     | '/_main/alerts/'
     | '/_main/dashboard/'
@@ -310,7 +289,6 @@ export const routeTree = rootRoute
     "/_main": {
       "filePath": "_main.tsx",
       "children": [
-        "/_main/dashboard/dashboard",
         "/_main/account/",
         "/_main/alerts/",
         "/_main/dashboard/",
@@ -320,10 +298,6 @@ export const routeTree = rootRoute
         "/_main/settings/",
         "/_main/trade/"
       ]
-    },
-    "/_main/dashboard/dashboard": {
-      "filePath": "_main/dashboard/dashboard.tsx",
-      "parent": "/_main"
     },
     "/_main/account/": {
       "filePath": "_main/account/index.tsx",

@@ -1,5 +1,5 @@
+import axiosInstance from "@/config/axios-instance";
 import { AlpacaAccount } from "@/types/alpaca.types";
-import { axiosInstance } from "./api.service";
 
 export const AlpacaService = {
     async getAccount() {

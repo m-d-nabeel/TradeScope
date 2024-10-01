@@ -1,22 +1,23 @@
 import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    PaginationState,
-    useReactTable,
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  useReactTable,
 } from "@tanstack/react-table";
 
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
+import { Link } from "@tanstack/react-router";
 import React from "react";
 import { PaginationComponent } from "./pagination";
 
@@ -31,7 +32,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 50    ,
+    pageSize: 50,
   });
 
   const table = useReactTable({
@@ -45,7 +46,6 @@ export function DataTable<TData, TValue>({
     state: {
       pagination,
     },
-    // autoResetPageIndex: false,
   });
 
   return (
@@ -88,14 +88,31 @@ export function DataTable<TData, TValue>({
                       : "bg-gray-50 dark:bg-gray-800"
                   } hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors`}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-3 px-4">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    if (cell.column.id === "symbol") {
+                      return (
+                        <TableCell key={cell.id} className="py-3 px-4">
+                          <Link
+                            to="/trade"
+                            search={{ symbols: cell.getValue() }}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </Link>
+                        </TableCell>
+                      );
+                    }
+                    return (
+                      <TableCell key={cell.id} className="py-3 px-4">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (

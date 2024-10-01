@@ -1,5 +1,5 @@
-import { AuthContext } from "@/routes/__root";
-import { Link, useLoaderData } from "@tanstack/react-router";
+import { useAuthQueries } from "@/hooks/use-auth.hook";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, DollarSign, Shield, TrendingUp, Zap } from "lucide-react";
 import { Button } from "../ui/button";
@@ -7,12 +7,10 @@ import { FeatureCard } from "./feature-card";
 import { Navbar } from "./navbar";
 
 export const Homepage = () => {
-  const auth = useLoaderData({ from: "/" as const }) as AuthContext;
-  const { user, login, logout } = auth;
-
+  const { isAuthenticated, login } = useAuthQueries();
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
-      <Navbar user={user} login={login} logout={logout} />
+      <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -26,7 +24,7 @@ export const Homepage = () => {
           <p className="text-xl text-gray-600 mb-8">
             Empower your financial future with our cutting-edge trading platform
           </p>
-          {!user && (
+          {!isAuthenticated && (
             <Button
               onClick={() => login("google")}
               size="lg"
@@ -116,7 +114,7 @@ export const Homepage = () => {
           <p className="text-xl text-gray-600 mb-8">
             Join thousands of successful traders on our platform today
           </p>
-          {!user ? (
+          {!isAuthenticated ? (
             <Button
               onClick={() => login("google")}
               size="lg"

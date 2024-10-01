@@ -10,12 +10,21 @@ import {
   YAxis,
 } from "recharts";
 
-export function AuctionPriceChart({ auctionData }:{ auctionData: AlpacaAuction[] }) {
-  const chartData = auctionData.map((auction) => ({
-    date: auction.d,
-    openingPrice: auction?.o?.[0]?.p,
-    closingPrice: auction?.c?.[0]?.p,
-  }));
+export function AuctionPriceChart({
+  auctionData,
+}: {
+  auctionData: AlpacaAuction[];
+}) {
+  const chartData = auctionData.map((auction) => {
+    if (!auction) {
+      return {};
+    }
+    return {
+      date: auction.d,
+      openingPrice: auction?.o?.[0].p,
+      closingPrice: auction?.c?.[0].p,
+    };
+  });
 
   return (
     <ResponsiveContainer width="100%" height={400}>

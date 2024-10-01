@@ -16,10 +16,10 @@ export function AuctionTimelineChart({
   auctionData: AlpacaAuction[];
 }) {
   const chartData = auctionData.flatMap((auction) =>
-    auction?.o.concat(auction?.c).map((a) => ({
+    auction?.o?.concat(auction?.c || []).map((a) => ({
       time: new Date(a?.t).getTime(),
       price: a?.p,
-      type: auction?.o.includes(a) ? "Opening" : "Closing",
+      type: auction?.o?.includes(a) ? "Opening" : "Closing",
     }))
   );
 
@@ -37,21 +37,22 @@ export function AuctionTimelineChart({
         <YAxis dataKey="price" name="Price" />
         <Tooltip
           cursor={{ strokeDasharray: "3 3" }}
-          formatter={(value, name, ) => [
-            // TODO::
+          formatter={(value, name) => [
             value,
-            name === "time" ? new Date().toLocaleString() : name,
+            name === "time"
+              ? new Date(value.toString()).toLocaleString()
+              : name,
           ]}
         />
         <Legend />
         <Scatter
           name="Opening Auction"
-          data={chartData.filter((d) => d.type === "Opening")}
+          data={chartData.filter((d) => d?.type === "Opening")}
           fill="#8884d8"
         />
         <Scatter
           name="Closing Auction"
-          data={chartData.filter((d) => d.type === "Closing")}
+          data={chartData.filter((d) => d?.type === "Closing")}
           fill="#82ca9d"
         />
       </ScatterChart>

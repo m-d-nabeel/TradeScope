@@ -64,8 +64,8 @@ type AlpacaAuctionFields = {
 
 export type AlpacaAuction = {
     d: string;
-    o: AlpacaAuctionFields[];
-    c: AlpacaAuctionFields[];
+    o: AlpacaAuctionFields[] | null;
+    c: AlpacaAuctionFields[] | null;
 }
 
 export type AlpacaAuctions = {

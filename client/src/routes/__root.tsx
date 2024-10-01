@@ -1,15 +1,10 @@
-import { ErrorComponent } from "@/components/errors/error-component";
-import NotFound from "@/components/errors/not-found";
-import { useAlpaca } from "@/hooks/useAlpaca";
-import { useAuth } from "@/hooks/useAuth";
+import { ErrorComponent } from "@/components/common/error-component";
+import NotFound from "@/components/common/not-found";
+import { GlobalStore } from "@/hooks/useGlobal";
 import { createRootRouteWithContext } from "@tanstack/react-router";
 
-export type AuthContext = ReturnType<typeof useAuth>;
-export type AlpacaContext = ReturnType<typeof useAlpaca>;
-
 export type RouterContext = {
-  auth: AuthContext;
-  alpaca: AlpacaContext;
+  globalCtx: GlobalStore;
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({

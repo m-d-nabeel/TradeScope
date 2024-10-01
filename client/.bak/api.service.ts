@@ -1,5 +1,6 @@
-import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { APP_CONFIG } from "@/config/constants";
+import { AuthService } from "@/services/auth.service";
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 export const axiosInstance = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,
@@ -18,7 +19,6 @@ const processQueue = (error: AxiosError | null, token: string | null = null) => 
       promise.resolve(token);
     }
   });
-
   failedQueue = [];
 };
 
@@ -31,34 +31,22 @@ axiosInstance.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then(() => {
-          return axiosInstance(originalRequest);
-        }).catch(err => {
-          return Promise.reject(err);
-        });
+        }).then(() => axiosInstance(originalRequest)).catch(err => Promise.reject(err));
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
-      return new Promise((resolve, reject) => {
-        axios.get("/auth/refresh", {
-          baseURL: APP_CONFIG.API_BASE_URL,
-          withCredentials: true,
-          timeout: 30000
-        })
-          .then(() => {
-            processQueue(null);
-            resolve(axiosInstance(originalRequest));
-          })
-          .catch((refreshError) => {
-            processQueue(refreshError);
-            reject(refreshError);
-          })
-          .finally(() => {
-            isRefreshing = false;
-          });
-      });
+      try {
+        await AuthService.refreshToken();
+        processQueue(null);
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError as AxiosError);
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
 
     return Promise.reject(error);

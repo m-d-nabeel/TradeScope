@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useAlpaca } from "@/hooks/useAlpaca";
+import { useAlpacaQueries } from "@/hooks/use-alpaca.hook";
 import { formatCurrency } from "@/lib/utils";
 import {
   AlertCircle,
@@ -18,34 +18,45 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
-
-function InfoItem({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string | number | boolean;
-  icon: React.ElementType;
-}) {
-  return (
-    <div className="flex items-center space-x-2">
-      <Icon className="w-5 h-5 text-gray-400" />
-      <span className="text-sm font-medium text-gray-500">{label}:</span>
-      <span className="text-sm font-semibold">
-        {typeof value === "boolean" ? (value ? "Yes" : "No") : value}
-      </span>
-    </div>
-  );
-}
+import { InfoItem } from "./info-item";
 
 export function AlpacaAccountDisplay() {
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
+  const { accountQuery } = useAlpacaQueries();
+  const { data, isSuccess } = accountQuery;
 
-  const { account } = useAlpaca();
+  if (!isSuccess) {
+    return (
+      <Card className="w-full max-w-4xl mx-auto bg-gradient-to-br from-gray-50 to-gray-100 shadow-xl">
+        <CardHeader className="border-b border-gray-200">
+          <CardTitle className="text-2xl font-bold text-gray-800">
+            Alpaca Account Overview
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center h-48">
+            <p className="text-lg text-gray-500">Loading...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
-  if (!account) {
-    return null;
+  if(!data) {
+    return (
+      <Card className="w-full max-w-4xl mx-auto bg-gradient-to-br from-gray-50 to-gray-100 shadow-xl">
+        <CardHeader className="border-b border-gray-200">
+          <CardTitle className="text-2xl font-bold text-gray-800">
+            Alpaca Account Overview
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center h-48">
+            <p className="text-lg text-gray-500">No account data found</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -63,45 +74,35 @@ export function AlpacaAccountDisplay() {
             </h3>
             <InfoItem
               label="Account Number"
-              value={
-                showSensitiveInfo ? account.account_number : "************"
-              }
+              value={showSensitiveInfo ? data.account_number : "************"}
               icon={DollarSign}
             />
-            <InfoItem
-              label="Status"
-              value={account.status}
-              icon={AlertCircle}
-            />
+            <InfoItem label="Status" value={data.status} icon={AlertCircle} />
             <InfoItem
               label="Crypto Status"
-              value={account.crypto_status}
+              value={data.crypto_status}
               icon={Zap}
             />
             <InfoItem
               label="Currency"
-              value={account.currency}
+              value={data.currency}
               icon={DollarSign}
             />
             <InfoItem
               label="Created At"
-              value={new Date(account.created_at).toLocaleDateString()}
+              value={new Date(data.created_at).toLocaleDateString()}
               icon={Calendar}
             />
             <div className="flex space-x-2">
               <Badge
-                variant={
-                  account.pattern_day_trader ? "destructive" : "secondary"
-                }
+                variant={data.pattern_day_trader ? "destructive" : "secondary"}
               >
-                {account.pattern_day_trader
+                {data.pattern_day_trader
                   ? "Pattern Day Trader"
                   : "Not Pattern Day Trader"}
               </Badge>
-              <Badge
-                variant={account.shorting_enabled ? "default" : "secondary"}
-              >
-                {account.shorting_enabled
+              <Badge variant={data.shorting_enabled ? "default" : "secondary"}>
+                {data.shorting_enabled
                   ? "Shorting Enabled"
                   : "Shorting Disabled"}
               </Badge>
@@ -114,32 +115,32 @@ export function AlpacaAccountDisplay() {
             </h3>
             <InfoItem
               label="Portfolio Value"
-              value={formatCurrency(account.portfolio_value)}
+              value={formatCurrency(data.portfolio_value)}
               icon={TrendingUp}
             />
             <InfoItem
               label="Cash"
-              value={formatCurrency(account.cash)}
+              value={formatCurrency(data.cash)}
               icon={DollarSign}
             />
             <InfoItem
               label="Buying Power"
-              value={formatCurrency(account.buying_power)}
+              value={formatCurrency(data.buying_power)}
               icon={Zap}
             />
             <InfoItem
               label="Daytrading Buying Power"
-              value={formatCurrency(account.daytrading_buying_power)}
+              value={formatCurrency(data.daytrading_buying_power)}
               icon={Zap}
             />
             <InfoItem
               label="Equity"
-              value={formatCurrency(account.equity)}
+              value={formatCurrency(data.equity)}
               icon={TrendingUp}
             />
             <InfoItem
               label="Last Equity"
-              value={formatCurrency(account.last_equity)}
+              value={formatCurrency(data.last_equity)}
               icon={TrendingUp}
             />
           </div>
@@ -150,17 +151,17 @@ export function AlpacaAccountDisplay() {
             </h3>
             <InfoItem
               label="Long Market Value"
-              value={formatCurrency(account.long_market_value)}
+              value={formatCurrency(data.long_market_value)}
               icon={TrendingUp}
             />
             <InfoItem
               label="Short Market Value"
-              value={formatCurrency(account.short_market_value)}
+              value={formatCurrency(data.short_market_value)}
               icon={TrendingUp}
             />
             <InfoItem
               label="Position Market Value"
-              value={formatCurrency(account.position_market_value)}
+              value={formatCurrency(data.position_market_value)}
               icon={TrendingUp}
             />
           </div>
@@ -169,22 +170,22 @@ export function AlpacaAccountDisplay() {
             <h3 className="text-lg font-semibold text-gray-700">Margins</h3>
             <InfoItem
               label="Initial Margin"
-              value={formatCurrency(account.initial_margin)}
+              value={formatCurrency(data.initial_margin)}
               icon={DollarSign}
             />
             <InfoItem
               label="Maintenance Margin"
-              value={formatCurrency(account.maintenance_margin)}
+              value={formatCurrency(data.maintenance_margin)}
               icon={DollarSign}
             />
             <InfoItem
               label="Last Maintenance Margin"
-              value={formatCurrency(account.last_maintenance_margin)}
+              value={formatCurrency(data.last_maintenance_margin)}
               icon={DollarSign}
             />
             <InfoItem
               label="SMA"
-              value={formatCurrency(account.sma)}
+              value={formatCurrency(data.sma)}
               icon={DollarSign}
             />
           </div>
@@ -196,23 +197,23 @@ export function AlpacaAccountDisplay() {
             <div className="grid grid-cols-2 gap-4">
               <InfoItem
                 label="Trading Blocked"
-                value={account.trading_blocked}
-                icon={account.trading_blocked ? Lock : Unlock}
+                value={data.trading_blocked}
+                icon={data.trading_blocked ? Lock : Unlock}
               />
               <InfoItem
                 label="Transfers Blocked"
-                value={account.transfers_blocked}
-                icon={account.transfers_blocked ? Lock : Unlock}
+                value={data.transfers_blocked}
+                icon={data.transfers_blocked ? Lock : Unlock}
               />
               <InfoItem
                 label="Account Blocked"
-                value={account.account_blocked}
-                icon={account.account_blocked ? Lock : Unlock}
+                value={data.account_blocked}
+                icon={data.account_blocked ? Lock : Unlock}
               />
               <InfoItem
                 label="Trade Suspended by User"
-                value={account.trade_suspended_by_user}
-                icon={account.trade_suspended_by_user ? Lock : Unlock}
+                value={data.trade_suspended_by_user}
+                icon={data.trade_suspended_by_user ? Lock : Unlock}
               />
             </div>
           </div>

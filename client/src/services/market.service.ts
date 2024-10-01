@@ -1,5 +1,5 @@
+import axiosInstance from "@/config/axios-instance";
 import qs from "qs";
-import { axiosInstance } from "./api.service";
 
 interface AlpacaMarketBars {
     symbols: string[];

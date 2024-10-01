@@ -1,3 +1,4 @@
+import { useAuthQueries } from "@/hooks/use-auth.hook";
 import { Link } from "@tanstack/react-router";
 import {
   BarChart2,
@@ -9,13 +10,9 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 
-interface NavbarProps {
-  user: any;
-  login: (provider: string) => void;
-  logout: () => void;
-}
+export const Navbar = () => {
+  const { login, logout, user } = useAuthQueries();
 
-export const Navbar = ({ user, login, logout }: NavbarProps) => {
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

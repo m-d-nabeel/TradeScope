@@ -4,13 +4,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { RouterContext } from "@/routes/__root";
-import {
-  Link,
-  rootRouteId,
-  useLocation,
-  useRouteContext,
-} from "@tanstack/react-router";
+import { useAuthQueries } from "@/hooks/use-auth.hook";
+import { Link, useLocation } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   BarChart3Icon,
@@ -19,7 +14,7 @@ import {
   HomeIcon,
   LogOutIcon,
   TrendingUpIcon,
-  UserIcon
+  UserIcon,
 } from "lucide-react";
 import { Button } from "../ui/button";
 
@@ -39,7 +34,7 @@ const links = [
 ];
 
 export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
-  const { auth }: RouterContext = useRouteContext({ from: rootRouteId });
+  const { logout } = useAuthQueries();
   const location = useLocation();
   const activePath = location.pathname.slice(1);
 
@@ -80,7 +75,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         </nav>
         <div className="absolute bottom-0 w-full p-4 bg-white border-t">
           <Button
-            onClick={auth.logout}
+            onClick={logout}
             variant="outline"
             className="w-full group hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors duration-200"
           >

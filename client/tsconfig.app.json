@@ -26,5 +26,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "src/services", "src/types", "src/config"]
+  "include": ["src", "src/services", "src/types", "src/config", ".bak/api.service.ts", ".bak/store"]
 }
