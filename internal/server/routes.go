@@ -22,10 +22,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	// Authentication routes
 	r.Route("/auth", func(r chi.Router) {
-		r.Get("/refresh", s.refreshTokenHandler)
-		r.Get("/{provider}", s.authHandler)
 		r.Get("/{provider}/callback", s.authCallbackHandler)
 		r.Get("/status", s.getAuthStatusHandler)
+		r.Get("/{provider}", s.authHandler)
+		r.Post("/refresh", s.refreshTokenHandler)
 		r.Post("/logout/{provider}", s.logoutHandler)
 	})
 

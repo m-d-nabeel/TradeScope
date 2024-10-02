@@ -6,17 +6,29 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useLoaderData } from "@tanstack/react-router";
+import { useMarketQueries } from "@/hooks/use-alpaca.hook";
+import { useSearch } from "@tanstack/react-router";
 import { AuctionExchangeDistribution } from "./auction-exchange-distribution";
 import { AuctionPriceChart } from "./auction-price-chart";
 import { AuctionTimelineChart } from "./auction-timeline-chart";
 import { AuctionSizeChart } from "./auctions-size-chart";
 
-export default function TradeVisualisation() {
-  const { symbol, auctionData } = useLoaderData({ from: "/_main/trade/" });
+interface SearchQuery {
+  symbols: string;
+}
 
-  console.log("symbol", symbol);
-  console.log("auctionData", auctionData);
+export default function TradeVisualisation() {
+  const search: SearchQuery = useSearch({ from: "/_main/trade/" });
+  const symbols = search.symbols.split(",");
+  const symbol = symbols[0];
+  
+  const { auctionQuery } = useMarketQueries({
+    symbols: symbols,
+    start: new Date("2023-01-01").toISOString(),
+  });
+
+  const { data } = auctionQuery;
+  const auctionData = data?.auctions?.[symbol];
 
   if (!auctionData) {
     return (

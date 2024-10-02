@@ -1,34 +1,3 @@
-// import { AuthService } from '@/services/auth.service';
-// import { useAuthStore } from '@/store/auth.store';
-// import axios from 'axios';
-// import { APP_CONFIG } from './constants';
-
-// const axiosInstance = axios.create({
-//     baseURL: APP_CONFIG.API_BASE_URL,
-//     withCredentials: true,
-// });
-
-// axiosInstance.interceptors.response.use(
-//     (response) => response,
-//     async (error) => {
-//         const originalRequest = error.config;
-//         if (error.response?.status === 401 && !originalRequest._retry) {
-//             originalRequest._retry = true;
-//             try {
-//                 const { data } = await AuthService.refreshToken();
-//                 useAuthStore.getState().setAuth(true, data);
-//                 return axiosInstance(originalRequest);
-//             } catch (refreshError) {
-//                 useAuthStore.getState().clearAuth();
-//                 return Promise.reject(refreshError);
-//             }
-//         }
-//         return Promise.reject(error);
-//     }
-// );
-
-// export default axiosInstance;
-
 import { APP_CONFIG } from "@/config/constants";
 import { AuthService } from "@/services/auth.service";
 import axios, {

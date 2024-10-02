@@ -27,9 +27,10 @@ type AuthService struct {
 }
 
 type UserClaims struct {
-	Email  string `json:"email"`
-	Name   string `json:"name"`
-	UserID string `json:"user_id"`
+	Email     string `json:"email"`
+	Name      string `json:"name"`
+	UserID    string `json:"user_id"`
+	AvatarURL string `json:"avatar_url"`
 	jwt.StandardClaims
 }
 
@@ -74,9 +75,10 @@ func (s *AuthService) GenerateTokenPair(user *goth.User) (string, string, error)
 
 func (s *AuthService) generateAccessToken(user *goth.User) (string, error) {
 	claims := UserClaims{
-		Email:  user.Email,
-		Name:   user.Name,
-		UserID: user.UserID,
+		Email:     user.Email,
+		Name:      user.Name,
+		UserID:    user.UserID,
+		AvatarURL: user.AvatarURL,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(AccessTokenExpiry).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -110,9 +112,10 @@ func (s *AuthService) RefreshTokens(user *sqlc.User) (string, string, error) {
 	userIDString := lib.UUIDToString(user.ID)
 
 	claims := &goth.User{
-		UserID: userIDString,
-		Name:   user.Name,
-		Email:  user.Email,
+		UserID:    userIDString,
+		Name:      user.Name,
+		Email:     user.Email,
+		AvatarURL: user.AvatarUrl.String,
 	}
 
 	return s.GenerateTokenPair(claims)

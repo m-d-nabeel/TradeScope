@@ -1,3 +1,4 @@
+import { useAuthQueries } from "@/hooks/use-auth.hook";
 import { useLocation } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bell, TrendingDown, TrendingUp } from "lucide-react";
@@ -11,6 +12,7 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const location = useLocation();
   const pageTitle = location.pathname.split("/")?.[1];
+  const { user } = useAuthQueries();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -89,8 +91,8 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt=""
+                      src={user?.avatar_url}
+                      alt="user avatar"
                     />
                   </button>
                 </div>

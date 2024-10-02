@@ -19,6 +19,7 @@ export type AuthStatusApiResponse = {
     email: string;
     name: string;
     user_id: string;
+    avatar_url: string;
     aud: string;
     exp: number;
     iat: number;

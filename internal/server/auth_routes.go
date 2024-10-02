@@ -59,9 +59,10 @@ func (s *Server) authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accessToken, refreshToken, err := s.auth.GenerateTokenPair(&goth.User{
-		UserID: lib.UUIDToString(dbUser.ID),
-		Email:  dbUser.Email,
-		Name:   dbUser.Name,
+		UserID:    lib.UUIDToString(dbUser.ID),
+		Email:     dbUser.Email,
+		Name:      dbUser.Name,
+		AvatarURL: dbUser.AvatarUrl.String,
 	})
 
 	if err != nil {

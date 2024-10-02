@@ -1,6 +1,13 @@
 import { AlpacaService } from "@/services/alpaca.service";
 import { AlpacaMarketService } from "@/services/market.service";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+
+interface MarketQuery {
+  symbols: string[];
+  start: string;
+  end?: string;
+  limit?: number;
+}
 
 export const useAlpacaQueries = () => {
   const accountQuery = useQuery({
@@ -19,18 +26,32 @@ export const useAlpacaQueries = () => {
     refetchOnWindowFocus: false,
   });
 
-  const barsMutation = useMutation({
-    mutationFn: AlpacaMarketService.getBars,
-  });
-
-  const auctionMutation = useMutation({
-    mutationFn: AlpacaMarketService.getAuctions,
-  });
-
   return {
     accountQuery,
     assetsQuery,
-    barsMutation,
-    auctionMutation,
   };
 };
+
+
+export const useMarketQueries = (params: MarketQuery) => {
+  const auctionQuery = useQuery({
+    queryKey: ["alpaca_auction", params],
+    queryFn: () => AlpacaMarketService.getAuctions(params),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const barsQuery = useQuery({
+    queryKey: ["alpaca_bars", params],
+    queryFn: () => AlpacaMarketService.getBars(params),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
+
+  return {
+    auctionQuery,
+    barsQuery,
+  };
+}
