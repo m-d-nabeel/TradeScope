@@ -26,9 +26,18 @@ export const useAlpacaQueries = () => {
     refetchOnWindowFocus: false,
   });
 
+  const stocksExchangesQuery = useQuery({
+    queryKey: ["alpaca_stocks_exchanges"],
+    queryFn: AlpacaMarketService.getStocksExchanges,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
+
   return {
     accountQuery,
     assetsQuery,
+    stocksExchangesQuery,
   };
 };
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -106,14 +107,14 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 
 		}
 
-		// // If not in cookie, check Authorization header
-		// if accessToken == "" {
-		// 	authHeader := r.Header.Get("Authorization")
-		// 	if strings.HasPrefix(authHeader, "Bearer ") {
-		// 		accessToken = strings.TrimPrefix(authHeader, "Bearer ")
-		// 		log.Println("AccessTokenFromHeader")
-		// 	}
-		// }
+		// If not in cookie, check Authorization header
+		if accessToken == "" {
+			authHeader := r.Header.Get("Authorization")
+			if strings.HasPrefix(authHeader, "Bearer ") {
+				accessToken = strings.TrimPrefix(authHeader, "Bearer ")
+				log.Println("AccessTokenFromHeader")
+			}
+		}
 
 		// If no access token found, attempt to refresh
 		if accessToken == "" {

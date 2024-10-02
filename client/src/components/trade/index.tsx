@@ -42,6 +42,7 @@ export default function TradeVisualisation() {
       </Card>
     );
   }
+
   return (
     <Card className="mx-auto my-2 w-full max-w-4xl">
       <CardHeader>

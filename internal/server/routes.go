@@ -35,23 +35,22 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Get("/profile", s.profileHandler)
 		r.Get("/settings", s.settingsHandler)
 		r.Get("/settings/{setting}", s.settingHandler)
-	})
 
-	// Alpaca API routes
-	r.With(s.AuthMiddleware).Route("/api/alpaca", func(r chi.Router) {
-		r.Get("/account", s.getAccountHandler)
-		r.Get("/positions", s.getPositionsHandler)
-		r.Get("/assets/{symbol}", s.getAssetHandler)
-		r.Get("/assets/get", s.getAssetsHandler)
-		r.Get("/assets/page/{page}", s.assetsPaginationHandler)
-		r.Post("/assets/refresh", s.updateAssetsHandler)
-		r.Get("/assets/{id}", s.getAssetByIdHandler)
-	})
+		r.Route(("/api/alpaca"), func(r chi.Router) {
+			r.Get("/account", s.getAccountHandler)
+			r.Get("/positions", s.getPositionsHandler)
+			r.Get("/assets/{symbol}", s.getAssetHandler)
+			r.Get("/assets/get", s.getAssetsHandler)
+			r.Get("/assets/page/{page}", s.assetsPaginationHandler)
+			r.Post("/assets/refresh", s.updateAssetsHandler)
+			r.Get("/assets/{id}", s.getAssetByIdHandler)
 
-	// Alpaca Market Data routes
-	r.With(s.AuthMiddleware).Route("/api/alpaca/market", func(r chi.Router) {
-		r.Get("/bars", s.GetHistoricalBarsHandler)
-		r.Get("/auctions", s.GetHistoricalAuctionsHandler)
+			r.Route("/market", func(r chi.Router) {
+				r.Get("/bars", s.getHistoricalBarsHandler)
+				r.Get("/auctions", s.getHistoricalAuctionsHandler)
+				r.Get("/stocks/exchanges", s.getStocksExchangesHandler)
+			})
+		})
 	})
 
 	return r

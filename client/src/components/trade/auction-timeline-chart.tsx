@@ -1,61 +1,100 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlpacaAuction } from "@/types/alpaca.types";
+import { format } from "date-fns";
+import React from "react";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   Legend,
   ResponsiveContainer,
-  Scatter,
-  ScatterChart,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 
-export function AuctionTimelineChart({
-  auctionData,
-}: {
+interface PropsInterface {
   auctionData: AlpacaAuction[];
-}) {
-  const chartData = auctionData.flatMap((auction) =>
-    auction?.o?.concat(auction?.c || []).map((a) => ({
-      time: new Date(a?.t).getTime(),
-      price: a?.p,
-      type: auction?.o?.includes(a) ? "Opening" : "Closing",
-    })),
-  );
+}
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <Card className="border-border bg-background">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium">
+            {format(new Date(label), "MMM d, yyyy")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {payload.map((entry: any, index: number) => (
+            <p key={`item-${index}`} className="text-sm">
+              <span className="font-medium" style={{ color: entry.color }}>
+                {entry.name}:
+              </span>{" "}
+              ${entry.value.toFixed(2)}
+            </p>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+  return null;
+};
+
+export function AuctionTimelineChart({ auctionData }: PropsInterface) {
+  const chartData = React.useMemo(() => {
+    return auctionData.map((auction) => ({
+      date: new Date(auction.d).getTime(),
+      openingPrice: auction?.o?.[0]?.p || null,
+      closingPrice: auction?.c?.[0]?.p || null,
+    }));
+  }, [auctionData]);
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <ScatterChart>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="time"
-          domain={["auto", "auto"]}
-          name="Time"
-          tickFormatter={(unixTime) => new Date(unixTime).toLocaleDateString()}
-          type="number"
-        />
-        <YAxis dataKey="price" name="Price" />
-        <Tooltip
-          cursor={{ strokeDasharray: "3 3" }}
-          formatter={(value, name) => [
-            value,
-            name === "time"
-              ? new Date(value.toString()).toLocaleString()
-              : name,
-          ]}
-        />
-        <Legend />
-        <Scatter
-          name="Opening Auction"
-          data={chartData.filter((d) => d?.type === "Opening")}
-          fill="#8884d8"
-        />
-        <Scatter
-          name="Closing Auction"
-          data={chartData.filter((d) => d?.type === "Closing")}
-          fill="#82ca9d"
-        />
-      </ScatterChart>
-    </ResponsiveContainer>
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Auction Price Timeline</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={400}>
+          <AreaChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis
+              dataKey="date"
+              type="number"
+              domain={["auto", "auto"]}
+              tickFormatter={(tick) => format(new Date(tick), "MMM d, yyyy")}
+              className="text-xs"
+            />
+            <YAxis
+              domain={["auto", "auto"]}
+              tickFormatter={(tick) => `$${tick.toFixed(2)}`}
+              className="text-xs"
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Area
+              type="monotone"
+              dataKey="openingPrice"
+              stroke="#8884d8"
+              fill="#8884d8"
+              fillOpacity={0.3}
+              name="Opening Auction"
+              connectNulls
+            />
+            <Area
+              type="monotone"
+              dataKey="closingPrice"
+              stroke="#82ca9d"
+              fill="#82ca9d"
+              fillOpacity={0.3}
+              name="Closing Auction"
+              connectNulls
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 }

@@ -12,6 +12,7 @@ const (
 	// Alpaca API endpoints
 	StocksBarsEndpoint    = "/stocks/bars"
 	StocksAuctionEndpoint = "/stocks/auctions"
+	MetaStocksExchanges   = "/stocks/meta/exchanges"
 )
 
 type Bar struct {
@@ -28,8 +29,8 @@ type Bar struct {
 type AuctionFields struct {
 	Timestamp     string  `json:"t"`
 	ExchangeCode  string  `json:"x"` // See v2/stocks/meta/exchanges for more details.
-	AuctionPrice  float64 `json:"p"`
-	AuctionSize   int64   `json:"s"`
+	AuctionPrice  float64 `json:"p"` // Auction price
+	AuctionSize   int64   `json:"s"` // Auction trade size
 	ConditionFlag string  `json:"c"` // The condition flag indicating that this is an auction. See v2/stocks/meta/conditions/trade for more details.
 }
 

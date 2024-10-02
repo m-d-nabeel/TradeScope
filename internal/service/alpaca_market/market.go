@@ -95,3 +95,35 @@ func GetHistoricalAuctions() (AuctionsResponse, error) {
 
 	return auctionsResponse, nil
 }
+
+func GetStocksExchanges() (map[string]string, error) {
+	alpacaRequest, err := newAlpacaRequest("GET", MetaStocksExchanges)
+
+	if err != nil {
+		log.Printf("Error creating request to Alpaca API: %v", err)
+		return nil, err
+	}
+
+	resp, err := http.DefaultClient.Do(alpacaRequest)
+
+	if err != nil {
+		log.Printf("Error sending request to Alpaca API: %v", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("Error response from Alpaca API: %v", resp.Status)
+		return nil, err
+	}
+
+	var exchanges map[string]string
+	err = json.NewDecoder(resp.Body).Decode(&exchanges)
+
+	if err != nil {
+		log.Printf("Error decoding response: %v", err)
+		return nil, err
+	}
+
+	return exchanges, nil
+}

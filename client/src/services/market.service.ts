@@ -52,4 +52,14 @@ export const AlpacaMarketService = {
       return null;
     }
   },
+
+  async getStocksExchanges(): Promise<Record<string, string>> {
+    try {
+      const response = await axiosInstance.get("/api/alpaca/market/stocks/exchanges");
+      return response.data;
+    } catch (error: any) {
+      console.info("Error getting stocks exchanges: ", error?.message);
+      return {};
+    }
+  }
 };
