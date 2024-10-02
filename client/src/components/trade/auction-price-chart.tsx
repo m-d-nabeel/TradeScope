@@ -2,45 +2,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlpacaAuction } from "@/types/alpaca.types";
 import { format, parseISO } from "date-fns";
 import React from "react";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartTooltip,
+} from "../ui/chart";
+import { CustomTooltip } from "./custom-tooltip";
 
 interface PropsInterface {
   auctionData: AlpacaAuction[];
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <Card className="border-border bg-background">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">
-            {format(parseISO(label), "MMM d, yyyy")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {payload.map((entry: any, index: number) => (
-            <p key={`item-${index}`} className="text-sm">
-              <span className="font-medium" style={{ color: entry.color }}>
-                {entry.name}:
-              </span>{" "}
-              ${entry.value.toFixed(2)}
-            </p>
-          ))}
-        </CardContent>
-      </Card>
-    );
-  }
-  return null;
-};
+const chartConfig = {
+  opening: {
+    label: "Opening Price",
+    color: "hsl(var(--chart-1))",
+  },
+  closing: {
+    label: "Closing Price",
+    color: "hsl(var(--chart-2))",
+  },
+} satisfies ChartConfig;
 
 export function AuctionPriceChart({ auctionData }: PropsInterface) {
   const chartData = React.useMemo(() => {
@@ -59,7 +43,7 @@ export function AuctionPriceChart({ auctionData }: PropsInterface) {
         <CardTitle>Auction Price Trends</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
+        <ChartContainer config={chartConfig}>
           <LineChart
             data={chartData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -80,8 +64,12 @@ export function AuctionPriceChart({ auctionData }: PropsInterface) {
               tickFormatter={(tick) => `$${tick.toFixed(2)}`}
               className="text-xs text-muted-foreground"
             />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
+            <ChartTooltip
+              content={<CustomTooltip />}
+              defaultIndex={1}
+              cursor={false}
+            />
+            <ChartLegend />
             <Line
               type="monotone"
               dataKey="openingPrice"
@@ -99,7 +87,7 @@ export function AuctionPriceChart({ auctionData }: PropsInterface) {
               activeDot={{ r: 5 }}
             />
           </LineChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

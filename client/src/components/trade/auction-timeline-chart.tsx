@@ -2,16 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlpacaAuction } from "@/types/alpaca.types";
 import { format } from "date-fns";
 import React from "react";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
+import { ChartConfig, ChartContainer, ChartTooltip } from "../ui/chart";
 
 interface PropsInterface {
   auctionData: AlpacaAuction[];
@@ -20,19 +12,19 @@ interface PropsInterface {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <Card className="border-border bg-background">
-        <CardHeader className="pb-2">
+      <Card className="h-fit w-fit border-border bg-background p-1 drop-shadow">
+        <CardHeader className="p-0 pb-1">
           <CardTitle className="text-sm font-medium">
             {format(new Date(label), "MMM d, yyyy")}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="m-0 h-fit w-fit p-0">
           {payload.map((entry: any, index: number) => (
-            <p key={`item-${index}`} className="text-sm">
+            <p key={`item-${index}`} className="text-sm flex justify-stretch">
               <span className="font-medium" style={{ color: entry.color }}>
                 {entry.name}:
-              </span>{" "}
-              ${entry.value.toFixed(2)}
+              </span>
+              <span className="ml-auto italic">${entry.value.toFixed(2)}</span>
             </p>
           ))}
         </CardContent>
@@ -41,6 +33,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   }
   return null;
 };
+
+const chartConfig = {
+  opening: {
+    label: "Opening Auction",
+    color: "hsl(var(--chart-1))",
+  },
+  closing: {
+    label: "Closing Auction",
+    color: "hsl(var(--chart-2))",
+  },
+} satisfies ChartConfig;
 
 export function AuctionTimelineChart({ auctionData }: PropsInterface) {
   const chartData = React.useMemo(() => {
@@ -57,8 +60,8 @@ export function AuctionTimelineChart({ auctionData }: PropsInterface) {
         <CardTitle>Auction Price Timeline</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
-          <AreaChart data={chartData}>
+        <ChartContainer config={chartConfig}>
+          <AreaChart accessibilityLayer data={chartData}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="date"
@@ -72,7 +75,12 @@ export function AuctionTimelineChart({ auctionData }: PropsInterface) {
               tickFormatter={(tick) => `$${tick.toFixed(2)}`}
               className="text-xs"
             />
-            <Tooltip content={<CustomTooltip />} />
+            <ChartTooltip
+              content={<CustomTooltip />}
+              cursor={false}
+              defaultIndex={1}
+            />
+
             <Legend />
             <Area
               type="monotone"
@@ -93,7 +101,7 @@ export function AuctionTimelineChart({ auctionData }: PropsInterface) {
               connectNulls
             />
           </AreaChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

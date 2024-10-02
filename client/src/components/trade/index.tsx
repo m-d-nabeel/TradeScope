@@ -18,10 +18,10 @@ interface SearchQuery {
 }
 
 export default function TradeVisualisation() {
-  const search: SearchQuery = useSearch({ from: "/_main/trade/" });
-  const symbols = search.symbols.split(",");
+  const search: SearchQuery | undefined = useSearch({ from: "/_main/trade/" });
+  const symbols = search?.symbols?.split(",") ?? ["AAPL"];
   const symbol = symbols[0];
-  
+
   const { auctionQuery } = useMarketQueries({
     symbols: symbols,
     start: new Date("2023-01-01").toISOString(),

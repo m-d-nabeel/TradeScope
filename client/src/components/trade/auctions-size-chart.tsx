@@ -6,41 +6,31 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
   XAxis,
-  YAxis,
+  YAxis
 } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartTooltip,
+} from "../ui/chart";
+import { CustomTooltip } from "./custom-tooltip";
 
 interface PropsInterface {
   auctionData: AlpacaAuction[];
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <Card className="border-border bg-background">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">
-            {format(parseISO(label), "MMM d, yyyy")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {payload.map((entry: any, index: number) => (
-            <p key={`item-${index}`} className="text-sm">
-              <span className="font-medium" style={{ color: entry.color }}>
-                {entry.name}:
-              </span>{" "}
-              {Number(entry.value).toLocaleString()}
-            </p>
-          ))}
-        </CardContent>
-      </Card>
-    );
-  }
-  return null;
-};
+const chartConfig = {
+  opening: {
+    label: "Opening Auction Size",
+    color: "hsl(var(--chart-1))",
+  },
+  closing: {
+    label: "Closing Auction Size",
+    color: "hsl(var(--chart-2))",
+  },
+} satisfies ChartConfig;
 
 const formatYAxis = (value: number) => {
   if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
@@ -63,7 +53,7 @@ export function AuctionSizeChart({ auctionData }: PropsInterface) {
         <CardTitle>Auction Size Chart</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
+        <ChartContainer config={chartConfig}>
           <AreaChart
             data={chartData}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
@@ -83,8 +73,12 @@ export function AuctionSizeChart({ auctionData }: PropsInterface) {
               tickFormatter={formatYAxis}
               className="text-xs text-muted-foreground"
             />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
+            <ChartTooltip
+              content={<CustomTooltip />}
+              defaultIndex={1}
+              cursor={false}
+            />
+            <ChartLegend />
             <Area
               type="monotone"
               dataKey="openingSize"
@@ -104,7 +98,7 @@ export function AuctionSizeChart({ auctionData }: PropsInterface) {
               name="Closing Auction Size"
             />
           </AreaChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
