@@ -1,0 +1,64 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      DB_DATABASE: trading_platform
+      DB_USERNAME: tradinguser
+      DB_PASSWORD: tradingpass
+      DB_PORT: 5432
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: adminpass
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: docker-compose up -d
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ">=1.20"
+
+      - name: Install global dependencies
+        run: make install-global-deps
+
+      - name: Run migrations
+        run: make migrate-all-up
+
+      - name: Build Go Backend
+        run: make build-release
+
+      - name: Run Go tests
+        run: go test -v ./...
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Build Vite Frontend
+        run: |
+          cd client
+          bun install
+          bun run build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: |
+            bin/api
+            client/dist
+
+      - name: Tear down Docker Compose
+        run: docker-compose down
+        if: always()
