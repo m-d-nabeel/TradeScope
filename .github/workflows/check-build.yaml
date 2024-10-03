@@ -9,37 +9,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    env:
-      DB_DATABASE: trading_platform
-      DB_USERNAME: tradinguser
-      DB_PASSWORD: tradingpass
-      DB_PORT: 5432
-      REDIS_PORT: 6379
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: ${{ env.DB_DATABASE }}
-          POSTGRES_USER: ${{ env.DB_USERNAME }}
-          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-        ports:
-          - ${{ env.DB_PORT }}:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:alpine
-        ports:
-          - ${{ env.REDIS_PORT }}:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -51,9 +20,6 @@ jobs:
 
       - name: Install global dependencies
         run: make install-global-deps
-
-      - name: Run migrations
-        run: make migrate-all-up
 
       - name: Build Go Backend
         run: make build-release
