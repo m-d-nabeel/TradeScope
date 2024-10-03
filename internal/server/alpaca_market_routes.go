@@ -1,9 +1,9 @@
 package server
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/trading-backend/internal/lib"
@@ -28,6 +28,16 @@ func (s *Server) getHistoricalBarsHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	cacheKey := strings.Join([]string{symbols, start, end, timeframe}, ":")
+	var barsResponse alpacamarket.BarsResponse
+	err := s.getCachedData(r.Context(), cacheKey, &barsResponse)
+
+	if err == nil {
+		log.Println("cache hit")
+		lib.RespondJSON(w, http.StatusOK, barsResponse)
+		return
+	}
+
 	if symbols != "" {
 		alpacamarket.MarketBarQuery["symbols"] = symbols
 	}
@@ -41,13 +51,16 @@ func (s *Server) getHistoricalBarsHandler(w http.ResponseWriter, r *http.Request
 		alpacamarket.MarketBarQuery["end"] = end
 	}
 
-	data, err := alpacamarket.GetHistoricalBars()
+	barsResponse, err = alpacamarket.GetHistoricalBars()
 	if err != nil {
 		log.Printf("Error getting historical bars: %v", err)
 		lib.RespondError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
-	lib.RespondJSON(w, http.StatusOK, data)
+	s.cacheData(r.Context(), cacheKey, barsResponse, 15*time.Minute)
+
+	lib.RespondJSON(w, http.StatusOK, barsResponse)
 }
 
 func (s *Server) getHistoricalAuctionsHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +77,16 @@ func (s *Server) getHistoricalAuctionsHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	cacheKey := strings.Join([]string{symbols, start, end}, ":")
+	var auctionsResponse alpacamarket.AuctionsResponse
+	err := s.getCachedData(r.Context(), cacheKey, &auctionsResponse)
+
+	if err == nil {
+		log.Println("cache hit")
+		lib.RespondJSON(w, http.StatusOK, auctionsResponse)
+		return
+	}
+
 	if symbols != "" {
 		alpacamarket.MarketAuctionQuery["symbols"] = symbols
 	}
@@ -74,49 +97,38 @@ func (s *Server) getHistoricalAuctionsHandler(w http.ResponseWriter, r *http.Req
 		alpacamarket.MarketAuctionQuery["end"] = end
 	}
 
-	data, err := alpacamarket.GetHistoricalAuctions()
+	auctionsResponse, err = alpacamarket.GetHistoricalAuctions()
 	if err != nil {
 		log.Printf("Error getting historical auctions: %v", err)
 		lib.RespondError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
-	lib.RespondJSON(w, http.StatusOK, data)
+	s.cacheData(r.Context(), cacheKey, auctionsResponse, 15*time.Minute)
+
+	lib.RespondJSON(w, http.StatusOK, auctionsResponse)
 }
 
 func (s *Server) getStocksExchangesHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Check cache
 	cacheKey := "stocks:meta-exchanges"
-	cachedData, err := s.rdb.Get(r.Context(), cacheKey)
+	var exchanges map[string]string
+	err := s.getCachedData(r.Context(), cacheKey, &exchanges)
+
 	if err == nil {
 		log.Println("cache hit")
-		var exchanges map[string]string
-		err = json.Unmarshal([]byte(cachedData), &exchanges)
-
-		if err != nil {
-			log.Println(err)
-		} else {
-			lib.RespondJSON(w, http.StatusOK, exchanges)
-			return
-		}
+		lib.RespondJSON(w, http.StatusOK, exchanges)
+		return
 	}
 
-	exchanges, err := alpacamarket.GetStocksExchanges()
+	exchanges, err = alpacamarket.GetStocksExchanges()
 	if err != nil {
 		log.Printf("Error getting stocks exchanges: %v", err)
 		lib.RespondError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
-	// Cache exchanges
-	exchangesJSON, err := json.Marshal(exchanges)
-	if err == nil {
-		err = s.rdb.Set(r.Context(), cacheKey, exchangesJSON, 15*time.Minute)
-		if err != nil {
-			log.Println("Error caching account:", err)
-		}
-	} else {
-		log.Println("Error unmarshaling account from cache:", err)
-	}
+	s.cacheData(r.Context(), cacheKey, exchanges, 15*time.Minute)
 
 	lib.RespondJSON(w, http.StatusOK, exchanges)
 }

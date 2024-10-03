@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -143,4 +144,32 @@ func RemoveCookies(w http.ResponseWriter) {
 	})
 
 	log.Println("Cookies removed")
+}
+
+func (s *Server) getCachedData(ctx context.Context, key string, data interface{}) error {
+	cachedData, err := s.rdb.Get(ctx, key)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal([]byte(cachedData), &data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Server) cacheData(ctx context.Context, key string, data interface{}, expiration time.Duration) error {
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	err = s.rdb.Set(ctx, key, dataJSON, expiration)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
