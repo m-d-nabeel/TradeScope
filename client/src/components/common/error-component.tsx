@@ -1,5 +1,3 @@
-"use client";
-
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertOctagon, Home, RefreshCw } from "lucide-react";

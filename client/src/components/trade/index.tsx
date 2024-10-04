@@ -12,6 +12,7 @@ import { AuctionExchangeDistribution } from "./auction-exchange-distribution";
 import { AuctionPriceChart } from "./auction-price-chart";
 import { AuctionTimelineChart } from "./auction-timeline-chart";
 import { AuctionSizeChart } from "./auctions-size-chart";
+import { FilterMenu } from "./filter-menu.tsx";
 
 interface SearchQuery {
   symbols: string;
@@ -45,11 +46,12 @@ export default function TradeVisualisation() {
 
   return (
     <Card className="mx-auto my-2 w-full max-w-4xl">
-      <CardHeader>
+      <CardHeader className="relative">
         <CardTitle>{symbol} Auction Data Analysis</CardTitle>
         <CardDescription>
           Visualizing auction data for {symbol} stock
         </CardDescription>
+        <FilterMenu />
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="price">

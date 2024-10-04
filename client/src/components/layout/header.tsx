@@ -93,6 +93,7 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
                       className="h-8 w-8 rounded-full"
                       src={user?.avatar_url}
                       alt="user avatar"
+                      referrerPolicy="no-referrer"
                     />
                   </button>
                 </div>
