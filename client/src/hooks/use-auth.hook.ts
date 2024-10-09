@@ -4,26 +4,35 @@ import { useGlobalStore } from "./use-global-context";
 
 export const useAuthQueries = () => {
   const queryClient = useQueryClient();
+  const { isAuthenticated, setAuth, clearAuth } = useGlobalStore();
 
   const authStatusQuery = useQuery({
     queryKey: ["auth-status"],
     queryFn: AuthService.checkAuthStatus,
     staleTime: 1000 * 60 * 5,
     refetchInterval: 1000 * 60 * 5,
+    retry: false,
+    enabled: isAuthenticated,
   });
   const loginMutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth-status"] });
-      useGlobalStore.setState({ isAuthenticated: true });
+      setAuth();
     },
   });
 
   const logoutMutation = useMutation({
-    mutationFn: AuthService.logout,
-    onSuccess: () => {
+    mutationFn: async () => {
+      try {
+        await AuthService.logout()
+      } catch (error: any) {
+        console.log("[LOGOUT_ERROR]: ", error);
+      }
+    },
+    onSettled: () => {
       queryClient.setQueryData(["auth-status"], null);
-      useGlobalStore.setState({ isAuthenticated: false });
+      clearAuth();
     },
   });
 

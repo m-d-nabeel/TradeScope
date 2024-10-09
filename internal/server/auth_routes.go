@@ -90,7 +90,9 @@ func (s *Server) authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	RemoveCookies(w)
-	http.Redirect(w, r, FrontendURL+"/login", http.StatusTemporaryRedirect)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	lib.RespondJSON(w, http.StatusOK, map[string]string{"message": "Logged out successfully"})
 }
 
 func (s *Server) AuthMiddleware(next http.Handler) http.Handler {

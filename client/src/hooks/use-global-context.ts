@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 export interface GlobalStore {
   isAuthenticated: boolean;
@@ -15,8 +15,7 @@ export const useGlobalStore = create<GlobalStore>()(
       clearAuth: () => set({ isAuthenticated: false }),
     }),
     {
-      name: "auth-storage",
-      storage: createJSONStorage(() => sessionStorage),
+      name: "auth-storage"
     },
   ),
 );
