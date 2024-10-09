@@ -1,22 +1,43 @@
 import { AlpacaAsset } from "@/types/alpaca.types";
-import { ColumnDef } from "@tanstack/react-table";
+import { rankItem } from "@tanstack/match-sorter-utils";
+import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { Briefcase, ChevronDown, ChevronUp, TrendingUp } from "lucide-react";
 import { TooltipComponent } from "../common/tooltip-provider";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { AssetBadge } from "./asset-badge";
+import { SearchableHeader } from "./searchable-header";
+
+export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  const itemRank = rankItem(row.getValue(columnId), value);
+  addMeta({ itemRank });
+  return itemRank.passed;
+};
 
 export const columns: ColumnDef<AlpacaAsset>[] = [
   {
     accessorKey: "symbol",
-    header: "Symbol",
+    header: ({ column, table }) => (
+      <SearchableHeader column={column} table={table} title="Symbol" />
+    ),
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("symbol")}</div>
     ),
+    filterFn: fuzzyFilter,
+    enableSorting: false,
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column, table }) => (
+      <SearchableHeader
+        column={column}
+        table={table}
+        title="Name"
+        icon={<Briefcase className="text-gray-400" size={16} />}
+      />
+    ),
+    filterFn: fuzzyFilter,
+    enableSorting: false,
   },
   {
     accessorKey: "class",

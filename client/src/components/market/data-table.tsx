@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Link } from "@tanstack/react-router";
 import React from "react";
+import { fuzzyFilter } from "./columns";
 import { PaginationComponent } from "./pagination";
 
 interface DataTableProps<TData, TValue> {
@@ -38,6 +39,9 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

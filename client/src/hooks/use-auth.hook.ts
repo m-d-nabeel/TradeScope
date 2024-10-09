@@ -17,8 +17,10 @@ export const useAuthQueries = () => {
   const loginMutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["auth-status"] });
-      setAuth();
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["auth-status"] });
+        setAuth();
+      }, 1000)
     },
   });
 
