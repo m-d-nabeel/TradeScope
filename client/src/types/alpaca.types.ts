@@ -142,3 +142,15 @@ export type DashboardQueryResponse = {
   };
 }
 /***************************************/
+
+export type PortfolioResponse = {
+  openPositions: any[];
+  portfolioHistory: {
+    base_value: string;
+    equity: string[];
+    profit_loss: string[];
+    profit_loss_pct: string[];
+    timeframe: string;
+    timestamp: number[];
+  };
+};

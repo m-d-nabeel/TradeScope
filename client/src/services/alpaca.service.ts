@@ -1,5 +1,5 @@
 import axiosInstance from "@/config/axios-instance";
-import { AlpacaAccountResponse, DashboardQueryResponse } from "@/types/alpaca.types";
+import { AlpacaAccountResponse, DashboardQueryResponse, PortfolioResponse } from "@/types/alpaca.types";
 
 export const AlpacaService = {
   async getAccount() {
@@ -38,6 +38,16 @@ export const AlpacaService = {
       return response.data;
     } catch (error: any) {
       console.info("Error getting dashboard data: ", error?.message);
+      return null;
+    }
+  },
+
+  async getPortfolioData(): Promise<PortfolioResponse | null> {
+    try {
+      const response = await axiosInstance.get<PortfolioResponse>("/api/alpaca/portfolio");
+      return response.data;
+    } catch (error: any) {
+      console.info("Error getting portfolio data: ", error?.message);
       return null;
     }
   }

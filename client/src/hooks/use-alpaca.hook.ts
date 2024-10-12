@@ -74,7 +74,16 @@ export const useDashboardQueries = () => {
     refetchOnWindowFocus: false,
   });
 
+  const portfolioQuery = useQuery({
+    queryKey: ["alpaca_portfolio"],
+    queryFn: AlpacaService.getPortfolioData,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
   return {
     dashboardQuery,
+    portfolioQuery,
   };
 };
