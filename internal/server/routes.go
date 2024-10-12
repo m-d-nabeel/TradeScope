@@ -29,14 +29,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Post("/logout/{provider}", s.logoutHandler)
 	})
 
-	// Authenticated routes
 	r.With(s.AuthMiddleware).Group(func(r chi.Router) {
 		r.Get("/profile", s.profileHandler)
 		r.Get("/settings", s.settingsHandler)
 		r.Get("/settings/{setting}", s.settingHandler)
 
 		r.Route(("/api/alpaca"), func(r chi.Router) {
-			r.Get("/dashboard", s.dashboardHandler)
+			r.Get("/dashboard", s.getDashboardHandler)
+			r.Get("/portfolio", s.getPortfolioHandler)
 			r.Get("/account", s.getAccountHandler)
 			r.Get("/positions", s.getPositionsHandler)
 			r.Get("/assets/{symbol}", s.getAssetHandler)

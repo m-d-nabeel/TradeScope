@@ -4,47 +4,13 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/trading-backend/internal/database/sqlc"
 	"github.com/trading-backend/internal/lib"
-	"github.com/trading-backend/internal/service/auth"
 )
-
-func (s *Server) getAccountHandler(w http.ResponseWriter, r *http.Request) {
-	userFromCtx, ok := r.Context().Value(userKey).(*auth.UserClaims)
-	if !ok || userFromCtx == nil {
-		http.Error(w, "failed to fetch user", http.StatusInternalServerError)
-		return
-	}
-
-	cacheKey := "account:userid:" + userFromCtx.UserID
-	var act alpaca.Account
-	err := s.getCachedData(r.Context(), cacheKey, &act)
-	if err == nil {
-		log.Println("cache hit")
-		lib.RespondJSON(w, http.StatusOK, act)
-		return
-	}
-
-	account, err := s.apca.GetAccount()
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "failed to fetch account", http.StatusInternalServerError)
-		return
-	}
-
-	err = s.cacheData(r.Context(), cacheKey, account, 15*time.Minute)
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	lib.RespondJSON(w, http.StatusAccepted, account)
-}
 
 func (s *Server) getPositionsHandler(w http.ResponseWriter, r *http.Request) {
 	positions, err := s.apca.GetPositions()

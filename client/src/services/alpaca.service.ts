@@ -1,11 +1,11 @@
 import axiosInstance from "@/config/axios-instance";
-import { AlpacaAccount, DashboardQueryResponse } from "@/types/alpaca.types";
+import { AlpacaAccountResponse, DashboardQueryResponse } from "@/types/alpaca.types";
 
 export const AlpacaService = {
   async getAccount() {
     try {
-      const response = await axiosInstance.get("/api/alpaca/account");
-      return response.data as AlpacaAccount;
+      const response = await axiosInstance.get<AlpacaAccountResponse>("/api/alpaca/account");
+      return response.data;
     } catch (error: any) {
       console.info("Error getting account: ", error?.message);
       return null;

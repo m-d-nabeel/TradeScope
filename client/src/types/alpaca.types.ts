@@ -1,4 +1,5 @@
-export type AlpacaAccount = {
+/***************Alpaca Account***************/
+type AlpacaAccount = {
   id: string;
   account_number: string;
   status: string;
@@ -34,6 +35,40 @@ export type AlpacaAccount = {
   crypto_tier: number;
 };
 
+type AccountActivities = {
+  activity_type: string;
+  cum_qty: string;
+  date: string;
+  description: string;
+  id: string;
+  leaves_qty: string;
+  net_amount: string;
+  order_id: string;
+  order_status: string;
+  per_share_amount: string;
+  price: string;
+  qty: string;
+  side: string;
+  status: string;
+  symbol: string;
+  transaction_time: string;
+  type: string;
+};
+
+type AlpacaAccountConfig = {
+  dtbp_check: string;
+  no_shorting: boolean;
+  trade_confirm_email: string;
+  trade_suspended_by_user: boolean;
+};
+
+export type AlpacaAccountResponse = {
+  account: AlpacaAccount;
+  accountActivities: AccountActivities[];
+  accountConfigs: AlpacaAccountConfig;
+};
+/***************************************/
+
 export type AlpacaAsset = {
   id: string;
   class: string;
@@ -53,6 +88,8 @@ export type AlpacaAsset = {
   attributes: string[];
 };
 
+
+/****************Auctions******************/
 type AlpacaAuctionFields = {
   t: string;
   x: string;
@@ -72,8 +109,7 @@ export type AlpacaAuctions = {
   next_page_token: string;
   currency: string;
 };
-
-
+/************Account History*************/
 type AccountHistory = {
   activity_type: string;
   cum_qty: string;
@@ -105,3 +141,4 @@ export type DashboardQueryResponse = {
     timestamp: number[];
   };
 }
+/***************************************/
