@@ -31,12 +31,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	// Authenticated routes
 	r.With(s.AuthMiddleware).Group(func(r chi.Router) {
-		r.Get("/dashboard", s.dashboardHandler)
 		r.Get("/profile", s.profileHandler)
 		r.Get("/settings", s.settingsHandler)
 		r.Get("/settings/{setting}", s.settingHandler)
 
 		r.Route(("/api/alpaca"), func(r chi.Router) {
+			r.Get("/dashboard", s.dashboardHandler)
 			r.Get("/account", s.getAccountHandler)
 			r.Get("/positions", s.getPositionsHandler)
 			r.Get("/assets/{symbol}", s.getAssetHandler)

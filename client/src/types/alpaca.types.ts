@@ -72,3 +72,36 @@ export type AlpacaAuctions = {
   next_page_token: string;
   currency: string;
 };
+
+
+type AccountHistory = {
+  activity_type: string;
+  cum_qty: string;
+  date: string;
+  description: string;
+  id: string;
+  leaves_qty: string;
+  net_amount: string;
+  order_id: string;
+  order_status: string;
+  per_share_amount: string;
+  price: string;
+  qty: string;
+  side: string;
+  status: string;
+  symbol: string;
+  transaction_time: string;
+  type: string;
+};
+export type DashboardQueryResponse = {
+  account: AlpacaAccount;
+  accountHistory: AccountHistory[];
+  portfolioHistory: {
+    base_value: string;
+    equity: string[];
+    profit_loss: string[];
+    profit_loss_pct: string[];
+    timeframe: string;
+    timestamp: number[];
+  };
+}
