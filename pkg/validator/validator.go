@@ -2,11 +2,15 @@ package validator
 
 import (
 	"errors"
+	"log"
 	"strconv"
 	"time"
 )
 
 func ValidateMarketQuery(symbols, timeframe, start, end string) error {
+
+	log.Println("Verifying market query", symbols, timeframe, start, end)
+
 	if symbols == "" {
 		return errors.New("symbol is required")
 	}

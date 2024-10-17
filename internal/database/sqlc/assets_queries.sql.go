@@ -41,7 +41,6 @@ type CreateAssetParams struct {
 	Attributes                   []string
 }
 
-// Insert a new asset
 func (q *Queries) CreateAsset(ctx context.Context, arg CreateAssetParams) error {
 	_, err := q.db.Exec(ctx, createAsset,
 		arg.ID,
@@ -86,7 +85,6 @@ SELECT id, seq_id, class, exchange, symbol, name, status, tradable, marginable, 
 WHERE id = $1
 `
 
-// Get a single asset by ID
 func (q *Queries) GetAssetByID(ctx context.Context, id pgtype.UUID) (Asset, error) {
 	row := q.db.QueryRow(ctx, getAssetByID, id)
 	var i Asset
@@ -122,7 +120,6 @@ type GetAssetsByStatusAndTradabilityParams struct {
 	Tradable bool
 }
 
-// Get assets by status and tradability
 func (q *Queries) GetAssetsByStatusAndTradability(ctx context.Context, arg GetAssetsByStatusAndTradabilityParams) ([]Asset, error) {
 	rows, err := q.db.Query(ctx, getAssetsByStatusAndTradability, arg.Status, arg.Tradable)
 	if err != nil {
@@ -166,7 +163,6 @@ WHERE LOWER(symbol) = LOWER($1)
 ORDER BY exchange
 `
 
-// Get assets by symbol (case-insensitive)
 func (q *Queries) GetAssetsBySymbol(ctx context.Context, lower string) ([]Asset, error) {
 	rows, err := q.db.Query(ctx, getAssetsBySymbol, lower)
 	if err != nil {
@@ -216,7 +212,6 @@ type GetAssetsWithKeysetPaginationParams struct {
 	Limit int32
 }
 
-// Get assets with keyset pagination
 func (q *Queries) GetAssetsWithKeysetPagination(ctx context.Context, arg GetAssetsWithKeysetPaginationParams) ([]Asset, error) {
 	rows, err := q.db.Query(ctx, getAssetsWithKeysetPagination, arg.SeqID, arg.Limit)
 	if err != nil {
@@ -259,7 +254,6 @@ SELECT id, seq_id, class, exchange, symbol, name, status, tradable, marginable, 
 ORDER BY symbol
 `
 
-// Get all assets
 func (q *Queries) ListAssets(ctx context.Context) ([]Asset, error) {
 	rows, err := q.db.Query(ctx, listAssets)
 	if err != nil {
@@ -297,30 +291,11 @@ func (q *Queries) ListAssets(ctx context.Context) ([]Asset, error) {
 	return items, nil
 }
 
-const swapAssets = `-- name: SwapAssets :exec
-TRUNCATE TABLE assets
-`
-
-func (q *Queries) SwapAssets(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, swapAssets)
-	return err
-}
-
 const truncateAssets = `-- name: TruncateAssets :exec
 TRUNCATE TABLE assets
 `
 
-// Truncate the assets table
 func (q *Queries) TruncateAssets(ctx context.Context) error {
 	_, err := q.db.Exec(ctx, truncateAssets)
-	return err
-}
-
-const truncateAssetsStaging = `-- name: TruncateAssetsStaging :exec
-TRUNCATE TABLE assets
-`
-
-func (q *Queries) TruncateAssetsStaging(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, truncateAssetsStaging)
 	return err
 }

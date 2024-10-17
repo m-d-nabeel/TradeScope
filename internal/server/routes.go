@@ -16,7 +16,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Use(corsOptions().Handler)
 	r.Use(setResponseHeaders)
 
-	// Define route groups
+	// Root routes
 	r.Get("/", s.handleHome)
 	r.Get("/health", s.checkHealthHandler)
 
@@ -29,22 +29,30 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Post("/logout/{provider}", s.logoutHandler)
 	})
 
-	r.With(s.AuthMiddleware).Group(func(r chi.Router) {
+	// Protected routes
+	r.Group(func(r chi.Router) {
+		r.Use(s.AuthMiddleware)
+
 		r.Get("/profile", s.profileHandler)
 		r.Get("/settings", s.settingsHandler)
 		r.Get("/settings/{setting}", s.settingHandler)
 
-		r.Route(("/api/alpaca"), func(r chi.Router) {
+		r.Route("/api/alpaca", func(r chi.Router) {
 			r.Get("/dashboard", s.getDashboardHandler)
 			r.Get("/portfolio", s.getPortfolioHandler)
 			r.Get("/account", s.getAccountHandler)
 			r.Get("/positions", s.getPositionsHandler)
-			r.Get("/assets/{symbol}", s.getAssetHandler)
-			r.Get("/assets/get", s.getAssetsHandler)
-			r.Get("/assets/page/{page}", s.assetsPaginationHandler)
-			r.Post("/assets/refresh", s.updateAssetsHandler)
-			r.Get("/assets/{id}", s.getAssetByIdHandler)
 
+			// Assets routes
+			r.Route("/assets", func(r chi.Router) {
+				r.Get("/get", s.getAssetsHandler)
+				r.Get("/page/{page}", s.assetsPaginationHandler)
+				r.Get("/{symbol}", s.getAssetHandler)
+				r.Get("/{id}", s.getAssetByIdHandler)
+				r.Get("/symbols", s.getAssetSymbolsHandler)
+			})
+
+			// Market routes
 			r.Route("/market", func(r chi.Router) {
 				r.Get("/bars", s.getHistoricalBarsHandler)
 				r.Get("/auctions", s.getHistoricalAuctionsHandler)

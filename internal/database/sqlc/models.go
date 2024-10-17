@@ -85,6 +85,12 @@ type Order struct {
 	UpdatedAt pgtype.Timestamptz
 }
 
+type Symbol struct {
+	ID     pgtype.UUID
+	Name   string
+	Symbol string
+}
+
 type User struct {
 	ID               pgtype.UUID
 	Name             string

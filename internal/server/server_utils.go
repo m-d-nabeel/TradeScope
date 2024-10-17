@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/robfig/cron/v3"
 	"github.com/trading-backend/internal/database/sqlc"
 	"github.com/trading-backend/internal/lib"
@@ -25,33 +24,7 @@ func (s *Server) UpdateAssetsJob() {
 		return
 	}
 
-	assets := make([]sqlc.CreateAssetsBatchParams, len(alpacaAssets))
-	for idx, asset := range alpacaAssets {
-		uuidID, err := lib.UUIDFromString(asset.ID)
-		if err != nil {
-			log.Printf("Error converting asset ID to UUID: %v", err)
-			return
-		}
-		assets[idx] = sqlc.CreateAssetsBatchParams{
-			ID:           uuidID,
-			SeqID:        int32(idx + 1),
-			Class:        string(asset.Class),
-			Exchange:     asset.Exchange,
-			Symbol:       asset.Symbol,
-			Name:         asset.Name,
-			Tradable:     asset.Tradable,
-			Marginable:   asset.Marginable,
-			Shortable:    asset.Shortable,
-			EasyToBorrow: asset.EasyToBorrow,
-			Fractionable: asset.Fractionable,
-			Status:       string(asset.Status),
-			MaintenanceMarginRequirement: pgtype.Int4{
-				Int32: int32(asset.MaintenanceMarginRequirement),
-				Valid: true,
-			},
-			Attributes: asset.Attributes,
-		}
-	}
+	assets, symbols := lib.PrepareBatchData(alpacaAssets)
 
 	tx, err := s.db.GetPool().Begin(ctx)
 	if err != nil {
@@ -74,23 +47,45 @@ func (s *Server) UpdateAssetsJob() {
 		return
 	}
 
+	// Truncate the symbols table
+	if err = txQuery.TruncateSymbols(ctx); err != nil {
+		log.Printf("Error truncating symbols: %v", err)
+		return
+	}
+
 	// Insert new data into assets table
 	if _, err = txQuery.CreateAssetsBatch(ctx, assets); err != nil {
 		log.Printf("Error inserting assets: %v", err)
 		return
 	}
 
+	// Insert new data into symbols table
+	if _, err = txQuery.CreateSymbolsBatch(ctx, symbols); err != nil {
+		log.Printf("Error inserting symbols: %v", err)
+		return
+	}
+
+	// Commit the transaction
 	if err = tx.Commit(ctx); err != nil {
 		log.Printf("Error committing transaction: %v", err)
 		return
 	}
 
-	log.Printf("Successfully updated %d assets", len(assets))
+	log.Printf("Successfully updated %d assets and symbols", len(assets))
 }
 
 func (s *Server) InitCronScheduler() *cron.Cron {
-	c := cron.New()
-	c.AddFunc("*/30 * * * *", s.UpdateAssetsJob)
+	// go s.UpdateAssetsJob()
+
+	c := cron.New(cron.WithChain(
+		cron.SkipIfStillRunning(cron.DefaultLogger),
+		cron.Recover(cron.DefaultLogger),
+	))
+	_, err := c.AddFunc("@every 15m", s.UpdateAssetsJob)
+	if err != nil {
+		log.Printf("Error adding cron job: %v", err)
+		return nil
+	}
 	c.Start()
 	log.Println("Cron job started")
 	return c

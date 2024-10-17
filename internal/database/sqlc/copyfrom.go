@@ -53,3 +53,36 @@ func (r iteratorForCreateAssetsBatch) Err() error {
 func (q *Queries) CreateAssetsBatch(ctx context.Context, arg []CreateAssetsBatchParams) (int64, error) {
 	return q.db.CopyFrom(ctx, []string{"assets"}, []string{"id", "seq_id", "class", "exchange", "symbol", "name", "tradable", "marginable", "shortable", "easy_to_borrow", "fractionable", "status", "maintenance_margin_requirement", "attributes"}, &iteratorForCreateAssetsBatch{rows: arg})
 }
+
+// iteratorForCreateSymbolsBatch implements pgx.CopyFromSource.
+type iteratorForCreateSymbolsBatch struct {
+	rows                 []CreateSymbolsBatchParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateSymbolsBatch) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateSymbolsBatch) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].Symbol,
+		r.rows[0].Name,
+	}, nil
+}
+
+func (r iteratorForCreateSymbolsBatch) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateSymbolsBatch(ctx context.Context, arg []CreateSymbolsBatchParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"symbols"}, []string{"symbol", "name"}, &iteratorForCreateSymbolsBatch{rows: arg})
+}

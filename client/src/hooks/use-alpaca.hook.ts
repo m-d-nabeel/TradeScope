@@ -34,10 +34,19 @@ export const useAlpacaQueries = () => {
     refetchOnWindowFocus: false
   });
 
+  const symbolsQuery = useQuery({
+    queryKey: ["alpaca_symbols"],
+    queryFn: AlpacaService.getSymbols,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
+
   return {
     accountQuery,
     assetsQuery,
     stocksExchangesQuery,
+    symbolsQuery,
   };
 };
 

@@ -1,9 +1,12 @@
 package lib
 
 import (
+	"log"
 	"time"
 
+	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/trading-backend/internal/database/sqlc"
 )
 
@@ -83,4 +86,64 @@ func DbAssetsToAssets(dbAssets []sqlc.Asset) []Asset {
 		assets[i] = DbAssetToAsset(dbAsset)
 	}
 	return assets
+}
+
+type Symbol struct {
+	ID     uuid.UUID `json:"id"`
+	Symbol string    `json:"symbol"`
+	Name   string    `json:"name"`
+}
+
+func DbSymbolToSymbol(dbSymbol sqlc.Symbol) Symbol {
+	return Symbol{
+		ID:     uuid.UUID(dbSymbol.ID.Bytes),
+		Symbol: dbSymbol.Symbol,
+		Name:   dbSymbol.Name,
+	}
+}
+
+func DbSymbolsToSymbols(dbSymbols []sqlc.Symbol) []Symbol {
+	symbols := make([]Symbol, len(dbSymbols))
+	for i, dbSymbol := range dbSymbols {
+		symbols[i] = DbSymbolToSymbol(dbSymbol)
+	}
+	return symbols
+}
+
+func PrepareBatchData(alpacaAssets []alpaca.Asset) ([]sqlc.CreateAssetsBatchParams, []sqlc.CreateSymbolsBatchParams) {
+	assets := make([]sqlc.CreateAssetsBatchParams, len(alpacaAssets))
+	symbols := make([]sqlc.CreateSymbolsBatchParams, len(alpacaAssets))
+	for idx, asset := range alpacaAssets {
+		uuidID, err := UUIDFromString(asset.ID)
+		if err != nil {
+			log.Printf("Error converting asset ID to UUID: %v", err)
+			return nil, nil
+		}
+		assets[idx] = sqlc.CreateAssetsBatchParams{
+			ID:           uuidID,
+			SeqID:        int32(idx + 1),
+			Class:        string(asset.Class),
+			Exchange:     asset.Exchange,
+			Symbol:       asset.Symbol,
+			Name:         asset.Name,
+			Tradable:     asset.Tradable,
+			Marginable:   asset.Marginable,
+			Shortable:    asset.Shortable,
+			EasyToBorrow: asset.EasyToBorrow,
+			Fractionable: asset.Fractionable,
+			Status:       string(asset.Status),
+			MaintenanceMarginRequirement: pgtype.Int4{
+				Int32: int32(asset.MaintenanceMarginRequirement),
+				Valid: true,
+			},
+			Attributes: asset.Attributes,
+		}
+
+		symbols[idx] = sqlc.CreateSymbolsBatchParams{
+			Symbol: asset.Symbol,
+			Name:   asset.Name,
+		}
+	}
+
+	return assets, symbols
 }

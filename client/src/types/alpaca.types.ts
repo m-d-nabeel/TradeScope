@@ -154,3 +154,10 @@ export type PortfolioResponse = {
     timestamp: number[];
   };
 };
+
+
+export type AlpacaSymbol = {
+  id: string;
+  symbol: string;
+  name: string;
+};

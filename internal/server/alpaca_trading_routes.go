@@ -5,9 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
 	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/trading-backend/internal/database/sqlc"
 	"github.com/trading-backend/internal/lib"
 )
@@ -41,82 +39,6 @@ func (s *Server) getAssetsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	lib.RespondJSON(w, http.StatusAccepted, lib.DbAssetsToAssets(assets))
-}
-
-func (s *Server) updateAssetsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("Updating assets")
-	alpacaAssets, err := s.apca.GetAssets(alpaca.GetAssetsRequest{})
-	if err != nil {
-		log.Printf("Error fetching assets from Alpaca: %v", err)
-		return
-	}
-
-	assets := make([]sqlc.CreateAssetsBatchParams, len(alpacaAssets))
-	for idx, asset := range alpacaAssets {
-		uuidID, err := lib.UUIDFromString(asset.ID)
-		if err != nil {
-			log.Printf("Error converting asset ID to UUID: %v", err)
-			return
-		}
-		assets[idx] = sqlc.CreateAssetsBatchParams{
-			ID:           uuidID,
-			SeqID:        int32(idx + 1),
-			Class:        string(asset.Class),
-			Exchange:     asset.Exchange,
-			Symbol:       asset.Symbol,
-			Name:         asset.Name,
-			Tradable:     asset.Tradable,
-			Marginable:   asset.Marginable,
-			Shortable:    asset.Shortable,
-			EasyToBorrow: asset.EasyToBorrow,
-			Fractionable: asset.Fractionable,
-			Status:       string(asset.Status),
-			MaintenanceMarginRequirement: pgtype.Int4{
-				Int32: int32(asset.MaintenanceMarginRequirement),
-				Valid: true,
-			},
-			Attributes: asset.Attributes,
-		}
-	}
-
-	tx, err := s.db.GetPool().Begin(r.Context())
-	if err != nil {
-		log.Printf("Error starting transaction: %v", err)
-		return
-	}
-	defer func() {
-		if err != nil {
-			if rbErr := tx.Rollback(r.Context()); rbErr != nil {
-				log.Printf("Error rolling back transaction: %v", rbErr)
-			}
-		}
-	}()
-
-	txQuery := sqlc.New(tx)
-
-	// Truncate the assets table
-	if err = txQuery.TruncateAssets(r.Context()); err != nil {
-		log.Printf("Error truncating assets: %v", err)
-		return
-	}
-
-	// Insert new data into assets table
-	if _, err = txQuery.CreateAssetsBatch(r.Context(), assets); err != nil {
-		log.Printf("Error inserting assets: %v", err)
-		return
-	}
-
-	if err = tx.Commit(r.Context()); err != nil {
-		log.Printf("Error committing transaction: %v", err)
-		return
-	}
-
-	log.Printf("Successfully updated %d assets", len(assets))
-	lib.RespondJSON(w, http.StatusAccepted, struct {
-		Message string `json:"message"`
-	}{
-		Message: "Assets updated",
-	})
 }
 
 func (s *Server) assetsPaginationHandler(w http.ResponseWriter, r *http.Request) {
@@ -165,4 +87,15 @@ func (s *Server) getAssetByIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	lib.RespondJSON(w, http.StatusAccepted, lib.DbAssetToAsset(asset))
+}
+
+func (s *Server) getAssetSymbolsHandler(w http.ResponseWriter, r *http.Request) {
+	dbQuery := sqlc.New(s.db.GetPool())
+	symbols, err := dbQuery.ListSymbols(r.Context())
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "failed to fetch asset symbols", http.StatusInternalServerError)
+		return
+	}
+	lib.RespondJSON(w, http.StatusAccepted, lib.DbSymbolsToSymbols(symbols))
 }
