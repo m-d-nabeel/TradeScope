@@ -1,17 +1,6 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
-export function TooltipComponent({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+export function TooltipComponent({ label, value }: { label: string; value: string }) {
   return (
     <TooltipProvider>
       <Tooltip>

@@ -1,9 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { DashboardQueryResponse } from "@/types/alpaca.types";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
@@ -35,10 +31,7 @@ export function PortfolioChart<T extends DashboardQueryResponse>({
           className="h-[300px] sm:h-[400px]"
         >
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={chartData}
-              margin={{ top: 10, right: 10, left: 10, bottom: 20 }}
-            >
+            <LineChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
               <XAxis
                 dataKey="date"
                 stroke="#888888"

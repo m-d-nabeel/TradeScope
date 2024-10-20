@@ -41,11 +41,7 @@ export const SearchableHeader = ({
   }
 
   return (
-    <Button
-      variant="ghost"
-      onClick={() => setIsSearching(true)}
-      className="w-full justify-between"
-    >
+    <Button variant="ghost" onClick={() => setIsSearching(true)} className="w-full justify-between">
       <div className="flex items-center space-x-2">
         {icon}
         <span className="text-sm font-medium">{title}</span>

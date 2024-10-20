@@ -10,11 +10,7 @@ export default function AccountDashboard() {
   const { data: accountData } = accountQuery;
 
   if (!accountData) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
   }
 
   return (

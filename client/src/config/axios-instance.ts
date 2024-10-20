@@ -1,10 +1,6 @@
 import { APP_CONFIG } from "@/config/constants";
 import { AuthService } from "@/services/auth.service";
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 const axiosInstance = axios.create({
   baseURL: APP_CONFIG.API_BASE_URL,
@@ -15,10 +11,7 @@ const axiosInstance = axios.create({
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
-const processQueue = (
-  error: AxiosError | null,
-  token: string | null = null,
-) => {
+const processQueue = (error: AxiosError | null, token: string | null = null) => {
   failedQueue.forEach((promise) => {
     if (error) {
       promise.reject(error);

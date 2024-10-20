@@ -2,19 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlpacaAuction } from "@/types/alpaca.types";
 import { format, parseISO } from "date-fns";
 import React from "react";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
-  YAxis
-} from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartTooltip,
-} from "../ui/chart";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { ChartConfig, ChartContainer, ChartLegend, ChartTooltip } from "../ui/chart";
 import { CustomTooltip } from "./custom-tooltip";
 
 interface PropsInterface {
@@ -54,14 +43,8 @@ export function AuctionSizeChart({ auctionData }: PropsInterface) {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <AreaChart
-            data={chartData}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              className="stroke-muted-foreground/20"
-            />
+          <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
             <XAxis
               dataKey="date"
               tickFormatter={(tick) => format(parseISO(tick), "MMM d")}
@@ -69,15 +52,8 @@ export function AuctionSizeChart({ auctionData }: PropsInterface) {
               minTickGap={50}
               className="text-xs text-muted-foreground"
             />
-            <YAxis
-              tickFormatter={formatYAxis}
-              className="text-xs text-muted-foreground"
-            />
-            <ChartTooltip
-              content={<CustomTooltip />}
-              defaultIndex={1}
-              cursor={false}
-            />
+            <YAxis tickFormatter={formatYAxis} className="text-xs text-muted-foreground" />
+            <ChartTooltip content={<CustomTooltip />} defaultIndex={1} cursor={false} />
             <ChartLegend />
             <Area
               type="monotone"

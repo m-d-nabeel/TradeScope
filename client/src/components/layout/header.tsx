@@ -115,24 +115,13 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
             <div className="mx-auto max-w-7xl px-4 py-1 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
                 {stocks.map((stock) => (
-                  <div
-                    key={stock.symbol}
-                    className="flex items-center space-x-2"
-                  >
-                    <span className="font-semibold text-gray-800">
-                      {stock.symbol}
-                    </span>
-                    <span className="text-gray-600">
-                      ${stock.price.toFixed(2)}
-                    </span>
+                  <div key={stock.symbol} className="flex items-center space-x-2">
+                    <span className="font-semibold text-gray-800">{stock.symbol}</span>
+                    <span className="text-gray-600">${stock.price.toFixed(2)}</span>
                     <span
                       className={`flex items-center ${stock.change >= 0 ? "text-green-600" : "text-red-600"}`}
                     >
-                      {stock.change >= 0 ? (
-                        <TrendingUp size={16} />
-                      ) : (
-                        <TrendingDown size={16} />
-                      )}
+                      {stock.change >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                       {Math.abs(stock.change).toFixed(2)}%
                     </span>
                   </div>

@@ -1,12 +1,12 @@
 import { PortfolioResponse } from "@/types/alpaca.types";
 import {
-    CartesianGrid,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 
 export function PortfolioChart<T extends PortfolioResponse>({
@@ -47,10 +47,7 @@ export function PortfolioChart<T extends PortfolioResponse>({
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
             }}
             labelStyle={{ color: "#374151", fontWeight: "bold" }}
-            formatter={(value: number) => [
-              `$${value.toLocaleString()}`,
-              "Equity",
-            ]}
+            formatter={(value: number) => [`$${value.toLocaleString()}`, "Equity"]}
           />
           <Line
             type="monotone"

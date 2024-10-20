@@ -88,7 +88,6 @@ export type AlpacaAsset = {
   attributes: string[];
 };
 
-
 /****************Auctions******************/
 type AlpacaAuctionFields = {
   t: string;
@@ -140,7 +139,7 @@ export type DashboardQueryResponse = {
     timeframe: string;
     timestamp: number[];
   };
-}
+};
 /***************************************/
 
 export type PortfolioResponse = {
@@ -154,7 +153,6 @@ export type PortfolioResponse = {
     timestamp: number[];
   };
 };
-
 
 export type AlpacaSymbol = {
   id: string;

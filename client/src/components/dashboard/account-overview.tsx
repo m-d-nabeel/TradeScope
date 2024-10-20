@@ -12,37 +12,25 @@ export function AccountOverview<T extends DashboardQueryResponse>({
         <h2 className="mb-2 text-lg font-semibold">Account Overview</h2>
         <dl className="space-y-2">
           <div className="flex justify-between">
-            <dt className="text-sm font-medium text-muted-foreground">
-              Account Number
-            </dt>
+            <dt className="text-sm font-medium text-muted-foreground">Account Number</dt>
             <dd className="text-sm font-semibold">{account.account_number}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-sm font-medium text-muted-foreground">
-              Status
-            </dt>
+            <dt className="text-sm font-medium text-muted-foreground">Status</dt>
             <dd className="text-sm font-semibold">{account.status}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-sm font-medium text-muted-foreground">
-              Cash Balance
-            </dt>
-            <dd className="text-sm font-semibold">
-              ${parseFloat(account.cash).toLocaleString()}
-            </dd>
+            <dt className="text-sm font-medium text-muted-foreground">Cash Balance</dt>
+            <dd className="text-sm font-semibold">${parseFloat(account.cash).toLocaleString()}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-sm font-medium text-muted-foreground">
-              Portfolio Value
-            </dt>
+            <dt className="text-sm font-medium text-muted-foreground">Portfolio Value</dt>
             <dd className="text-sm font-semibold">
               ${parseFloat(account.portfolio_value).toLocaleString()}
             </dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-sm font-medium text-muted-foreground">
-              Buying Power
-            </dt>
+            <dt className="text-sm font-medium text-muted-foreground">Buying Power</dt>
             <dd className="text-sm font-semibold">
               ${parseFloat(account.buying_power).toLocaleString()}
             </dd>

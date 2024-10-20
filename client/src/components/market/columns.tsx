@@ -20,9 +20,7 @@ export const columns: ColumnDef<AlpacaAsset>[] = [
     header: ({ column, table }) => (
       <SearchableHeader column={column} table={table} title="Symbol" />
     ),
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("symbol")}</div>
-    ),
+    cell: ({ row }) => <div className="font-medium">{row.getValue("symbol")}</div>,
     filterFn: fuzzyFilter,
     enableSorting: false,
   },
@@ -59,9 +57,7 @@ export const columns: ColumnDef<AlpacaAsset>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("class")}</div>
-    ),
+    cell: ({ row }) => <div className="text-center">{row.getValue("class")}</div>,
   },
   {
     accessorKey: "exchange",
@@ -83,9 +79,7 @@ export const columns: ColumnDef<AlpacaAsset>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("exchange")}</div>
-    ),
+    cell: ({ row }) => <div className="text-center">{row.getValue("exchange")}</div>,
   },
   {
     accessorKey: "status",
@@ -109,11 +103,7 @@ export const columns: ColumnDef<AlpacaAsset>[] = [
     },
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      return (
-        <Badge variant={status === "active" ? "default" : "secondary"}>
-          {status}
-        </Badge>
-      );
+      return <Badge variant={status === "active" ? "default" : "secondary"}>{status}</Badge>;
     },
   },
   {
@@ -134,8 +124,6 @@ export const columns: ColumnDef<AlpacaAsset>[] = [
   },
   {
     accessorKey: "maintenance_margin_requirement",
-    header: () => (
-      <TooltipComponent label="Margin" value="Maintenance Margin Requirement" />
-    ),
+    header: () => <TooltipComponent label="Margin" value="Maintenance Margin Requirement" />,
   },
 ];

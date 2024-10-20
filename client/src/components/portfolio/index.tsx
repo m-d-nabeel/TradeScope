@@ -1,10 +1,4 @@
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDashboardQueries } from "@/hooks/use-alpaca.hook";
 import { PortfolioChart } from "./portfolio-chart";
 import { PortfolioSummary } from "./portfolio-summary";
@@ -18,9 +12,7 @@ export function PortfolioDashboard() {
   return (
     <Card className="mx-auto w-full max-w-4xl bg-gradient-to-br from-blue-50 to-purple-50">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-gray-800">
-          Portfolio Dashboard
-        </CardTitle>
+        <CardTitle className="text-2xl font-bold text-gray-800">Portfolio Dashboard</CardTitle>
         <CardDescription className="text-gray-600">
           Your investment performance at a glance
         </CardDescription>

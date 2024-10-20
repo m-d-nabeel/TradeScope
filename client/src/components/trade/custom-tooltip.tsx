@@ -12,7 +12,7 @@ export const CustomTooltip = ({ active, payload, label }: any) => {
         </CardHeader>
         <CardContent className="m-0 h-fit w-fit p-0">
           {payload.map((entry: any, index: number) => (
-            <p key={`item-${index}`} className="text-sm flex justify-stretch">
+            <p key={`item-${index}`} className="flex justify-stretch text-sm">
               <span className="font-medium" style={{ color: entry.color }}>
                 {entry.name}:
               </span>

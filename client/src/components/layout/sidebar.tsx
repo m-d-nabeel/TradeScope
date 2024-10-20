@@ -1,9 +1,4 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuthQueries } from "@/hooks/use-auth.hook";
 import { Link, useLocation } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -57,9 +52,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <Icon
-                className={`h-5 w-5 ${activePath === to.slice(1) ? "text-blue-500" : ""}`}
-              />
+              <Icon className={`h-5 w-5 ${activePath === to.slice(1) ? "text-blue-500" : ""}`} />
               <span className="font-medium">{label}</span>
               {activePath === to.slice(1) && (
                 <motion.div

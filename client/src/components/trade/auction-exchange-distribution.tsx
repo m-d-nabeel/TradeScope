@@ -80,15 +80,9 @@ export function AuctionExchangeDistribution({ auctionData }: PropsInterface) {
         <CardDescription>Distribution of exchanges in auctions</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
+        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
           <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Pie
               data={chartData}
               dataKey="count"
@@ -98,10 +92,7 @@ export function AuctionExchangeDistribution({ auctionData }: PropsInterface) {
               strokeWidth={5}
             >
               {chartData.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
               <Label
                 content={({ viewBox }) => {

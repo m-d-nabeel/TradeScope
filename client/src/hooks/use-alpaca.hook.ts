@@ -31,7 +31,7 @@ export const useAlpacaQueries = () => {
     queryFn: AlpacaMarketService.getStocksExchanges,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 
   const symbolsQuery = useQuery({
@@ -39,7 +39,7 @@ export const useAlpacaQueries = () => {
     queryFn: AlpacaService.getSymbols,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 
   return {
@@ -49,7 +49,6 @@ export const useAlpacaQueries = () => {
     symbolsQuery,
   };
 };
-
 
 export const useMarketQueries = (params: MarketQuery) => {
   const auctionQuery = useQuery({
@@ -65,14 +64,14 @@ export const useMarketQueries = (params: MarketQuery) => {
     queryFn: () => AlpacaMarketService.getBars(params),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 
   return {
     auctionQuery,
     barsQuery,
   };
-}
+};
 
 export const useDashboardQueries = () => {
   const dashboardQuery = useQuery({

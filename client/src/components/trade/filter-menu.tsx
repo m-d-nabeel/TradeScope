@@ -1,18 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAlpacaQueries } from "@/hooks/use-alpaca.hook";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import Fuse from "fuse.js";
 import { FilterIcon, Search } from "lucide-react";
-import { useState } from "react";
-
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Loading from "../common/loading";
@@ -25,50 +20,54 @@ type AlpacaSymbol = {
 
 export function FilterMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<AlpacaSymbol | null>(null);
+  const [showSymbolsDropdown, setShowSymbolsDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [startDate, setStartDate] = useState(new Date("2023-01-01"));
-  const [endDate, setEndDate] = useState(new Date());
-  const [showStocksDropdown, setShowStocksDropdown] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState<AlpacaSymbol | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const searchQuery = useSearch({ from: "/_main/trade/" });
   const navigate = useNavigate();
 
   const { symbolsQuery } = useAlpacaQueries();
-  const { data: symbolsData, isLoading, isSuccess } = symbolsQuery;
+  const { data: symbolsData, isLoading, isError } = symbolsQuery;
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  useEffect(() => {
+    setStartDate(searchQuery.startDate ? new Date(searchQuery.startDate) : new Date("2024-01-01"));
+    setEndDate(searchQuery.endDate ? new Date(searchQuery.endDate) : new Date());
+    setSearchTerm(searchQuery.symbols?.split(",")[0] ?? "");
+  }, [searchQuery]);
 
-  if (!isSuccess || !symbolsData) {
-    return <p>Failed to load data.</p>;
-  }
+  const fuse = React.useMemo(() => {
+    return new Fuse(symbolsData || [], {
+      keys: ["symbol", "name"],
+      threshold: 0.3,
+      includeScore: true,
+    });
+  }, [symbolsData]);
 
-  const fuse = new Fuse(symbolsData, {
-    keys: ["symbol", "name"],
-    threshold: 0.3,
-    includeScore: true,
-  });
+  const filteredSymbols = React.useMemo(() => {
+    if (!searchTerm) return symbolsData?.slice(0, 20) || [];
+    return fuse
+      .search(searchTerm)
+      .slice(0, 20)
+      .map((result) => result.item);
+  }, [searchTerm, symbolsData, fuse]);
 
-  const filteredSymbols = searchTerm
-    ? fuse
-        .search(searchTerm)
-        .slice(0, 20)
-        .map((result) => result.item)
-    : symbolsData?.slice(0, 20);
-
-  const handleApplyFilters = () => {
+  const handleApplyFilters = () => {  
     navigate({
       to: "/trade",
       search: {
-        symbols: selectedStock?.symbol || "",
-        start: startDate ? startDate.toISOString() : "",
-        end: endDate ? endDate.toISOString() : "",
-        name: selectedStock?.name || "",
+        symbols: selectedSymbol?.symbol || "",
+        startDate: startDate ? startDate.toISOString() : "",
+        endDate: endDate ? endDate.toISOString() : "",
+        name: selectedSymbol?.name || "",
       },
     });
-
     setIsOpen(false);
   };
+
+  if (isLoading) return <Loading />;
+  if (isError) return <p>Failed to load data.</p>;
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -91,27 +90,25 @@ export function FilterMenu() {
         >
           <div className="space-y-2">
             <h4 className="text-lg font-semibold">Filters</h4>
-            <p className="text-sm text-muted-foreground">
-              Set the filters for your analysis
-            </p>
+            <p className="text-sm text-muted-foreground">Set the filters for your analysis</p>
           </div>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="stock">Stock</Label>
+              <Label htmlFor="stock">Symbol</Label>
               <div className="relative">
                 <Input
                   id="stock"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => setShowStocksDropdown(true)}
-                  onBlur={() => setShowStocksDropdown(false)}
+                  onFocus={() => setShowSymbolsDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowSymbolsDropdown(false), 200)}
                   placeholder="Search stocks..."
                   className="pr-10"
                 />
                 <Search className="absolute right-3 top-2.5 h-5 w-5 text-muted-foreground" />
               </div>
               <AnimatePresence>
-                {showStocksDropdown && (
+                {showSymbolsDropdown && (
                   <motion.ul
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -124,14 +121,12 @@ export function FilterMenu() {
                         key={symbol.id}
                         className="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-accent hover:text-accent-foreground"
                         onClick={() => {
-                          setSelectedStock(symbol);
+                          setSelectedSymbol(symbol);
                           setSearchTerm(symbol.symbol);
-                          setShowStocksDropdown(false);
+                          setShowSymbolsDropdown(false);
                         }}
                       >
-                        <span className="block truncate font-semibold">
-                          {symbol.symbol}
-                        </span>
+                        <span className="block truncate font-semibold">{symbol.symbol}</span>
                         <span className="block truncate text-sm text-muted-foreground">
                           {symbol.name}
                         </span>
@@ -144,34 +139,27 @@ export function FilterMenu() {
             <div className="flex flex-col gap-y-2">
               <div className="flex items-center gap-x-2">
                 <div className="w-full">
-                  <label
-                    htmlFor="start-date"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="start-date" className="block text-sm font-medium text-gray-700">
                     Start Date
                   </label>
                   <DatePicker
                     id="start-date"
-                    popperClassName="relative -mx-8 shadow-lg"
                     selected={startDate}
-                    onChange={(date) => setStartDate(date as Date)}
-                    maxDate={endDate}
+                    onChange={(date) => setStartDate(date)}
+                    maxDate={endDate || new Date()}
                     dateFormat="yyyy-MM-dd"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
                 <div className="w-full">
-                  <label
-                    htmlFor="end-date"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="end-date" className="block text-sm font-medium text-gray-700">
                     End Date
                   </label>
                   <DatePicker
                     id="end-date"
-                    popperClassName="relative -mx-8 shadow-lg"
                     selected={endDate}
-                    onChange={(date) => setEndDate(date as Date)}
+                    onChange={(date) => setEndDate(date)}
+                    minDate={startDate ?? new Date("2024-01-01")}
                     maxDate={new Date()}
                     dateFormat="yyyy-MM-dd"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"

@@ -39,12 +39,8 @@ export default function NotFound() {
 
       {/* 404 Message with glitch effect */}
       <h1 className="relative mb-4 text-9xl font-bold">
-        <span className="animate-glitch-1 absolute left-0 top-0 -ml-2 text-red-500">
-          404
-        </span>
-        <span className="animate-glitch-2 absolute left-0 top-0 ml-2 text-blue-500">
-          404
-        </span>
+        <span className="animate-glitch-1 absolute left-0 top-0 -ml-2 text-red-500">404</span>
+        <span className="animate-glitch-2 absolute left-0 top-0 ml-2 text-blue-500">404</span>
         <span className="relative">404</span>
       </h1>
 

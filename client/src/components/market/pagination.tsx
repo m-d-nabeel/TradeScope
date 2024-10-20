@@ -1,12 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table } from "@tanstack/react-table";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { useState } from "react";
 
 interface PaginationProps<TData> {
@@ -30,8 +25,7 @@ export function PaginationComponent<TData>({ table }: PaginationProps<TData>) {
         <span>Total rows: {table.getFilteredRowModel().rows.length}</span>
         <span>|</span>
         <span>
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
         </span>
       </div>
       <div className="flex items-center space-x-2">

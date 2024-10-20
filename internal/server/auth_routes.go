@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -23,6 +25,10 @@ const (
 	userKey     contextKey = "__user_key__"
 )
 
+/*************************************************/
+/************GOTHIC AUTH HANDLER STARTS***********/
+/*************************************************/
+
 func (s *Server) authHandler(w http.ResponseWriter, r *http.Request) {
 	provider := chi.URLParam(r, "provider")
 	r = r.WithContext(context.WithValue(r.Context(), providerKey, provider))
@@ -34,10 +40,18 @@ func (s *Server) authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	provider := chi.URLParam(r, "provider")
 	r = r.WithContext(context.WithValue(r.Context(), providerKey, provider))
 
+	// Retrieve the state parameter
+	state := r.URL.Query().Get("state")
+	if state == "" {
+		log.Println("Missing state parameter")
+		s.sendAuthResponse(w, "AUTH_ERROR", nil, "Missing state parameter", "")
+		return
+	}
+
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
 		log.Println("Authentication failed: ", err)
-		http.Error(w, "Authentication failed: "+err.Error(), http.StatusInternalServerError)
+		s.sendAuthResponse(w, "AUTH_ERROR", nil, err.Error(), state)
 		return
 	}
 
@@ -54,7 +68,7 @@ func (s *Server) authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		if err != nil {
 			log.Println("User creation failed: ", err)
-			http.Error(w, "User creation failed: "+err.Error(), http.StatusInternalServerError)
+			s.sendAuthResponse(w, "AUTH_ERROR", nil, "User creation failed", state)
 			return
 		}
 	}
@@ -68,7 +82,7 @@ func (s *Server) authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Println("Token generation failed: ", err)
-		http.Error(w, "Token generation failed: "+err.Error(), http.StatusInternalServerError)
+		s.sendAuthResponse(w, "AUTH_ERROR", nil, "Token generation failed", state)
 		return
 	}
 
@@ -79,14 +93,60 @@ func (s *Server) authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Println("Token update failed: ", err)
-		http.Error(w, "Token update failed: "+err.Error(), http.StatusInternalServerError)
+		s.sendAuthResponse(w, "AUTH_ERROR", nil, "Token update failed", state)
 		return
 	}
 
 	SetCookies(w, accessToken, refreshToken)
 
-	http.Redirect(w, r, FrontendURL+"/dashboard", http.StatusTemporaryRedirect)
+	userResponse := map[string]interface{}{
+		"id":        lib.UUIDToString(dbUser.ID),
+		"email":     dbUser.Email,
+		"name":      dbUser.Name,
+		"avatarUrl": dbUser.AvatarUrl.String,
+	}
+
+	s.sendAuthResponse(w, "AUTH_SUCCESS", userResponse, "", state)
 }
+
+func (s *Server) sendAuthResponse(w http.ResponseWriter, responseType string, user interface{}, errorMsg string, state string) {
+	response := map[string]interface{}{
+		"type":  responseType,
+		"state": state,
+	}
+	if user != nil {
+		response["user"] = user
+	}
+	if errorMsg != "" {
+		response["error"] = errorMsg
+	}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		log.Printf("Error marshaling JSON response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// Escape single quotes in the JSON string
+	escapedJSON := strings.Replace(string(jsonResponse), "'", "\\'", -1)
+
+	w.Header().Set("Content-Type", "text/html")
+	fmt.Fprintf(w, `
+		<html>
+		<body>
+			<script>
+				window.opener.postMessage('%s', '%s');
+				window.close();
+			</script>
+		</body>
+		</html>
+	`, escapedJSON, FrontendURL)
+}
+
+/*************************************************/
+/*************GOTHIC AUTH HANDLER ENDS************/
+/*************************************************/
 
 func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	RemoveCookies(w)

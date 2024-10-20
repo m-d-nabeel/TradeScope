@@ -16,8 +16,7 @@ export function HelpPage() {
         },
         {
           subtitle: "Connecting Broker Accounts",
-          description:
-            "Simple instructions on linking your Alpaca account to the app.",
+          description: "Simple instructions on linking your Alpaca account to the app.",
         },
       ],
     },
@@ -27,8 +26,7 @@ export function HelpPage() {
       content: [
         {
           subtitle: "Viewing Stocks",
-          description:
-            "How to search for and view stock information (price, percentage change).",
+          description: "How to search for and view stock information (price, percentage change).",
         },
         {
           subtitle: "Favorite Stocks",
@@ -77,19 +75,11 @@ export function HelpPage() {
           >
             <button
               className="flex w-full items-center justify-between px-4 py-5 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 sm:p-6"
-              onClick={() =>
-                setOpenSection(
-                  openSection === section.title ? null : section.title,
-                )
-              }
+              onClick={() => setOpenSection(openSection === section.title ? null : section.title)}
             >
               <div className="flex items-center space-x-3">
-                <div className="flex-shrink-0 rounded-full bg-blue-100 p-2">
-                  {section.icon}
-                </div>
-                <h2 className="text-lg font-medium text-gray-900">
-                  {section.title}
-                </h2>
+                <div className="flex-shrink-0 rounded-full bg-blue-100 p-2">{section.icon}</div>
+                <h2 className="text-lg font-medium text-gray-900">{section.title}</h2>
               </div>
               <ChevronDown
                 className={`h-5 w-5 transform text-gray-400 transition-transform duration-300 ${
@@ -113,12 +103,8 @@ export function HelpPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: itemIndex * 0.1 }}
                       >
-                        <h3 className="text-sm font-semibold text-gray-900">
-                          {item.subtitle}
-                        </h3>
-                        <p className="mt-1 text-sm text-gray-600">
-                          {item.description}
-                        </p>
+                        <h3 className="text-sm font-semibold text-gray-900">{item.subtitle}</h3>
+                        <p className="mt-1 text-sm text-gray-600">{item.description}</p>
                       </motion.div>
                     ))}
                   </div>

@@ -1,4 +1,5 @@
 import { AuthService } from "@/services/auth.service";
+import { User } from "@/types/user.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useGlobalStore } from "./use-global-context";
 
@@ -14,26 +15,29 @@ export const useAuthQueries = () => {
     retry: false,
     enabled: isAuthenticated,
   });
-  const loginMutation = useMutation({
+
+  const loginMutation = useMutation<User, Error, string | undefined>({
     mutationFn: AuthService.login,
-    onSuccess: () => {
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["auth-status"] });
-        setAuth();
-      }, 1000)
+    onSuccess: (user) => {
+      queryClient.setQueryData(["auth-status"], { status: "Authenticated", user });
+      setAuth();
+    },
+    onError: (error) => {
+      console.error("[LOGIN_ERROR]: ", error);
+      clearAuth();
     },
   });
 
   const logoutMutation = useMutation({
-    mutationFn: async () => {
-      try {
-        await AuthService.logout()
-      } catch (error: any) {
-        console.log("[LOGOUT_ERROR]: ", error);
-      }
+    mutationFn: AuthService.logout,
+    onSuccess: () => {
+      queryClient.setQueryData(["auth-status"], { status: "Unauthenticated", user: null });
+      clearAuth();
+    },
+    onError: (error: any) => {
+      console.error("[LOGOUT_ERROR]: ", error);
     },
     onSettled: () => {
-      queryClient.setQueryData(["auth-status"], null);
       clearAuth();
     },
   });

@@ -12,9 +12,7 @@ export default function TradingDashboard() {
   if (!data) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="text-2xl font-bold text-gray-500 dark:text-gray-400">
-          Loading...
-        </div>
+        <div className="text-2xl font-bold text-gray-500 dark:text-gray-400">Loading...</div>
       </div>
     );
   }

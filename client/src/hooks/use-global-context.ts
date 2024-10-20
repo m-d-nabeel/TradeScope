@@ -15,7 +15,7 @@ export const useGlobalStore = create<GlobalStore>()(
       clearAuth: () => set({ isAuthenticated: false }),
     }),
     {
-      name: "auth-storage"
+      name: "auth-storage",
     },
   ),
 );

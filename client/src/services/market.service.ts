@@ -26,9 +26,7 @@ export const AlpacaMarketService = {
         end,
       });
       console.log("Query: ", query);
-      const response = await axiosInstance.get(
-        `/api/alpaca/market/bars?${query}`,
-      );
+      const response = await axiosInstance.get(`/api/alpaca/market/bars?${query}`);
       return response.data;
     } catch (error: any) {
       console.info("Error getting bars: ", error?.message);
@@ -43,9 +41,7 @@ export const AlpacaMarketService = {
         end,
       });
       console.log("Query: ", query);
-      const response = await axiosInstance.get(
-        `/api/alpaca/market/auctions?${query}`,
-      );
+      const response = await axiosInstance.get(`/api/alpaca/market/auctions?${query}`);
       return response.data;
     } catch (error: any) {
       console.info("Error getting auctions: ", error?.message);
@@ -61,5 +57,5 @@ export const AlpacaMarketService = {
       console.info("Error getting stocks exchanges: ", error?.message);
       return {};
     }
-  }
+  },
 };

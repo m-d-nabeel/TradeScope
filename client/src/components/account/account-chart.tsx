@@ -1,12 +1,5 @@
 import { AlpacaAccountResponse } from "@/types/alpaca.types";
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 export function AccountChart<T extends AlpacaAccountResponse>({
@@ -32,13 +25,7 @@ export function AccountChart<T extends AlpacaAccountResponse>({
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#4f46e5"
-              strokeWidth={2}
-              dot={false}
-            />
+            <Line type="monotone" dataKey="value" stroke="#4f46e5" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

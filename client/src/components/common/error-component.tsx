@@ -3,12 +3,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertOctagon, Home, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export function ErrorComponent({ error }: { error: Error }) {
+export function ErrorComponent({
+  error,
+  mode = "dark",
+}: {
+  error: Error;
+  mode?: "light" | "dark";
+}) {
   const navigate = useNavigate();
   const location = useLocation();
   const [errorMessage, setErrorMessage] = useState("");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
+  const [isHoveringRefresh, setIsHoveringRefresh] = useState(false);
+  const [isHoveringHome, setIsHoveringHome] = useState(false);
 
   useEffect(() => {
     setErrorMessage(error.message || "An unexpected error occurred");
@@ -27,13 +34,18 @@ export function ErrorComponent({ error }: { error: Error }) {
   const handleRefresh = () => {
     return navigate({
       to: location.pathname,
+      search: location.search,
       replace: true,
     });
   };
 
+  const isDark = mode === "dark";
+
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-900 text-white"
+      className={`relative flex min-h-screen items-center justify-center overflow-hidden ${
+        isDark ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"
+      }`}
       style={
         {
           "--mouse-x": `${mousePosition.x}px`,
@@ -42,21 +54,37 @@ export function ErrorComponent({ error }: { error: Error }) {
       }
     >
       {/* Dynamic background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.1)_0%,transparent_60%)]" />
+      <div
+        className={`absolute inset-0 ${
+          isDark
+            ? "bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.1)_0%,transparent_60%)]"
+            : "bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(0,0,0,0.05)_0%,transparent_60%)]"
+        }`}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="z-10 w-full max-w-md overflow-hidden rounded-lg bg-gray-800 bg-opacity-50 p-8 shadow-2xl backdrop-blur-md"
+        className={`z-10 w-full max-w-md overflow-hidden rounded-lg ${
+          isDark ? "bg-gray-800 bg-opacity-50" : "bg-white bg-opacity-70"
+        } p-8 shadow-2xl backdrop-blur-md`}
       >
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           className="relative mx-auto mb-6 flex h-24 w-24 items-center justify-center"
         >
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500 to-purple-500 opacity-20" />
-          <AlertOctagon className="relative z-10 h-12 w-12 text-red-500" />
+          <div
+            className={`absolute inset-0 rounded-full ${
+              isDark
+                ? "bg-gradient-to-r from-red-500 to-purple-500 opacity-20"
+                : "bg-gradient-to-r from-orange-300 to-rose-300 opacity-30"
+            }`}
+          />
+          <AlertOctagon
+            className={`relative z-10 h-12 w-12 ${isDark ? "text-red-500" : "text-red-600"}`}
+          />
         </motion.div>
         <motion.h1
           className="mb-4 text-center text-3xl font-bold"
@@ -80,14 +108,20 @@ export function ErrorComponent({ error }: { error: Error }) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleRefresh}
-            className="relative flex items-center space-x-2 overflow-hidden rounded-full bg-gray-700 px-6 py-2 transition-all duration-300"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
+            className={`relative flex items-center space-x-2 overflow-hidden rounded-full ${
+              isDark ? "bg-gray-700" : "bg-gray-200"
+            } px-6 py-2 transition-all duration-300`}
+            onMouseEnter={() => setIsHoveringRefresh(true)}
+            onMouseLeave={() => setIsHoveringRefresh(false)}
           >
             <AnimatePresence>
-              {isHovering && (
+              {isHoveringRefresh && (
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600"
+                  className={`absolute inset-0 ${
+                    isDark
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600"
+                      : "bg-gradient-to-r from-blue-400 to-purple-400"
+                  }`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -102,14 +136,20 @@ export function ErrorComponent({ error }: { error: Error }) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="relative flex items-center space-x-2 overflow-hidden rounded-full bg-gray-700 px-6 py-2 transition-all duration-300"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
+              className={`relative flex items-center space-x-2 overflow-hidden rounded-full ${
+                isDark ? "bg-gray-700" : "bg-gray-200"
+              } px-6 py-2 transition-all duration-300`}
+              onMouseEnter={() => setIsHoveringHome(true)}
+              onMouseLeave={() => setIsHoveringHome(false)}
             >
               <AnimatePresence>
-                {isHovering && (
+                {isHoveringHome && (
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600"
+                    className={`absolute inset-0 ${
+                      isDark
+                        ? "bg-gradient-to-r from-purple-600 to-pink-600"
+                        : "bg-gradient-to-r from-purple-400 to-pink-400"
+                    }`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}

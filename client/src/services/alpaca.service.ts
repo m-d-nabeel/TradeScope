@@ -1,5 +1,11 @@
 import axiosInstance from "@/config/axios-instance";
-import { AlpacaAccountResponse, AlpacaAsset, AlpacaSymbol, DashboardQueryResponse, PortfolioResponse } from "@/types/alpaca.types";
+import {
+  AlpacaAccountResponse,
+  AlpacaAsset,
+  AlpacaSymbol,
+  DashboardQueryResponse,
+  PortfolioResponse,
+} from "@/types/alpaca.types";
 
 export const AlpacaService = {
   async getAccount() {
@@ -13,9 +19,7 @@ export const AlpacaService = {
   },
   async getAssets(page: number) {
     try {
-      const response = await axiosInstance.get(
-        `/api/alpaca/assets/page/${page}`,
-      );
+      const response = await axiosInstance.get(`/api/alpaca/assets/page/${page}`);
       return response.data;
     } catch (error: any) {
       console.info("Error getting assets: ", error?.message);
@@ -60,5 +64,5 @@ export const AlpacaService = {
       console.info("Error getting symbols: ", error?.message);
       return [];
     }
-  }
+  },
 };

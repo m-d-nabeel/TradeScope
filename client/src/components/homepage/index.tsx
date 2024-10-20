@@ -85,10 +85,9 @@ export const Homepage = () => {
                 Revolutionize Your Trading Experience
               </h2>
               <p className="mt-2 text-gray-600">
-                Our platform leverages the power of the Alpaca API to provide
-                you with a seamless, efficient, and intelligent trading
-                experience. From beginners to seasoned pros, we've got the tools
-                you need to succeed in the market.
+                Our platform leverages the power of the Alpaca API to provide you with a seamless,
+                efficient, and intelligent trading experience. From beginners to seasoned pros,
+                we've got the tools you need to succeed in the market.
               </p>
               <div className="mt-4">
                 <Button
@@ -108,9 +107,7 @@ export const Homepage = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="mt-16 text-center"
         >
-          <h2 className="mb-4 text-3xl font-bold text-gray-900">
-            Ready to Start Trading?
-          </h2>
+          <h2 className="mb-4 text-3xl font-bold text-gray-900">Ready to Start Trading?</h2>
           <p className="mb-8 text-xl text-gray-600">
             Join thousands of successful traders on our platform today
           </p>

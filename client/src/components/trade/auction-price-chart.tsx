@@ -3,12 +3,7 @@ import { AlpacaAuction } from "@/types/alpaca.types";
 import { format, parseISO } from "date-fns";
 import React from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartTooltip,
-} from "../ui/chart";
+import { ChartConfig, ChartContainer, ChartLegend, ChartTooltip } from "../ui/chart";
 import { CustomTooltip } from "./custom-tooltip";
 
 interface PropsInterface {
@@ -31,8 +26,8 @@ export function AuctionPriceChart({ auctionData }: PropsInterface) {
     return auctionData
       .map((auction) => ({
         date: auction.d,
-        openingPrice: auction?.o?.[0]?.p,
-        closingPrice: auction?.c?.[0]?.p,
+        openingPrice: auction.o?.[0]?.p,
+        closingPrice: auction.c?.[0]?.p,
       }))
       .filter((data) => data.openingPrice && data.closingPrice);
   }, [auctionData]);
@@ -44,14 +39,8 @@ export function AuctionPriceChart({ auctionData }: PropsInterface) {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart
-            data={chartData}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              className="stroke-muted-foreground/20"
-            />
+          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
             <XAxis
               dataKey="date"
               tickFormatter={(tick) => format(parseISO(tick), "MMM d")}
@@ -64,11 +53,7 @@ export function AuctionPriceChart({ auctionData }: PropsInterface) {
               tickFormatter={(tick) => `$${tick.toFixed(2)}`}
               className="text-xs text-muted-foreground"
             />
-            <ChartTooltip
-              content={<CustomTooltip />}
-              defaultIndex={1}
-              cursor={false}
-            />
+            <ChartTooltip content={<CustomTooltip />} defaultIndex={1} cursor={false} />
             <ChartLegend />
             <Line
               type="monotone"
