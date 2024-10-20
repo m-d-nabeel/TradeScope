@@ -42,6 +42,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 			r.Get("/portfolio", s.getPortfolioHandler)
 			r.Get("/account", s.getAccountHandler)
 			r.Get("/positions", s.getPositionsHandler)
+			r.Get("/calendar", s.getTradingCalendarHandler)
 
 			// Assets routes
 			r.Route("/assets", func(r chi.Router) {

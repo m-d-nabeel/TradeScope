@@ -1,4 +1,4 @@
-package alpacamarket
+package alpacaservice
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 )
 
 func GetHistoricalBars() (BarsResponse, error) {
-	alpacaRequest, err := newAlpacaRequest("GET", StocksBarsEndpoint)
+	alpacaRequest, err := newAlpacaMarketRequest("GET", StocksBarsEndpoint)
 
 	if err != nil {
 		log.Printf("Error creating request to Alpaca API: %v", err)
@@ -52,7 +52,7 @@ func GetHistoricalBars() (BarsResponse, error) {
 }
 
 func GetHistoricalAuctions() (AuctionsResponse, error) {
-	alpacaRequest, err := newAlpacaRequest("GET", StocksAuctionEndpoint)
+	alpacaRequest, err := newAlpacaMarketRequest("GET", StocksAuctionEndpoint)
 
 	if err != nil {
 		log.Printf("Error creating request to Alpaca API: %v", err)
@@ -97,7 +97,7 @@ func GetHistoricalAuctions() (AuctionsResponse, error) {
 }
 
 func GetStocksExchanges() (map[string]string, error) {
-	alpacaRequest, err := newAlpacaRequest("GET", MetaStocksExchanges)
+	alpacaRequest, err := newAlpacaMarketRequest("GET", MetaStocksExchanges)
 
 	if err != nil {
 		log.Printf("Error creating request to Alpaca API: %v", err)

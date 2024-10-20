@@ -10,7 +10,7 @@ import { FilterIcon, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Loading from "../common/loading";
+import {Loading} from "../common/loading";
 
 type AlpacaSymbol = {
   id: string;
@@ -33,7 +33,7 @@ export function FilterMenu() {
 
   useEffect(() => {
     setStartDate(searchQuery.startDate ? new Date(searchQuery.startDate) : new Date("2024-01-01"));
-    setEndDate(searchQuery.endDate ? new Date(searchQuery.endDate) : new Date());
+    setEndDate(searchQuery.endDate ? new Date(searchQuery.endDate) : null);
     setSearchTerm(searchQuery.symbols?.split(",")[0] ?? "");
   }, [searchQuery]);
 
@@ -53,7 +53,7 @@ export function FilterMenu() {
       .map((result) => result.item);
   }, [searchTerm, symbolsData, fuse]);
 
-  const handleApplyFilters = () => {  
+  const handleApplyFilters = () => {
     navigate({
       to: "/trade",
       search: {

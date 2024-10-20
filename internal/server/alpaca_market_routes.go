@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/trading-backend/internal/lib"
-	alpacamarket "github.com/trading-backend/internal/service/alpaca_market"
+	alpacamarket "github.com/trading-backend/internal/service/alpaca_service"
 	"github.com/trading-backend/pkg/validator"
 )
 

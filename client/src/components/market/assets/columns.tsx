@@ -2,9 +2,9 @@ import { AlpacaAsset } from "@/types/alpaca.types";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { Briefcase, ChevronDown, ChevronUp, TrendingUp } from "lucide-react";
-import { TooltipComponent } from "../common/tooltip-provider";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { TooltipComponent } from "../../common/tooltip-provider";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
 import { AssetBadge } from "./asset-badge";
 import { SearchableHeader } from "./searchable-header";
 

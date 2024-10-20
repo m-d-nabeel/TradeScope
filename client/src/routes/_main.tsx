@@ -1,4 +1,4 @@
-import Loading from "@/components/common/loading";
+import { Loading } from "@/components/common/loading";
 import { Layout } from "@/components/layout";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 

@@ -159,3 +159,13 @@ export type AlpacaSymbol = {
   symbol: string;
   name: string;
 };
+
+
+export type TradingDay = {
+  date: string;
+  open: string;
+  close: string;
+  session_open: string;
+  session_close: string;
+  settlement_date: string;
+};

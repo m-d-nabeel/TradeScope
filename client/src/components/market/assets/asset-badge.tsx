@@ -1,5 +1,5 @@
-import { Badge } from "../ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { Badge } from "../../ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../ui/tooltip";
 
 export function AssetBadge({ label, value }: { label: string; value: boolean }) {
   return (

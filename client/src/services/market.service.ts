@@ -40,7 +40,6 @@ export const AlpacaMarketService = {
         start,
         end,
       });
-      console.log("Query: ", query);
       const response = await axiosInstance.get(`/api/alpaca/market/auctions?${query}`);
       return response.data;
     } catch (error: any) {

@@ -1,4 +1,4 @@
-package alpacamarket
+package alpacaservice
 
 import (
 	"log"
@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	// Alpaca API endpoints
-	StocksBarsEndpoint    = "/stocks/bars"
+	StocksBarsEndpoint    = "/stocks/bars" // Alpaca Market API endpoints
 	StocksAuctionEndpoint = "/stocks/auctions"
 	MetaStocksExchanges   = "/stocks/meta/exchanges"
+	CalendarEndpoint      = "/calendar" // Alpaca Trading API endpoints
 )
 
 type Bar struct {
@@ -73,7 +73,7 @@ var MarketBarQuery = map[string]string{
 	"limit":      strconv.Itoa(1000), // Maximum number of bars to return
 	"adjustment": "raw",              // Adjustment type ("raw", "split", "dividend", "all")
 	"asof":       "",                 // As-of date (default is current date)
-	"feed":       "sip",              // Data feed ("sip", "iex", "otc")
+	"feed":       "iex",              // Data feed ("sip", "iex", "otc")
 	"currency":   "USD",              // Currency (default is USD)
 	"sort":       "asc",              // Sort order ("asc" or "desc")
 	"page_token": "",                 // Page token for pagination
@@ -84,11 +84,29 @@ type MarketService interface {
 	GetHistoricalBars() (BarsResponse, error)
 }
 
-// newAlpacaRequest creates a new HTTP request to the Alpaca API
-func newAlpacaRequest(method, path string) (*http.Request, error) {
+// newAlpacaMarketRequest creates a new HTTP request to the Alpaca API
+func newAlpacaMarketRequest(method, path string) (*http.Request, error) {
 	alpacaRequest, err := http.NewRequest(
 		method,
 		"https://data.alpaca.markets/v2"+path,
+		nil,
+	)
+
+	if err != nil {
+		log.Printf("Error creating request to Alpaca API: %v", err)
+		return nil, err
+	}
+
+	alpacaRequest.Header.Add("APCA-API-KEY-ID", config.Envs.ApcaApiKeyId)
+	alpacaRequest.Header.Add("APCA-API-SECRET-KEY", config.Envs.ApcaApiSecretKey)
+
+	return alpacaRequest, nil
+}
+
+func newAlpacaTradingRequest(method, path string) (*http.Request, error) {
+	alpacaRequest, err := http.NewRequest(
+		method,
+		"https://paper-api.alpaca.markets/v2"+path,
 		nil,
 	)
 

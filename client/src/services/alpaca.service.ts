@@ -5,6 +5,7 @@ import {
   AlpacaSymbol,
   DashboardQueryResponse,
   PortfolioResponse,
+  TradingDay,
 } from "@/types/alpaca.types";
 
 export const AlpacaService = {
@@ -65,4 +66,14 @@ export const AlpacaService = {
       return [];
     }
   },
+
+  async getTradingCalendar(): Promise<TradingDay[]> {
+    try {
+      const response = await axiosInstance.get("/api/alpaca/calendar");
+      return response.data;
+    } catch (error: any) {
+      console.info("Error getting trading calendar: ", error?.message);
+      return [];
+    }
+  }
 };

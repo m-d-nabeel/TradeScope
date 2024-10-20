@@ -42,11 +42,20 @@ export const useAlpacaQueries = () => {
     refetchOnWindowFocus: false,
   });
 
+  const calendarQuery = useQuery({
+    queryKey: ["alpaca_calendar"],
+    queryFn: AlpacaService.getTradingCalendar,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false
+  });
+
   return {
     accountQuery,
     assetsQuery,
     stocksExchangesQuery,
     symbolsQuery,
+    calendarQuery
   };
 };
 

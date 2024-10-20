@@ -10,161 +10,191 @@
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root";
-import { Route as MainImport } from "./routes/_main";
-import { Route as IndexImport } from "./routes/index";
-import { Route as MainTradeIndexImport } from "./routes/_main/trade/index";
-import { Route as MainSettingsIndexImport } from "./routes/_main/settings/index";
-import { Route as MainPortfolioIndexImport } from "./routes/_main/portfolio/index";
-import { Route as MainMarketIndexImport } from "./routes/_main/market/index";
-import { Route as MainHelpIndexImport } from "./routes/_main/help/index";
-import { Route as MainDashboardIndexImport } from "./routes/_main/dashboard/index";
-import { Route as MainAlertsIndexImport } from "./routes/_main/alerts/index";
-import { Route as MainAccountIndexImport } from "./routes/_main/account/index";
+import { Route as rootRoute } from './routes/__root'
+import { Route as MainImport } from './routes/_main'
+import { Route as IndexImport } from './routes/index'
+import { Route as MainTradeIndexImport } from './routes/_main/trade/index'
+import { Route as MainSettingsIndexImport } from './routes/_main/settings/index'
+import { Route as MainPortfolioIndexImport } from './routes/_main/portfolio/index'
+import { Route as MainMarketIndexImport } from './routes/_main/market/index'
+import { Route as MainHelpIndexImport } from './routes/_main/help/index'
+import { Route as MainDashboardIndexImport } from './routes/_main/dashboard/index'
+import { Route as MainAlertsIndexImport } from './routes/_main/alerts/index'
+import { Route as MainAccountIndexImport } from './routes/_main/account/index'
+import { Route as MainMarketCalendarImport } from './routes/_main/market/calendar'
+import { Route as MainMarketAssetsImport } from './routes/_main/market/assets'
 
 // Create/Update Routes
 
 const MainRoute = MainImport.update({
-  id: "/_main",
+  id: '/_main',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const IndexRoute = IndexImport.update({
-  path: "/",
+  path: '/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const MainTradeIndexRoute = MainTradeIndexImport.update({
-  path: "/trade/",
+  path: '/trade/',
   getParentRoute: () => MainRoute,
-} as any);
+} as any)
 
 const MainSettingsIndexRoute = MainSettingsIndexImport.update({
-  path: "/settings/",
+  path: '/settings/',
   getParentRoute: () => MainRoute,
-} as any);
+} as any)
 
 const MainPortfolioIndexRoute = MainPortfolioIndexImport.update({
-  path: "/portfolio/",
+  path: '/portfolio/',
   getParentRoute: () => MainRoute,
-} as any);
+} as any)
 
 const MainMarketIndexRoute = MainMarketIndexImport.update({
-  path: "/market/",
+  path: '/market/',
   getParentRoute: () => MainRoute,
-} as any);
+} as any)
 
 const MainHelpIndexRoute = MainHelpIndexImport.update({
-  path: "/help/",
+  path: '/help/',
   getParentRoute: () => MainRoute,
-} as any);
+} as any)
 
 const MainDashboardIndexRoute = MainDashboardIndexImport.update({
-  path: "/dashboard/",
+  path: '/dashboard/',
   getParentRoute: () => MainRoute,
-} as any);
+} as any)
 
 const MainAlertsIndexRoute = MainAlertsIndexImport.update({
-  path: "/alerts/",
+  path: '/alerts/',
   getParentRoute: () => MainRoute,
-} as any);
+} as any)
 
 const MainAccountIndexRoute = MainAccountIndexImport.update({
-  path: "/account/",
+  path: '/account/',
   getParentRoute: () => MainRoute,
-} as any);
+} as any)
+
+const MainMarketCalendarRoute = MainMarketCalendarImport.update({
+  path: '/market/calendar',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainMarketAssetsRoute = MainMarketAssetsImport.update({
+  path: '/market/assets',
+  getParentRoute: () => MainRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/_main": {
-      id: "/_main";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof MainImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/_main/account/": {
-      id: "/_main/account/";
-      path: "/account";
-      fullPath: "/account";
-      preLoaderRoute: typeof MainAccountIndexImport;
-      parentRoute: typeof MainImport;
-    };
-    "/_main/alerts/": {
-      id: "/_main/alerts/";
-      path: "/alerts";
-      fullPath: "/alerts";
-      preLoaderRoute: typeof MainAlertsIndexImport;
-      parentRoute: typeof MainImport;
-    };
-    "/_main/dashboard/": {
-      id: "/_main/dashboard/";
-      path: "/dashboard";
-      fullPath: "/dashboard";
-      preLoaderRoute: typeof MainDashboardIndexImport;
-      parentRoute: typeof MainImport;
-    };
-    "/_main/help/": {
-      id: "/_main/help/";
-      path: "/help";
-      fullPath: "/help";
-      preLoaderRoute: typeof MainHelpIndexImport;
-      parentRoute: typeof MainImport;
-    };
-    "/_main/market/": {
-      id: "/_main/market/";
-      path: "/market";
-      fullPath: "/market";
-      preLoaderRoute: typeof MainMarketIndexImport;
-      parentRoute: typeof MainImport;
-    };
-    "/_main/portfolio/": {
-      id: "/_main/portfolio/";
-      path: "/portfolio";
-      fullPath: "/portfolio";
-      preLoaderRoute: typeof MainPortfolioIndexImport;
-      parentRoute: typeof MainImport;
-    };
-    "/_main/settings/": {
-      id: "/_main/settings/";
-      path: "/settings";
-      fullPath: "/settings";
-      preLoaderRoute: typeof MainSettingsIndexImport;
-      parentRoute: typeof MainImport;
-    };
-    "/_main/trade/": {
-      id: "/_main/trade/";
-      path: "/trade";
-      fullPath: "/trade";
-      preLoaderRoute: typeof MainTradeIndexImport;
-      parentRoute: typeof MainImport;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/_main': {
+      id: '/_main'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof MainImport
+      parentRoute: typeof rootRoute
+    }
+    '/_main/market/assets': {
+      id: '/_main/market/assets'
+      path: '/market/assets'
+      fullPath: '/market/assets'
+      preLoaderRoute: typeof MainMarketAssetsImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/market/calendar': {
+      id: '/_main/market/calendar'
+      path: '/market/calendar'
+      fullPath: '/market/calendar'
+      preLoaderRoute: typeof MainMarketCalendarImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/account/': {
+      id: '/_main/account/'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof MainAccountIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/alerts/': {
+      id: '/_main/alerts/'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof MainAlertsIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/dashboard/': {
+      id: '/_main/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof MainDashboardIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/help/': {
+      id: '/_main/help/'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof MainHelpIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/market/': {
+      id: '/_main/market/'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof MainMarketIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/portfolio/': {
+      id: '/_main/portfolio/'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof MainPortfolioIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/settings/': {
+      id: '/_main/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof MainSettingsIndexImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/trade/': {
+      id: '/_main/trade/'
+      path: '/trade'
+      fullPath: '/trade'
+      preLoaderRoute: typeof MainTradeIndexImport
+      parentRoute: typeof MainImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface MainRouteChildren {
-  MainAccountIndexRoute: typeof MainAccountIndexRoute;
-  MainAlertsIndexRoute: typeof MainAlertsIndexRoute;
-  MainDashboardIndexRoute: typeof MainDashboardIndexRoute;
-  MainHelpIndexRoute: typeof MainHelpIndexRoute;
-  MainMarketIndexRoute: typeof MainMarketIndexRoute;
-  MainPortfolioIndexRoute: typeof MainPortfolioIndexRoute;
-  MainSettingsIndexRoute: typeof MainSettingsIndexRoute;
-  MainTradeIndexRoute: typeof MainTradeIndexRoute;
+  MainMarketAssetsRoute: typeof MainMarketAssetsRoute
+  MainMarketCalendarRoute: typeof MainMarketCalendarRoute
+  MainAccountIndexRoute: typeof MainAccountIndexRoute
+  MainAlertsIndexRoute: typeof MainAlertsIndexRoute
+  MainDashboardIndexRoute: typeof MainDashboardIndexRoute
+  MainHelpIndexRoute: typeof MainHelpIndexRoute
+  MainMarketIndexRoute: typeof MainMarketIndexRoute
+  MainPortfolioIndexRoute: typeof MainPortfolioIndexRoute
+  MainSettingsIndexRoute: typeof MainSettingsIndexRoute
+  MainTradeIndexRoute: typeof MainTradeIndexRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
+  MainMarketAssetsRoute: MainMarketAssetsRoute,
+  MainMarketCalendarRoute: MainMarketCalendarRoute,
   MainAccountIndexRoute: MainAccountIndexRoute,
   MainAlertsIndexRoute: MainAlertsIndexRoute,
   MainDashboardIndexRoute: MainDashboardIndexRoute,
@@ -173,103 +203,115 @@ const MainRouteChildren: MainRouteChildren = {
   MainPortfolioIndexRoute: MainPortfolioIndexRoute,
   MainSettingsIndexRoute: MainSettingsIndexRoute,
   MainTradeIndexRoute: MainTradeIndexRoute,
-};
+}
 
-const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren);
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "": typeof MainRouteWithChildren;
-  "/account": typeof MainAccountIndexRoute;
-  "/alerts": typeof MainAlertsIndexRoute;
-  "/dashboard": typeof MainDashboardIndexRoute;
-  "/help": typeof MainHelpIndexRoute;
-  "/market": typeof MainMarketIndexRoute;
-  "/portfolio": typeof MainPortfolioIndexRoute;
-  "/settings": typeof MainSettingsIndexRoute;
-  "/trade": typeof MainTradeIndexRoute;
+  '/': typeof IndexRoute
+  '': typeof MainRouteWithChildren
+  '/market/assets': typeof MainMarketAssetsRoute
+  '/market/calendar': typeof MainMarketCalendarRoute
+  '/account': typeof MainAccountIndexRoute
+  '/alerts': typeof MainAlertsIndexRoute
+  '/dashboard': typeof MainDashboardIndexRoute
+  '/help': typeof MainHelpIndexRoute
+  '/market': typeof MainMarketIndexRoute
+  '/portfolio': typeof MainPortfolioIndexRoute
+  '/settings': typeof MainSettingsIndexRoute
+  '/trade': typeof MainTradeIndexRoute
 }
 
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "": typeof MainRouteWithChildren;
-  "/account": typeof MainAccountIndexRoute;
-  "/alerts": typeof MainAlertsIndexRoute;
-  "/dashboard": typeof MainDashboardIndexRoute;
-  "/help": typeof MainHelpIndexRoute;
-  "/market": typeof MainMarketIndexRoute;
-  "/portfolio": typeof MainPortfolioIndexRoute;
-  "/settings": typeof MainSettingsIndexRoute;
-  "/trade": typeof MainTradeIndexRoute;
+  '/': typeof IndexRoute
+  '': typeof MainRouteWithChildren
+  '/market/assets': typeof MainMarketAssetsRoute
+  '/market/calendar': typeof MainMarketCalendarRoute
+  '/account': typeof MainAccountIndexRoute
+  '/alerts': typeof MainAlertsIndexRoute
+  '/dashboard': typeof MainDashboardIndexRoute
+  '/help': typeof MainHelpIndexRoute
+  '/market': typeof MainMarketIndexRoute
+  '/portfolio': typeof MainPortfolioIndexRoute
+  '/settings': typeof MainSettingsIndexRoute
+  '/trade': typeof MainTradeIndexRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  "/": typeof IndexRoute;
-  "/_main": typeof MainRouteWithChildren;
-  "/_main/account/": typeof MainAccountIndexRoute;
-  "/_main/alerts/": typeof MainAlertsIndexRoute;
-  "/_main/dashboard/": typeof MainDashboardIndexRoute;
-  "/_main/help/": typeof MainHelpIndexRoute;
-  "/_main/market/": typeof MainMarketIndexRoute;
-  "/_main/portfolio/": typeof MainPortfolioIndexRoute;
-  "/_main/settings/": typeof MainSettingsIndexRoute;
-  "/_main/trade/": typeof MainTradeIndexRoute;
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/_main': typeof MainRouteWithChildren
+  '/_main/market/assets': typeof MainMarketAssetsRoute
+  '/_main/market/calendar': typeof MainMarketCalendarRoute
+  '/_main/account/': typeof MainAccountIndexRoute
+  '/_main/alerts/': typeof MainAlertsIndexRoute
+  '/_main/dashboard/': typeof MainDashboardIndexRoute
+  '/_main/help/': typeof MainHelpIndexRoute
+  '/_main/market/': typeof MainMarketIndexRoute
+  '/_main/portfolio/': typeof MainPortfolioIndexRoute
+  '/_main/settings/': typeof MainSettingsIndexRoute
+  '/_main/trade/': typeof MainTradeIndexRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | ""
-    | "/account"
-    | "/alerts"
-    | "/dashboard"
-    | "/help"
-    | "/market"
-    | "/portfolio"
-    | "/settings"
-    | "/trade";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | ''
+    | '/market/assets'
+    | '/market/calendar'
+    | '/account'
+    | '/alerts'
+    | '/dashboard'
+    | '/help'
+    | '/market'
+    | '/portfolio'
+    | '/settings'
+    | '/trade'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | ""
-    | "/account"
-    | "/alerts"
-    | "/dashboard"
-    | "/help"
-    | "/market"
-    | "/portfolio"
-    | "/settings"
-    | "/trade";
+    | '/'
+    | ''
+    | '/market/assets'
+    | '/market/calendar'
+    | '/account'
+    | '/alerts'
+    | '/dashboard'
+    | '/help'
+    | '/market'
+    | '/portfolio'
+    | '/settings'
+    | '/trade'
   id:
-    | "__root__"
-    | "/"
-    | "/_main"
-    | "/_main/account/"
-    | "/_main/alerts/"
-    | "/_main/dashboard/"
-    | "/_main/help/"
-    | "/_main/market/"
-    | "/_main/portfolio/"
-    | "/_main/settings/"
-    | "/_main/trade/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/_main'
+    | '/_main/market/assets'
+    | '/_main/market/calendar'
+    | '/_main/account/'
+    | '/_main/alerts/'
+    | '/_main/dashboard/'
+    | '/_main/help/'
+    | '/_main/market/'
+    | '/_main/portfolio/'
+    | '/_main/settings/'
+    | '/_main/trade/'
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  MainRoute: typeof MainRouteWithChildren;
+  IndexRoute: typeof IndexRoute
+  MainRoute: typeof MainRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MainRoute: MainRouteWithChildren,
-};
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 
@@ -289,6 +331,8 @@ export const routeTree = rootRoute
     "/_main": {
       "filePath": "_main.tsx",
       "children": [
+        "/_main/market/assets",
+        "/_main/market/calendar",
         "/_main/account/",
         "/_main/alerts/",
         "/_main/dashboard/",
@@ -298,6 +342,14 @@ export const routeTree = rootRoute
         "/_main/settings/",
         "/_main/trade/"
       ]
+    },
+    "/_main/market/assets": {
+      "filePath": "_main/market/assets.tsx",
+      "parent": "/_main"
+    },
+    "/_main/market/calendar": {
+      "filePath": "_main/market/calendar.tsx",
+      "parent": "/_main"
     },
     "/_main/account/": {
       "filePath": "_main/account/index.tsx",

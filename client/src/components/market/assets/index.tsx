@@ -1,5 +1,5 @@
 import { useAlpacaQueries } from "@/hooks/use-alpaca.hook";
-import Loading from "../common/loading";
+import { Loading } from "../../common/loading";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 

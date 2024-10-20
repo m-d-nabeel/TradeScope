@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMarketQueries } from "@/hooks/use-alpaca.hook";
 import { useSearch } from "@tanstack/react-router";
 import { ErrorComponent } from "../common/error-component.tsx";
-import Loading from "../common/loading.tsx";
+import {Loading} from "../common/loading.tsx";
 import { AuctionExchangeDistribution } from "./auction-exchange-distribution";
 import { AuctionPriceChart } from "./auction-price-chart";
 import { AuctionSizeChart } from "./auctions-size-chart";

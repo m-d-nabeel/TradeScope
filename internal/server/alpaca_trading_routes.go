@@ -4,10 +4,12 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/trading-backend/internal/database/sqlc"
 	"github.com/trading-backend/internal/lib"
+	alpacaservice "github.com/trading-backend/internal/service/alpaca_service"
 )
 
 func (s *Server) getPositionsHandler(w http.ResponseWriter, r *http.Request) {
@@ -98,4 +100,30 @@ func (s *Server) getAssetSymbolsHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	lib.RespondJSON(w, http.StatusAccepted, lib.DbSymbolsToSymbols(symbols))
+}
+
+func (s *Server) getTradingCalendarHandler(w http.ResponseWriter, r *http.Request) {
+	cacheKey := "trading-calendar"
+	var calendar []alpacaservice.CalendarDay
+	err := s.getCachedData(r.Context(), cacheKey, &calendar)
+
+	if err == nil {
+		log.Println("cache hit")
+		lib.RespondJSON(w, http.StatusOK, calendar)
+		return
+	}
+
+	calendar, err = alpacaservice.GetCalendar()
+	if err != nil {
+		log.Printf("Error getting trading calendar: %v", err)
+		lib.RespondError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = s.cacheData(r.Context(), cacheKey, calendar, 15*time.Minute)
+	if err != nil {
+		log.Println("failed to cache data")
+	}
+
+	lib.RespondJSON(w, http.StatusOK, calendar)
 }

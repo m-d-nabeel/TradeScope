@@ -2,7 +2,7 @@ import { AlpacaAsset } from "@/types/alpaca.types";
 import { Table } from "@tanstack/react-table";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 export const SearchableHeader = ({
   column,

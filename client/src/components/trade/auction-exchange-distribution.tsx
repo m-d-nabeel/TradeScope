@@ -12,7 +12,7 @@ import {
 
 import { useAlpacaQueries } from "@/hooks/use-alpaca.hook";
 import { AlpacaAuction } from "@/types/alpaca.types";
-import Loading from "../common/loading";
+import {Loading} from "../common/loading";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
 
 interface PropsInterface {
