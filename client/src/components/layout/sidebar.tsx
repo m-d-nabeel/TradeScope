@@ -55,7 +55,9 @@ const links: LinkItem[] = [
 export const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const { logout } = useAuthQueries();
   const location = useLocation();
-  const activePath = location.pathname.slice(1);
+  const activePath = location.pathname.split("/").slice(2).join("/");
+  console.log(activePath);
+  
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 
   const toggleMenu = (to: string) => {
