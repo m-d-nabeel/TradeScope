@@ -59,6 +59,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 				r.Get("/auctions", s.getHistoricalAuctionsHandler)
 				r.Get("/stocks/exchanges", s.getStocksExchangesHandler)
 			})
+
+			// Trade routes
+			r.Route("/trade", func(r chi.Router) {
+				// r.Get("/assets", s.getUserAssetsHandler)
+				// r.Get("/orders", s.getOrdersHandler)
+				// r.Post("/orders", s.createOrdersHandler)
+				// r.Delete("/orders/{orderId}", s.cancelOrderHandler)
+			})
 		})
 	})
 

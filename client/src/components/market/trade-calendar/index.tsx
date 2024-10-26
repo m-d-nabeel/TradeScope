@@ -44,14 +44,16 @@ export function TradingCalendar() {
               {day}
             </div>
           ))}
-          {days.map((day) => (
-            <CalendarDay
-              key={day.toISOString()}
-              day={day}
-              isCurrentMonth={isSameMonth(day, currentDate)}
-              tradingDay={tradingCalendar.find((d) => isSameDay(new Date(d.date), day))}
-            />
-          ))}
+          {days.map((day) => {
+            return (
+              <CalendarDay
+                key={day.toISOString()}
+                day={day}
+                isCurrentMonth={isSameMonth(day, new Date())}
+                tradingDay={tradingCalendar.find((d) => isSameDay(new Date(d.date), day))}
+              />
+            );
+          })}
         </div>
       </CardContent>
     </Card>

@@ -1,7 +1,7 @@
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertOctagon, Home, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import React from "react";
 
 export function ErrorComponent({
   error,
@@ -10,14 +10,12 @@ export function ErrorComponent({
   error: Error;
   mode?: "light" | "dark";
 }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [errorMessage, setErrorMessage] = useState("");
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHoveringRefresh, setIsHoveringRefresh] = useState(false);
-  const [isHoveringHome, setIsHoveringHome] = useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
+  const [isHoveringRefresh, setIsHoveringRefresh] = React.useState(false);
+  const [isHoveringHome, setIsHoveringHome] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setErrorMessage(error.message || "An unexpected error occurred");
 
     const updateMousePosition = (e: MouseEvent) => {
@@ -32,11 +30,7 @@ export function ErrorComponent({
   }, [error]);
 
   const handleRefresh = () => {
-    return navigate({
-      to: location.pathname,
-      search: location.search,
-      replace: true,
-    });
+    window.location.reload();
   };
 
   const isDark = mode === "dark";
