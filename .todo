@@ -1,0 +1,45 @@
+Dashboard:
+
+GET /v2/account (account information)
+GET /v2/positions (current positions)
+GET /v2/account/portfolio/history (portfolio history)
+
+
+Trade:
+
+GET /v2/assets (list of tradable assets)
+POST /v2/orders (place an order)
+GET /v2/orders (get open orders)
+DELETE /v2/orders/{order_id} (cancel an order)
+
+
+Portfolio:
+
+GET /v2/positions (list open positions)
+GET /v2/account/portfolio/history (portfolio performance)
+
+
+Market:
+
+GET /v2/assets (for asset details)
+GET /v2/calendar (trading calendar)
+GET /v1/bars/{timeframe} (historical price data)
+GET /v2/stocks/{symbol}/trades (latest trades)
+GET /v2/stocks/{symbol}/quotes (latest quotes)
+
+
+Alerts:
+
+This feature isn't directly supported by Alpaca API. You'll need to implement it in your backend, potentially using websockets for real-time data.
+
+
+Account:
+
+GET /v2/account (account details)
+GET /v2/account/activities (account activities)
+GET /v2/account/configurations (account configurations)
+
+
+Help:
+
+This section would typically be static content that you provide, not requiring API calls.
