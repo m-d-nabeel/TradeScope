@@ -3,9 +3,9 @@ package server
 import (
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
+	"github.com/alpacahq/alpaca-trade-api-go/v3/alpaca"
 	"github.com/go-chi/chi/v5"
 	"github.com/trading-backend/internal/database/sqlc"
 	"github.com/trading-backend/internal/lib"
@@ -23,40 +23,41 @@ func (s *Server) getPositionsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getAssetHandler(w http.ResponseWriter, r *http.Request) {
-	asset, err := s.apca.GetAsset("AAPL")
+
+	symbol := chi.URLParam(r, "symbol")
+	if symbol == "" {
+		log.Println("Invalid symbol")
+		lib.RespondError(w, http.StatusInternalServerError, "Invalid symbol")
+		return
+	}
+
+	cacheKey := "asset: " + symbol
+	var asset *alpaca.Asset
+	err := s.getCachedData(r.Context(), cacheKey, &asset)
+
+	if err == nil {
+		log.Println("cache hit")
+		lib.RespondJSON(w, http.StatusOK, asset)
+		return
+	}
+	asset, err = s.apca.GetAsset(symbol)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "failed to fetch asset", http.StatusInternalServerError)
 		return
 	}
+
+	err = s.cacheData(r.Context(), cacheKey, asset, 15*time.Minute)
+	if err != nil {
+		log.Println("failed to cache data")
+	}
+
 	lib.RespondJSON(w, http.StatusAccepted, asset)
 }
 
 func (s *Server) getAssetsHandler(w http.ResponseWriter, r *http.Request) {
 	dbQuery := sqlc.New(s.db.GetPool())
 	assets, err := dbQuery.ListAssets(r.Context())
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
-		return
-	}
-	lib.RespondJSON(w, http.StatusAccepted, lib.DbAssetsToAssets(assets))
-}
-
-func (s *Server) assetsPaginationHandler(w http.ResponseWriter, r *http.Request) {
-	pageStr := chi.URLParam(r, "page")
-	pageNo, err := strconv.Atoi(pageStr)
-	if err != nil || pageNo < 1 {
-		log.Println(err)
-		pageNo = 1
-	}
-
-	dbQuery := sqlc.New(s.db.GetPool())
-	assets, err := dbQuery.GetAssetsWithKeysetPagination(r.Context(), sqlc.GetAssetsWithKeysetPaginationParams{
-		SeqID: int32((pageNo - 1) * 20),
-		Limit: 200,
-	})
-
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "failed to fetch assets", http.StatusInternalServerError)
@@ -126,4 +127,14 @@ func (s *Server) getTradingCalendarHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	lib.RespondJSON(w, http.StatusOK, calendar)
+}
+
+func (s *Server) getClockHandler(w http.ResponseWriter, r *http.Request) {
+	clock, err := s.apca.GetClock()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "failed to fetch clock", http.StatusInternalServerError)
+		return
+	}
+	lib.RespondJSON(w, http.StatusAccepted, clock)
 }

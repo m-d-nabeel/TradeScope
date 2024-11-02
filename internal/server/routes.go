@@ -47,7 +47,6 @@ func (s *Server) RegisterRoutes() http.Handler {
 			// Assets routes
 			r.Route("/assets", func(r chi.Router) {
 				r.Get("/get", s.getAssetsHandler)
-				r.Get("/page/{page}", s.assetsPaginationHandler)
 				r.Get("/{symbol}", s.getAssetHandler)
 				r.Get("/{id}", s.getAssetByIdHandler)
 				r.Get("/symbols", s.getAssetSymbolsHandler)
@@ -62,6 +61,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 			// Trade routes
 			r.Route("/trade", func(r chi.Router) {
+				r.Get("/clock", s.getClockHandler)
 				// r.Get("/assets", s.getUserAssetsHandler)
 				// r.Get("/orders", s.getOrdersHandler)
 				// r.Post("/orders", s.createOrdersHandler)
