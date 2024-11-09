@@ -1,39 +1,41 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-import { format, parseISO } from "date-fns";
-import { AnimatePresence, motion } from "framer-motion";
-import { Calendar as CalendarIcon, Clock, X } from "lucide-react";
-import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import { format, isSameDay, parseISO } from "date-fns"
+import { AnimatePresence, motion } from "framer-motion"
+import { Calendar as CalendarIcon, Clock, X } from "lucide-react"
+import { useState } from "react"
 
 interface TradingDay {
-  date: string;
-  open: string;
-  close: string;
-  session_open: string;
-  session_close: string;
-  settlement_date: string;
+  date: string
+  open: string
+  close: string
+  session_open: string
+  session_close: string
+  settlement_date: string
 }
 
 interface CalendarDayProps {
-  day: Date;
-  isCurrentMonth: boolean;
-  tradingDay?: TradingDay;
+  day: Date
+  isCurrentMonth: boolean
+  tradingDay?: TradingDay
 }
 
 export function CalendarDay({ day, isCurrentMonth, tradingDay }: CalendarDayProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false)
+  const currentDate = new Date()
 
   const formatSessionTime = (time: string) => {
-    const hours = time.slice(0, 2);
-    const minutes = time.slice(2);
-    return `${hours}:${minutes}`;
-  };
+    const hours = time.slice(0, 2)
+    const minutes = time.slice(2)
+    return `${hours}:${minutes}`
+  }
 
   const dayClasses = cn(
     "p-1 sm:p-3 rounded-xl transition-all duration-300 ease-in-out relative overflow-hidden",
     isCurrentMonth ? "bg-gradient-to-br from-blue-50 to-indigo-100" : "bg-gray-100 text-gray-400",
     tradingDay ? "cursor-pointer hover:shadow-lg hover:scale-105 transform" : "",
-  );
+    isSameDay(day, currentDate) && "bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-lg"
+  )
 
   return (
     <>
@@ -46,6 +48,7 @@ export function CalendarDay({ day, isCurrentMonth, tradingDay }: CalendarDayProp
           className={cn(
             "absolute left-0 top-0 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold sm:left-2 sm:top-2 sm:h-8 sm:w-8 sm:text-sm",
             isCurrentMonth ? "bg-indigo-500 text-white" : "bg-gray-300 text-gray-600",
+            isSameDay(day, currentDate) && "bg-white text-indigo-600"
           )}
           layoutId={`date-${day.toISOString()}`}
         >
@@ -56,7 +59,7 @@ export function CalendarDay({ day, isCurrentMonth, tradingDay }: CalendarDayProp
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center space-x-1 text-green-600">
+                  <div className={cn("flex items-center space-x-1", isSameDay(day, currentDate) ? "text-indigo-200" : "text-green-600")}>
                     <Clock className="h-2 w-2 sm:h-3 sm:w-3" />
                     <span>{tradingDay.open}</span>
                   </div>
@@ -69,7 +72,7 @@ export function CalendarDay({ day, isCurrentMonth, tradingDay }: CalendarDayProp
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center space-x-1 text-red-600">
+                  <div className={cn("flex items-center space-x-1", isSameDay(day, currentDate) ? "text-indigo-200" : "text-red-600")}>
                     <Clock className="h-2 w-2 sm:h-3 sm:w-3" />
                     <span>{tradingDay.close}</span>
                   </div>
@@ -139,5 +142,5 @@ export function CalendarDay({ day, isCurrentMonth, tradingDay }: CalendarDayProp
         )}
       </AnimatePresence>
     </>
-  );
+  )
 }

@@ -88,6 +88,22 @@ func DbAssetsToAssets(dbAssets []sqlc.Asset) []Asset {
 	return assets
 }
 
+func SortAssetsByTradable(assets []Asset) []Asset {
+	var tradable []Asset
+	var notTradable []Asset
+	tradableCount := 0
+	for _, asset := range assets {
+		if asset.Tradable {
+			tradable = append(tradable, asset)
+			tradableCount++
+		} else {
+			notTradable = append(notTradable, asset)
+		}
+	}
+	log.Printf("Tradable assets: %d", tradableCount)
+	return append(tradable, notTradable...)
+}
+
 type Symbol struct {
 	ID     uuid.UUID `json:"id"`
 	Symbol string    `json:"symbol"`

@@ -169,3 +169,10 @@ export type TradingDay = {
   session_close: string;
   settlement_date: string;
 };
+
+export type TradingClock = {
+  timestamp: string;
+  is_open: boolean;
+  next_open: string;
+  next_close: string;
+}

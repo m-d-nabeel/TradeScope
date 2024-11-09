@@ -50,12 +50,19 @@ export const useAlpacaQueries = () => {
     refetchOnWindowFocus: false
   });
 
+  const clockQuery = useQuery({
+    queryKey: ["aplaca_clock"],
+    queryFn: AlpacaService.getTradingClock,
+    staleTime: 0,
+  });
+
   return {
     accountQuery,
     assetsQuery,
     stocksExchangesQuery,
     symbolsQuery,
-    calendarQuery
+    calendarQuery,
+    clockQuery
   };
 };
 

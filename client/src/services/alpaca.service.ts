@@ -5,6 +5,7 @@ import {
   AlpacaSymbol,
   DashboardQueryResponse,
   PortfolioResponse,
+  TradingClock,
   TradingDay,
 } from "@/types/alpaca.types";
 
@@ -75,5 +76,16 @@ export const AlpacaService = {
       console.info("Error getting trading calendar: ", error?.message);
       return [];
     }
+  },
+
+  async getTradingClock(): Promise<TradingClock | null> {
+    try {
+      const response = await axiosInstance.get("/api/alpaca/trade/clock");
+      return response.data;
+    } catch (error: any) {
+      console.info("Error getting trading clock: ", error?.message);
+      return null;
+    }
   }
+
 };

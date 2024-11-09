@@ -1,29 +1,70 @@
-import { useAuthQueries } from "@/hooks/use-auth.hook";
-import { useLocation } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
-import { Bell, TrendingDown, TrendingUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useAlpacaQueries } from "@/hooks/use-alpaca.hook"
+import { useAuthQueries } from "@/hooks/use-auth.hook"
+import { useLocation } from "@tanstack/react-router"
+import { AnimatePresence, motion } from "framer-motion"
+import { Bell, Clock, LockIcon, UnlockIcon, TrendingDown, TrendingUp } from "lucide-react"
+import { useEffect, useState } from "react"
+import { format } from "date-fns"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { TradingClock } from "@/types/alpaca.types"
 
 type HeaderProps = {
-  setSidebarOpen: (open: boolean) => void;
-};
+  setSidebarOpen: (open: boolean) => void
+}
 
 export const Header = ({ setSidebarOpen }: HeaderProps) => {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const location = useLocation();
-  const pageTitle = location.pathname.split("/")?.[1];
-  const { user } = useAuthQueries();
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const location = useLocation()
+  const pageTitle = location.pathname.split("/")?.[1]
+  const { user } = useAuthQueries()
+  const { clockQuery } = useAlpacaQueries()
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   const stocks = [
     { symbol: "AAPL", price: 150.25, change: 2.5 },
     { symbol: "GOOGL", price: 2750.1, change: -1.2 },
     { symbol: "TSLA", price: 900.8, change: 3.7 },
-  ];
+  ]
+
+  const formatTime = (dateString: string) => {
+    return format(new Date(dateString), "h:mm a")
+  }
+
+  const renderMarketStatus = (clockData: TradingClock) => {
+    const { is_open, next_open, next_close } = clockData
+    const statusColor = is_open ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+    const timeColor = is_open ? "text-green-600" : "text-red-600"
+    const Icon = is_open ? UnlockIcon : LockIcon
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className={`flex items-center space-x-2 rounded-full px-3 py-1.5 text-sm font-medium ${statusColor}`}>
+              <Icon className="h-4 w-4" />
+              <span>{is_open ? "Market Open" : "Market Closed"}</span>
+              <span className={`font-bold ${timeColor}`}>
+                {is_open
+                  ? `Closes ${formatTime(next_close)}`
+                  : `Opens ${formatTime(next_open)}`}
+              </span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>
+              {is_open
+                ? `Market closes at ${format(new Date(next_close), "h:mm a 'on' MMMM d, yyyy")}`
+                : `Market opens at ${format(new Date(next_open), "h:mm a 'on' MMMM d, yyyy")}`}
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
 
   return (
     <header className="sticky top-0 z-10 bg-white shadow-md">
@@ -61,16 +102,16 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
           </div>
 
           <div className="hidden md:block">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <motion.div
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="font-semibold text-gray-600"
-                >
-                  {currentTime.toLocaleTimeString()}
-                </motion.div>
-              </div>
+            <div className="flex items-center space-x-4">
+              <motion.div
+                animate={{ y: [0, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="flex items-center space-x-2 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-600"
+              >
+                <Clock className="h-4 w-4" />
+                <span>{currentTime.toLocaleTimeString()}</span>
+              </motion.div>
+              {clockQuery.data && renderMarketStatus(clockQuery.data)}
             </div>
           </div>
 
@@ -112,16 +153,21 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
             transition={{ duration: 0.3 }}
             className="border-t border-gray-200 bg-gray-50"
           >
-            <div className="mx-auto max-w-7xl px-4 py-1 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between">
                 {stocks.map((stock) => (
                   <div key={stock.symbol} className="flex items-center space-x-2">
                     <span className="font-semibold text-gray-800">{stock.symbol}</span>
                     <span className="text-gray-600">${stock.price.toFixed(2)}</span>
                     <span
-                      className={`flex items-center ${stock.change >= 0 ? "text-green-600" : "text-red-600"}`}
+                      className={`flex items-center ${stock.change >= 0 ? "text-green-600" : "text-red-600"
+                        }`}
                     >
-                      {stock.change >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                      {stock.change >= 0 ? (
+                        <TrendingUp size={16} />
+                      ) : (
+                        <TrendingDown size={16} />
+                      )}
                       {Math.abs(stock.change).toFixed(2)}%
                     </span>
                   </div>
@@ -132,5 +178,5 @@ export const Header = ({ setSidebarOpen }: HeaderProps) => {
         )}
       </AnimatePresence>
     </header>
-  );
-};
+  )
+}
