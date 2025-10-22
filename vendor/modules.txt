@@ -74,7 +74,7 @@ github.com/mailru/easyjson/jwriter
 github.com/markbates/goth
 github.com/markbates/goth/gothic
 github.com/markbates/goth/providers/google
-# github.com/redis/go-redis/v9 v9.6.1
+# github.com/redis/go-redis/v9 v9.6.3
 ## explicit; go 1.18
 github.com/redis/go-redis/v9
 github.com/redis/go-redis/v9/internal
