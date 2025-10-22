@@ -1,6 +1,6 @@
 module github.com/trading-backend
 
-go 1.23
+go 1.23.0
 
 toolchain go1.23.1
 
@@ -36,7 +36,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/rs/cors v1.11.1
 	golang.org/x/crypto v0.27.0
-	golang.org/x/oauth2 v0.23.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 )
