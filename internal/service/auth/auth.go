@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
@@ -22,21 +22,21 @@ const (
 	RefreshAudience    = "refresh"
 )
 
-type AuthService struct {
-	jwtSecret []byte
-}
+	type AuthService struct {
+		jwtSecret []byte
+	}
 
 type UserClaims struct {
-	Email     string `json:"email"`
-	Name      string `json:"name"`
-	UserID    string `json:"user_id"`
-	AvatarURL string `json:"avatar_url"`
-	jwt.StandardClaims
+    Email     string `json:"email"`
+    Name      string `json:"name"`
+    UserID    string `json:"user_id"`
+    AvatarURL string `json:"avatar_url"`
+    jwt.RegisteredClaims
 }
 
 type RefreshClaims struct {
-	UserID string `json:"user_id"`
-	jwt.StandardClaims
+    UserID string `json:"user_id"`
+    jwt.RegisteredClaims
 }
 
 func NewAuthService() *AuthService {
@@ -74,34 +74,34 @@ func (s *AuthService) GenerateTokenPair(user *goth.User) (string, string, error)
 }
 
 func (s *AuthService) generateAccessToken(user *goth.User) (string, error) {
-	claims := UserClaims{
-		Email:     user.Email,
-		Name:      user.Name,
-		UserID:    user.UserID,
-		AvatarURL: user.AvatarURL,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(AccessTokenExpiry).Unix(),
-			IssuedAt:  time.Now().Unix(),
-			Audience:  AccessAudience,
-		},
-	}
+       claims := UserClaims{
+	       Email:     user.Email,
+	       Name:      user.Name,
+	       UserID:    user.UserID,
+	       AvatarURL: user.AvatarURL,
+	       RegisteredClaims: jwt.RegisteredClaims{
+		       ExpiresAt: jwt.NewNumericDate(time.Now().Add(AccessTokenExpiry)),
+		       IssuedAt:  jwt.NewNumericDate(time.Now()),
+		       Audience:  []string{AccessAudience},
+	       },
+       }
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(s.jwtSecret)
+       token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+       return token.SignedString(s.jwtSecret)
 }
 
 func (s *AuthService) generateRefreshToken(user *goth.User) (string, error) {
-	claims := RefreshClaims{
-		UserID: user.UserID,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(RefreshTokenExpiry).Unix(),
-			IssuedAt:  time.Now().Unix(),
-			Audience:  RefreshAudience,
-		},
-	}
+       claims := RefreshClaims{
+	       UserID: user.UserID,
+	       RegisteredClaims: jwt.RegisteredClaims{
+		       ExpiresAt: jwt.NewNumericDate(time.Now().Add(RefreshTokenExpiry)),
+		       IssuedAt:  jwt.NewNumericDate(time.Now()),
+		       Audience:  []string{RefreshAudience},
+	       },
+       }
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(s.jwtSecret)
+       token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+       return token.SignedString(s.jwtSecret)
 }
 
 func (s *AuthService) RefreshTokens(user *sqlc.User) (string, string, error) {
